@@ -143,6 +143,7 @@ details.panel[open] summary::after{content:"−"}
 .howto li::marker{color:var(--brass)}
 .howto b{color:var(--brass)}
 .foot{text-align:center;font-size:.82rem;color:var(--muted);display:flex;flex-direction:column;gap:6px;align-items:center}
+.foot .ver{opacity:.7;font-size:.78rem}
 .link{background:none;border:none;color:var(--brass);text-decoration:underline;padding:4px;font-size:.82rem}
 .resume{border-color:var(--brass-deep)}
 .resume .vs{font-weight:700;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
@@ -4586,8 +4587,18 @@ function viewHome(){
     <div class="foot">
       <span>بنك الأسئلة: ${Q.length} سؤالاً. الأسئلة التي ظهرت سابقاً تأتي في آخر الدور.</span>
       <button class="link" data-act="resetSeen">تصفير سجل الأسئلة المستخدمة</button>
+      ${verLabel()}
     </div>
   </div>`;
+}
+// رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
+const GAME_VER = '202611141235';
+function verLabel(){
+  const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
+  if (!m) return '';
+  const d = new Date(Date.UTC(+m[1], m[2] - 1, +m[3], +m[4] + 3, +m[5]));
+  const p = n => String(n).padStart(2, '0');
+  return `<small class="ver">النسخة ${ltr(`${d.getUTCDate()}/${d.getUTCMonth() + 1} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`)}</small>`;
 }
 
 function viewIntro(){
