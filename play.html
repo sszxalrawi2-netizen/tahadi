@@ -106,6 +106,14 @@ h2{font-size:1.5rem}
 .trow .field{font-size:1.05rem;text-align:start}
 .tlie{flex:none;border:2px solid var(--rim);background:var(--felt);border-radius:12px;padding:0 10px;font-weight:700;font-size:.9rem;color:var(--muted)}
 .tlie.on{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 25%,var(--felt));color:var(--ink)}
+.tgpad{display:flex;flex-direction:column;gap:10px}
+.tgshow{min-height:58px;border-radius:14px;background:var(--felt-2);border:1px solid var(--rim);padding:10px 12px;font-size:1.35rem;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:8px;overflow-wrap:anywhere}
+.tgshow small{color:var(--brass);font-size:1.2rem;white-space:nowrap}
+.tgn{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tgn button{border:none;border-radius:14px;min-height:56px;background:var(--brass);color:var(--brass-ink);font-family:var(--display);font-size:1.7rem}
+.tgn button:disabled{opacity:.25}
+.tgo{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tgo button{border:1px solid var(--rim);border-radius:12px;min-height:50px;background:var(--felt-3);font-size:1.4rem;font-weight:700}
 .step{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .step button{border:none;border-radius:12px;background:var(--felt-3);padding:12px 0;font-weight:700}
 </style>
@@ -452,6 +460,25 @@ function body(){
       <div class="big" style="color:var(--brass)">«${esc(v.need)}»</div><p class="muted" style="margin:0">الكلمة الجاية تبدأ بهذا الحرف</p></div>
       ${v.mine ? `<div class="card"><span class="label">دورك!</span><input class="field" id="gs" maxlength="30" autocomplete="off" placeholder="كلمة تبدأ بـ«${esc(v.need)}»">${v.err ? `<p class="no center" style="margin:0;font-weight:700">${esc(v.err)}</p>` : ''}<button class="btn primary" data-act="sendGuess">أرسل</button></div>`
         : `<p class="muted" style="text-align:center;margin:0">الدور على ${esc(v.turn)}، ساعدوه!</p>`}`;
+    case 'escape': return `<div class="card"><span class="label">ألغازك: حلّها وقول الرقم لفريقك</span>
+        ${(v.items || []).length ? `<ul class="pieces">${v.items.map(x => `<li><small class="muted">الخانة ${esc(x.pos)}</small><br>${esc(x.text)}</li>`).join('')}</ul>` : '<p class="muted" style="margin:0">ما عندك لغز هالمرة، ساعد فريقك بالحل.</p>'}</div>
+      ${v.solved ? '<div class="card center"><div class="big ok">🔓 فتحتوا القفل!</div></div>'
+        : `<div class="card"><span class="label">رمز القفل (4 أرقام)</span>
+          <input class="field" id="code" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="0000" dir="ltr" style="letter-spacing:.4em;font-size:2rem" value="${esc(local.code || '')}" ${v.lock ? 'disabled' : ''}>
+          <button class="btn primary" data-act="sendCode" ${v.lock ? 'disabled' : ''}>${v.lock ? `🔒 مقفول ${v.lock} ثوانٍ` : 'افتح القفل'}</button>
+          ${(v.tries || []).length ? `<p class="muted center" style="margin:0">${v.tries.slice().reverse().map(t => `${ltr(t.code)}: ${t.ok} بمكانها`).join(' · ')}</p>` : ''}</div>`}`;
+    case 'target': {
+      const tok = local.tok || [], used = new Set(tok.filter(x => typeof x === 'number'));
+      const val = tgEvalP(tok, v.nums), shown = tok.map(x => typeof x === 'number' ? v.nums[x] : {'*':'×', '/':'÷', '-':'−'}[x] || x).join(' ');
+      return `<div class="card center" style="gap:4px"><span class="label">الهدف</span><div class="big" style="color:var(--brass)">${ltr(v.target)}</div></div>
+      <div class="tgpad"><div class="tgshow" dir="ltr">${shown ? esc(shown) : '<span class="muted">اضغط الأرقام والعمليات</span>'}<small>${val != null ? '= ' + val : ''}</small></div>
+        <div class="tgn" dir="ltr">${v.nums.map((n, i) => `<button data-act="tgN" data-i="${i}" ${used.has(i) ? 'disabled' : ''}>${n}</button>`).join('')}</div>
+        <div class="tgo" dir="ltr">${['+', '-', '*', '/', '(', ')'].map(o => `<button data-act="tgO" data-o="${o}">${{'*':'×', '/':'÷', '-':'−'}[o] || o}</button>`).join('')}<button data-act="tgB" aria-label="مسح آخر شي">⌫</button><button data-act="tgC">مسح</button></div>
+        <button class="btn primary" data-act="tgSend" ${val == null ? 'disabled' : ''}>أرسل المعادلة</button>
+        ${v.err ? `<p class="no center" style="margin:0">${esc(v.err)}</p>` : ''}</div>
+      <div class="card" style="gap:4px">${v.mine ? `<span class="label">أحسن محاولة إلك</span><b dir="ltr">${esc(v.mine.e)} = ${v.mine.v}</b><small class="${v.mine.d === 0 ? 'ok' : 'muted'}">${v.mine.d === 0 ? '🎯 بالضبط!' : `الفرق ${v.mine.d}`}</small>` : '<span class="muted">ما أرسلت بعد. تقدر ترسل أكثر من مرة.</span>'}
+        ${v.team != null ? `<small class="muted">أقرب شي بفريقك: ${v.team === 0 ? 'بالضبط 🎯' : 'فرق ' + v.team}</small>` : ''}</div>`;
+    }
     case 'piece': return `${v.prompt ? `<p class="prompt">${esc(v.prompt)}</p>` : ''}
       ${v.code ? `<div class="code">${v.code.map(w => `<span class="cw">${w.map(n => `<b>${esc(n)}</b>`).join('')}</span>`).join('')}</div>` : ''}
       <div class="card"><span class="label">${esc(v.label)}</span>${(v.items || []).length ? `<ul class="pieces">${v.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</div>
@@ -533,7 +560,17 @@ function mountPad(){
   const up = () => { if (cur) { cur = null; flushPad(); } };
   cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
 }
-app.addEventListener('input', e => { const id = e.target.id || ''; if (/^tr\d$/.test(id)) local[id] = e.target.value; if (/^f\d$/.test(id)) { local.f = local.f || []; local.f[+id.slice(1)] = e.target.value; } });
+// «هدف الأرقام»: نفس حساب التابلت حتى يشوف اللاعب النتيجة وهو يكتب
+function tgEvalP(tokens, nums){
+  if (!tokens.length) return null;
+  const used = new Set(); let i = 0;
+  const peek = () => tokens[i];
+  function atom(){ const tk = tokens[i++]; if (tk === '(') { const v = expr(); if (tokens[i++] !== ')') throw 0; return v; } if (typeof tk === 'number' && !used.has(tk) && tk < nums.length) { used.add(tk); return nums[tk]; } throw 0; }
+  function term(){ let v = atom(); while (peek() === '*' || peek() === '/') { const o = tokens[i++], b = atom(); if (o === '*') v *= b; else { if (!b || v % b) throw 0; v /= b; } } return v; }
+  function expr(){ let v = term(); while (peek() === '+' || peek() === '-') { const o = tokens[i++], b = term(); v = o === '+' ? v + b : v - b; } return v; }
+  try { const v = expr(); return i === tokens.length ? v : null; } catch(e) { return null; }
+}
+app.addEventListener('input', e => { const id = e.target.id || ''; if (id === 'code') local.code = e.target.value; if (/^tr\d$/.test(id)) local[id] = e.target.value; if (/^f\d$/.test(id)) { local.f = local.f || []; local.f[+id.slice(1)] = e.target.value; } });
 app.addEventListener('pointerdown', e => {
   // زر ردّة الفعل يقيس من لحظة اللمس، لا من رفع الإصبع
   const el = e.target.closest('[data-act="react"]'); if (!el || !view || view.k !== 'react' || local.res) return;
@@ -587,6 +624,12 @@ app.addEventListener('click', e => {
     if (local.lie == null) { alert('حدّد أيّها الكذبة'); return; }
     send({t:'truth3', vid:view.vid, s, lie:local.lie});
   }
+  else if (a === 'sendCode') { const inp = document.getElementById('code'); const v = (inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, ''); if (v.length !== 4) { inp.focus(); return; } local.code = ''; send({t:'code', vid:view.vid, v}); try { navigator.vibrate && navigator.vibrate(30); } catch(_){} }
+  else if (a === 'tgN') { local.tok = (local.tok || []).concat([+el.dataset.i]); render(); }
+  else if (a === 'tgO') { local.tok = (local.tok || []).concat([el.dataset.o]); render(); }
+  else if (a === 'tgB') { local.tok = (local.tok || []).slice(0, -1); render(); }
+  else if (a === 'tgC') { local.tok = []; render(); }
+  else if (a === 'tgSend') { if (tgEvalP(local.tok || [], view.nums) == null) return; send({t:'expr', vid:view.vid, v:local.tok}); try { navigator.vibrate && navigator.vibrate(30); } catch(_){} }
   else if (a === 'bLock') { const v = local.bet != null ? local.bet : (view.mine || 0); send({t:'bet', vid:view.vid, v}); }
 });
 document.addEventListener('visibilitychange', () => {

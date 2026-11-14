@@ -216,6 +216,19 @@ details.panel[open] summary::after{content:"−"}
 .pqbox{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:16px;border:2px solid color-mix(in srgb,var(--tc) 55%,transparent);background:color-mix(in srgb,var(--tc) 10%,var(--felt))}
 .pqbox b{color:var(--tc)}
 /* سباق الفريقين */
+.esclock{display:flex;gap:8px;justify-content:center;margin:10px 0 4px}
+.esclock b{width:clamp(44px,12vw,62px);height:clamp(54px,14vw,74px);border-radius:12px;background:var(--felt);border:2px solid var(--tc);display:grid;place-items:center;font-family:var(--display);font-weight:400;font-size:clamp(1.8rem,6vw,2.6rem);color:var(--brass)}
+.esctries{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
+.esctries span{padding:2px 10px;border-radius:99px;background:color-mix(in srgb,var(--bad) 20%,var(--felt-3));font-size:.85rem;font-weight:700}
+.esctries span.ok{background:color-mix(in srgb,var(--good) 35%,var(--felt-3))}
+.escp{margin:10px 0 0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px;font-size:.92rem}
+.escp small{color:var(--muted);margin-inline-end:6px}
+.escp b{color:var(--brass);margin-inline-start:8px;font-size:1.1rem}
+.tgtarget{font-family:var(--display);font-size:clamp(3rem,12vw,4.6rem);color:var(--brass);text-align:center;line-height:1.1}
+.tgnums{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:6px}
+.tgnums span{min-width:52px;padding:8px 10px;border-radius:12px;background:var(--felt-3);font-family:var(--display);font-size:1.6rem;text-align:center}
+.tgexpr{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:8px;font-weight:700;font-size:1.15rem}
+.tgexpr small{color:var(--muted);font-weight:400}
 .rtrack{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px}
 .rtrack::before{content:"";position:absolute;inset-inline-start:0;bottom:-6px;height:3px;width:var(--p);background:var(--tc);border-radius:3px;transition:width .4s}
 .rtrack span{height:38px;border-radius:10px;background:var(--felt-3);display:grid;place-items:center;font-weight:700;color:var(--muted)}
@@ -1591,9 +1604,11 @@ const ROUNDS = [
   {id:'auction', group:'تحديات تفاعلية', name:'المزاد', desc:'زايدوا على عدد الإجابات، ومن يربح المزاد يثبت كلامه', cats:['auction'], levels:[1,2,3], mult:1, type:'auction'},
   {id:'reverse', group:'تحديات تفاعلية', name:'بالمقلوب', desc:'اسمعوا الكلمة مقلوبة وخمّنوا الكلمة الصحيحة', cats:['reverse'], levels:[1,2,3], mult:1, type:'reverse'},
   {id:'greed', group:'تحديات تفاعلية', name:'اطمع أو وقّف', desc:'سلم من 5 أسئلة، كل جواب صح يضاعف الرصيد. توقفون وتأخذونه، أو تطمعون وتخاطرون بكل شي', cats:['general','capitals','football','iq','logic','odd','calc','seqs'], levels:[1,2,3], mult:1, type:'greed', count:n => Math.max(1, Math.round(n / 2)) * 2},
+  {id:'trust', group:'تحديات تفاعلية', name:'راهن على صاحبك', desc:'واحد منكم يجاوب لحاله بدون مساعدة، والفريق يراهن عليه قبل ما يشوف السؤال', cats:['general','capitals','football','iq','logic','odd'], levels:[1,2,3], mult:1, type:'trust', count:n => n * 2},
   {id:'rapid', group:'تحديات تفاعلية', name:'صح أم خطأ', desc:'8 عبارات سريعة في 45 ثانية، بلا وقت للتفكير الطويل', cats:['rapid'], levels:[1,2,3], mult:1, type:'rapid'},
   {id:'allq', group:'من الجوال', name:'الكل يجاوب', desc:'السؤال على التابلت، وكل لاعب يجاوب من جواله، والأسرع يكسب أكثر', cats:['general','football','capitals','iq','calc','seqs','logic','odd'], levels:[1,2], mult:1, type:'all', net:2, count:n => n * 3},
   {id:'race', group:'من الجوال', name:'سباق الفريقين', desc:'كل فريق تجيه 5 أسئلة مختلفة على جوالاته بنفس الوقت، والأسرع والأدق يفوز', cats:['general','capitals','football','iq','logic','seqs','calc','odd'], levels:[1,2], mult:1, type:'race', net:2, count:n => n},
+  {id:'target', group:'من الجوال', name:'هدف الأرقام', desc:'ستة أرقام ورقم هدف، ركّبوا معادلة توصل له من جوالاتكم، والأقرب يكسب', cats:['target'], levels:[1,2,3], mult:1, type:'target', net:2, count:n => n},
   {id:'letters', group:'من الجوال', name:'حروف', desc:'حرف عشوائي، والكل يكتب من جواله اسم وحيوان ونبات وجماد وبلد. أول من يكمّل يقول «ستوب!»', cats:['letters'], levels:[1], mult:1, type:'letters', net:2, count:n => n},
   {id:'spy', group:'من الجوال', name:'الجاسوس', desc:'كل لاعب يرى كلمة سرية بجواله إلا الجاسوس، فاكشفوه', cats:['spy'], levels:[1,2,3], mult:1, type:'spy', net:3, count:n => Math.max(2, n)},
   {id:'liar', group:'من الجوال', name:'الكذّاب', desc:'اكتب جواباً مزيفاً يخدع الآخرين، واكتشف الحقيقي بينها', cats:['liar'], levels:[1,2,3], mult:1, type:'liar', net:3, count:n => n * 2},
@@ -1608,6 +1623,7 @@ const ROUNDS = [
   {id:'tmem', group:'تعاون الفريق', name:'الذاكرة الجماعية', desc:'الكلمات مقسّمة على جوالات الفريق، وبعدها الكل يكتب ما يتذكره', cats:['memory'], levels:[1,2,3], mult:1, type:'tmem', net:2, count:n => n},
   {id:'cipher', group:'تعاون الفريق', name:'شفرة الأرقام', desc:'رسالة بالأرقام، ومفتاح الشفرة مقسّم على جوالات الفريق', cats:['cipher'], levels:[1,2,3], mult:1, type:'coop', net:2, count:n => n * 2},
   {id:'scale', group:'تعاون الفريق', name:'الميزان', desc:'معادلات أوزان مقسّمة على الجوالات، وواحد بس يرسل الجواب', cats:['scale'], levels:[1,2,3], mult:1, type:'coop', net:2, count:n => n * 2},
+  {id:'escape', group:'تعاون الفريق', name:'غرفة الهروب', desc:'قفل من 4 أرقام، وكل جوال عليه لغز يعطي رقماً منه. أول فريق يفتح القفل يفوز', cats:['escape'], levels:[1,2,3], mult:1, type:'escape', net:2, count:n => n},
   {id:'wordle', group:'تعاون الفريق', name:'الكلمة المخفية', desc:'خمّنوا الكلمة بست محاولات، وبعد كل محاولة تعرفون الحروف الصحيحة', cats:['wordle'], levels:[1,2], mult:1, type:'wordle', net:2, count:n => n},
   {id:'chain', group:'تعاون الفريق', name:'سلسلة الفريق', desc:'بالدور، كل لاعب يكتب كلمة تبدأ بآخر حرف من كلمة صاحبه', cats:['chain'], levels:[1,2], mult:1, type:'chain', net:2, count:n => n},
   {id:'tmap', group:'تعاون الفريق', name:'خريطة الكنز', desc:'واحد يشوف الخريطة بجواله ويوجّه فريقه، والفريق يحرّك القطعة على التابلت', cats:['tmap'], levels:[1,2,3], mult:1, type:'tmap', net:2, count:n => n},
@@ -1620,7 +1636,7 @@ const ROUNDS = [
   {id:'closest', group:'كرة القدم', name:'الأقرب يفوز', desc:'الفريقان يكتبان رقماً، والأقرب للجواب يأخذ النقاط', cats:['closest'], levels:[1,2,3], mult:1, type:'num'},
   {id:'hard', group:'الختام', name:'الجولة الصعبة', desc:'أصعب الأسئلة من كل الفقرات، والنقاط مضاعفة', cats:['general','whoami','links','iq','logic','seqs','odd','flags','flagcolors','capitals','football','players','career'], levels:[3], mult:2, type:'mcq'},
 ];
-const CAT_NAMES = {secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
+const CAT_NAMES = {escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
 const LEVEL_POINTS = {1:100, 2:200, 3:300};
 const LEVEL_NAMES = {1:'سهل', 2:'متوسط', 3:'صعب'};
 const CLUE_POINTS = [300, 200, 150, 100];
@@ -1653,8 +1669,10 @@ const RACE_N = 5, RACE_PER = 50, RACE_BONUS = 100, RACE_TIME = 100, RACE_LOCK = 
 const GREED_STEPS = [100, 200, 400, 800, 1600], GREED_TIME = 20;
 const LT_TIME = 90, LT_STOP = 10, LT_UNIQ = 20, LT_SHARE = 10;
 const STREAK_BONUS = 50;   // من الإجابة الثالثة المتتالية وما بعدها
-const TEAM_TYPES = COOP_TYPES.concat(['wordle', 'chain', 'tmap', 'race']);   // تحتاج لاعباً من كل فريق
-const NET_TYPES = ['race', 'letters', 'all', 'spy', 'liar', 'who', 'react', 'alike', 'wrote', 'pdraw', 'fast', 'tclock', 'truth', 'split', 'coop', 'tmem', 'wordle', 'chain', 'secret', 'tmap'];
+const ESC_PTS = 300, ESC_TIME = 180, ESC_LOCK = 8;
+const TG_EXACT = 200, TG_NEAR = 100, TG_TIME = 90;
+const TEAM_TYPES = COOP_TYPES.concat(['wordle', 'chain', 'tmap', 'race', 'escape', 'target']);   // تحتاج لاعباً من كل فريق
+const NET_TYPES = ['escape', 'target', 'race', 'letters', 'all', 'spy', 'liar', 'who', 'react', 'alike', 'wrote', 'pdraw', 'fast', 'tclock', 'truth', 'split', 'coop', 'tmem', 'wordle', 'chain', 'secret', 'tmap'];
 const PEN_COLORS = ['--ink', '--team-a', '--team-b', '--good', '--brass'];   // وقت الانفجار عشوائي ومخفي (بالثواني)
 const TILE_STEPS = [2, 4, 7, 12];   // عدد مربعات العلم المكشوفة في كل مرحلة (من 12)
 const LIFES = [
@@ -1664,7 +1682,7 @@ const LIFES = [
   {id:'dbl', g:'×2', name:'مضاعفة'},
   {id:'swap', g:'⇄', name:'تبديل السؤال'},
 ];
-const LIFES_FOR = {mcq:['fifty','hint','time','dbl','swap'], list:['time','dbl','swap'], num:[], order:['hint','time','dbl','swap'], rapid:['time','dbl','swap'], describe:['time','dbl'], reverse:['time','dbl'], auction:[], bomb:[], buzz:[], memory:['time','dbl'], draw:['time','dbl'], all:[], spy:[], liar:[], who:[], react:[], alike:[], wrote:[], pdraw:[], fast:[], tclock:[], truth:[], split:[], coop:[], tmem:[], wordle:[], chain:[], secret:[], tmap:[], race:[], letters:[], greed:['fifty','time']};
+const LIFES_FOR = {mcq:['fifty','hint','time','dbl','swap'], list:['time','dbl','swap'], num:[], order:['hint','time','dbl','swap'], rapid:['time','dbl','swap'], describe:['time','dbl'], reverse:['time','dbl'], auction:[], bomb:[], buzz:[], memory:['time','dbl'], draw:['time','dbl'], all:[], spy:[], liar:[], who:[], react:[], alike:[], wrote:[], pdraw:[], fast:[], tclock:[], truth:[], split:[], coop:[], tmem:[], wordle:[], chain:[], secret:[], tmap:[], race:[], letters:[], greed:['fifty','time'], escape:[], target:[], trust:[]};
 const preStage = t => t === 'describe' || t === 'reverse' || t === 'bomb' || t === 'memory' || t === 'draw';   // فقرات تبدأ بشاشة تحضير قبل الوقت
 const STEAL_SECONDS = 20;
 const LETTERS = ['أ','ب','ج','د'];
@@ -2086,6 +2104,9 @@ function makeMap(id, lvl){
   return null;
 }
 BANK.tmap = [1, 2, 3].flatMap(l => Array.from({length:8}, (_, i) => makeMap(`mp${l}${String(i + 1).padStart(2, '0')}`, l))).filter(Boolean);
+// غرفة الهروب وهدف الأرقام: الألغاز والأرقام تُولَّد وقت اللعب، هنا بس الصعوبة
+BANK.escape = [1, 2, 3].flatMap(l => Array.from({length:8}, (_, i) => ({id:`es${l}${i + 1}`, lvl:l, escape:true, q:'غرفة الهروب'})));
+BANK.target = [1, 2, 3].flatMap(l => Array.from({length:8}, (_, i) => ({id:`tg${l}${i + 1}`, lvl:l, target:true, q:'هدف الأرقام'})));
 // سلسلة الفريق: [الفئة، كلمة البداية]
 BANK.chain = [['أي كلمة','بغداد',1],['حيوانات','أسد',1],['دول','مصر',1],['أكلات','كباب',1],['أسماء أولاد','محمد',1],['مدن','بغداد',2],['لاعبو كرة','ميسي',2],['أشياء في البيت','باب',1],
   ['أي كلمة','قمر',1],['فواكه وخضار','تفاح',2],['أسماء بنات','سارة',1],['مهن','طبيب',2],['أي كلمة','سيارة',1],['أندية كرة','برشلونة',2],['أي كلمة','كتاب',1],['أي كلمة','شمس',1]]
@@ -2373,7 +2394,7 @@ BANK.letters = Array.from('ابتجحدرزسشصعفقكلمنهي').map((l, i)
     [2,'إذا كان أمس السبت، فما اليوم بعد غد؟',['الثلاثاء','الاثنين','الأربعاء','الأحد'],'اليوم الأحد.','اليوم الأحد، وبعد غد الثلاثاء.'],
   ]));
 
-  const odd = (rows) => rows.map(([items, note, hint, lvl], i) => { const oid = id('xod', i), rnd = seeded(oid), shown = items.slice().sort(() => rnd() - .5); return {id:oid, lvl, q:`أيّها الدخيل؟ ${shown.join('، ')}`, o:items, hint, note}; });
+  const odd = (rows, p = 'xod') => rows.map(([items, note, hint, lvl], i) => { const oid = id(p, i), rnd = seeded(oid), shown = items.slice().sort(() => rnd() - .5); return {id:oid, lvl, q:`أيّها الدخيل؟ ${shown.join('، ')}`, o:items, hint, note}; });
   add('odd', odd([
     [['أوروبا','الأمازون','النيل','الدانوب'], 'أوروبا قارة، والبقية أنهار.', 'ثلاثة منها تجري.', 1],
     [['نيويورك','باريس','لندن','برلين'], 'نيويورك ليست عاصمة، والبقية عواصم.', 'عاصمة أمريكا واشنطن.', 1],
@@ -2485,11 +2506,132 @@ BANK.letters = Array.from('ابتجحدرزسشصعفقكلمنهي').map((l, i)
 
   add('secret', [['أم كلثوم','شخصية مشهورة',1],['صلاح الدين الأيوبي','شخصية تاريخية',1],['هارون الرشيد','شخصية تاريخية',1],['نابليون','شخصية تاريخية',2],['أينشتاين','عالم',1],['ابن سينا','عالم',2],['كاظم الساهر','مطرب',1],['فيروز','مطربة',1],['توم وجيري','كرتون',1],['كابتن ماجد','كرتون',1],['سبونج بوب','كرتون',1],['هالاند','لاعب كرة',1],['بنزيما','لاعب كرة',1],['غوارديولا','مدرب',2],['أسد','حيوان',1],['زرافة','حيوان',1],['بطريق','حيوان',1],['تمساح','حيوان',1],['برج إيفل','مكان',1],['الأهرامات','مكان',1],['دبي','مدينة',1],['البصرة','مدينة',1],['لندن','مدينة',1],['المسكوف','أكلة',1],['البيتزا','أكلة',1],['الدولمة','أكلة',1],['الثلاجة','شيء',1],['الجوال','شيء',1],['الطيارة','شيء',1],['مستر بين','شخصية مشهورة',1],['شارلي شابلن','شخصية مشهورة',2],['ستيف جوبز','شخصية مشهورة',2],['إيلون ماسك','شخصية مشهورة',1]]
     .map(([name, cat, lvl], i) => ({id:id('xsr', i), lvl, secret:name, topic:cat, q:`الشخصية السرية: ${cat}`})));
+
+  /* ---- تحديث نوفمبر 2026: أحداث 2026 وأسئلة جديدة ---- */
+  add('football', mcq('yf', [
+    [1,'من فاز بكأس العالم 2026؟',['إسبانيا','الأرجنتين','فرنسا','إنجلترا'],'هزم الأرجنتين بالنهائي.'],
+    [2,'من سجّل هدف فوز إسبانيا في نهائي كأس العالم 2026؟',['فيران توريس','لامين يامال','ألفارو موراتا','داني أولمو'],'بالدقيقة 106 بالوقت الإضافي.'],
+    [2,'كم انتهى نهائي كأس العالم 2026؟',['إسبانيا 1-0 الأرجنتين','إسبانيا 2-1 الأرجنتين','الأرجنتين 1-0 إسبانيا','2-2 وركلات ترجيح'],'بعد التمديد.'],
+    [2,'كم مرة فازت إسبانيا بكأس العالم (حتى 2026)؟',['2','1','3','4'],'2010 و2026.'],
+    [2,'من فاز بجائزة أفضل لاعب في مونديال 2026؟',['رودري','ليونيل ميسي','كيليان مبابي','لامين يامال'],'لاعب وسط إسباني.'],
+    [2,'من هدّاف كأس العالم 2026؟',['كيليان مبابي','ليونيل ميسي','جود بيلينغهام','هاري كين'],'سجّل 10 أهداف.'],
+    [3,'من أول لاعب يفوز بلقب هدّاف كأس العالم في نسختين؟',['كيليان مبابي','ميروسلاف كلوزه','رونالدو البرازيلي','غاري لينكر'],'2022 و2026.'],
+    [3,'من فاز بجائزة أفضل حارس في مونديال 2026؟',['أوناي سيمون','إيميليانو مارتينيز','مايك ماينان','تيبو كورتوا'],'حارس البطل.'],
+    [3,'من فاز بجائزة أفضل لاعب شاب في مونديال 2026؟',['باو كوبارسي','لامين يامال','أردا غولر','إندريك'],'مدافع إسباني.'],
+    [2,'في أي ملعب أقيم نهائي كأس العالم 2026؟',['ملعب ميتلايف','ملعب أزتيكا','ملعب سوفاي','ملعب روز بول'],'قرب نيويورك.'],
+    [2,'من مدرب إسبانيا الفائز بكأس العالم 2026؟',['لويس دي لا فوينتي','لويس إنريكي','تشابي هيرنانديز','روبرتو مارتينيز'],'فاز بجائزة أفضل مدرب 2026.'],
+    [1,'أي منتخب عربي تأهل لكأس العالم 2026 بعد غياب 40 سنة؟',['العراق','الكويت','الإمارات','سوريا'],'آخر مشاركة 1986.'],
+    [2,'من سجّل هدف تأهل العراق لكأس العالم 2026 أمام بوليفيا؟',['أيمن حسين','علي الحمادي','مهند علي','أمجد عطوان'],'رأس الحربة.'],
+    [2,'كم انتهت مباراة العراق وبوليفيا اللي تأهل بيها العراق لمونديال 2026؟',['2-1 للعراق','1-0 للعراق','3-1 للعراق','1-1 وركلات ترجيح'],''],
+    [3,'في أي مدينة لعب العراق مباراة التأهل لمونديال 2026 أمام بوليفيا؟',['مونتيري','مكسيكو سيتي','ميامي','الدوحة'],'في المكسيك.'],
+    [2,'كم مرة شارك العراق في كأس العالم (حتى 2026)؟',['2','1','3','4'],'1986 و2026.'],
+    [3,'أي منتخبات كانت مع العراق بمجموعته في مونديال 2026؟',['فرنسا والسنغال والنرويج','البرازيل والمغرب واليابان','إسبانيا والأوروغواي وكوريا','ألمانيا والمكسيك وغانا'],''],
+    [1,'أي نادٍ فاز بدوري أبطال أوروبا 2026؟',['باريس سان جيرمان','آرسنال','ريال مدريد','بايرن ميونخ'],'للمرة الثانية على التوالي.'],
+    [2,'من خسر نهائي دوري أبطال أوروبا 2026 بركلات الترجيح؟',['آرسنال','إنتر ميلان','برشلونة','ليفربول'],'نادٍ إنجليزي.'],
+    [3,'في أي مدينة أقيم نهائي دوري أبطال أوروبا 2026؟',['بودابست','ميونخ','إسطنبول','لشبونة'],'عاصمة المجر.'],
+    [2,'من فاز بالدوري الإنجليزي موسم 2025–2026؟',['آرسنال','مانشستر سيتي','ليفربول','تشيلسي'],'أول لقب له منذ 22 سنة.'],
+    [2,'من فاز بالكرة الذهبية 2026؟',['هاري كين','كيليان مبابي','لامين يامال','رودري'],'مهاجم بايرن ميونخ.'],
+    [3,'من آخر إنجليزي فاز بالكرة الذهبية قبل هاري كين؟',['مايكل أوين','ديفيد بيكهام','واين روني','ستيفن جيرارد'],'سنة 2001.'],
+    [3,'في أي مدينة أقيم حفل الكرة الذهبية 2026؟',['لندن','باريس','مدريد','ميونخ'],''],
+    [2,'كم منتخباً عربياً شارك في كأس العالم 2026؟',['8','4','6','10'],'منها العراق والأردن.'],
+    [2,'أي منتخب عربي شارك لأول مرة بتاريخه في كأس العالم 2026؟',['الأردن','العراق','قطر','الكويت'],'وصيف كأس آسيا 2023.'],
+  ]));
+  add('general', mcq('yg', [
+    [2,'ما العنصر الكيميائي الذي رمزه Fe؟',['الحديد','الفلور','الفضة','الرصاص'],'منه تُصنع السكك.'],
+    [2,'ما العنصر الكيميائي الذي رمزه Au؟',['الذهب','الفضة','الألمنيوم','الأرغون'],'معدن ثمين أصفر.'],
+    [2,'ما أصغر كوكب في المجموعة الشمسية؟',['عطارد','المريخ','الزهرة','بلوتو'],'الأقرب للشمس.'],
+    [2,'في أي دولة يقع جبل كليمنجارو؟',['تنزانيا','كينيا','إثيوبيا','أوغندا'],'أعلى قمة بأفريقيا.'],
+    [2,'ما عملة اليابان؟',['الين','اليوان','الوون','الروبية'],''],
+    [2,'ما عملة تركيا؟',['الليرة','الدينار','الريال','الدرهم'],''],
+    [2,'في أي مدينة عراقية تقع زقورة أور؟',['الناصرية','الحلة','الكوت','السماوة'],'محافظة ذي قار.'],
+    [2,'ما أكبر سد في العراق؟',['سد الموصل','سد حديثة','سد دوكان','سد دربندخان'],'على نهر دجلة شمالاً.'],
+    [2,'ما اسم المجرى اللي يتكوّن من التقاء دجلة والفرات؟',['شط العرب','الزاب','الخابور','الكارون'],'يمر بالبصرة.'],
+    [2,'أي مدينة عراقية تُلقّب بـ«أم الربيعين»؟',['الموصل','أربيل','كركوك','دهوك'],''],
+    [2,'أي مدينة تُلقّب بـ«دار السلام»؟',['بغداد','الموصل','كربلاء','سامراء'],'عاصمة العباسيين.'],
+    [2,'ما اسم المنارة المائلة الشهيرة في الموصل؟',['منارة الحدباء','الملوية','منارة سوق الغزل','برج بابل'],''],
+    [3,'ما أصلب مادة طبيعية؟',['الألماس','الحديد','الجرانيت','الكوارتز'],''],
+    [2,'ما أكبر عضو في جسم الإنسان؟',['الجلد','الكبد','الرئة','الدماغ'],'يغطي الجسم كله.'],
+    [2,'ما أقرب نجم إلى الأرض؟',['الشمس','سيريوس','نجم القطب','بروكسيما سنتوري'],'انتبه للفخ!'],
+    [3,'من مكتشف البنسلين؟',['ألكسندر فلمنغ','لويس باستور','توماس إديسون','إسحاق نيوتن'],'سنة 1928.'],
+    [2,'من اخترع الهاتف؟',['غراهام بيل','توماس إديسون','نيكولا تسلا','ماركوني'],''],
+    [3,'من العالم العربي الملقّب بأبي الكيمياء؟',['جابر بن حيان','ابن سينا','الخوارزمي','ابن الهيثم'],''],
+    [3,'من العالم اللي يُنسب إليه علم الجبر؟',['الخوارزمي','ابن رشد','الكندي','الفارابي'],'ومنه جاءت كلمة «خوارزمية».'],
+    [3,'من مؤلف كتاب «المناظر» في علم البصريات؟',['ابن الهيثم','البيروني','ابن خلدون','الرازي'],''],
+    [2,'من الشاعر العراقي صاحب قصيدة «أنشودة المطر»؟',['بدر شاكر السياب','الجواهري','نازك الملائكة','مظفر النواب'],'من البصرة.'],
+    [3,'من الشاعر العراقي الملقّب بـ«شاعر العرب الأكبر»؟',['محمد مهدي الجواهري','معروف الرصافي','بدر شاكر السياب','جميل صدقي الزهاوي'],''],
+    [2,'ما أقصر سورة في القرآن الكريم؟',['الكوثر','الإخلاص','العصر','الفلق'],'ثلاث آيات.'],
+    [2,'ما أكبر دولة عربية مساحةً؟',['الجزائر','السعودية','السودان','ليبيا'],''],
+    [3,'أي دولة يمر بها خط الاستواء ومدار الجدي معاً؟',['البرازيل','مصر','الهند','أستراليا'],''],
+    [2,'كم دولة عضو في جامعة الدول العربية؟',['22','20','18','25'],''],
+    [2,'في أي محيط تقع جزر المالديف؟',['المحيط الهندي','المحيط الأطلسي','المحيط الهادئ','المحيط المتجمد'],''],
+    [3,'ما أعمق نقطة معروفة في محيطات العالم؟',['خندق ماريانا','خندق بورتوريكو','خليج المكسيك','بحر العرب'],'بالمحيط الهادئ.'],
+    [2,'ما أكبر جزيرة في العالم؟',['غرينلاند','مدغشقر','بريطانيا','بورنيو'],'أستراليا تُحسب قارة.'],
+    [2,'ما الشركة المطوّرة لنظام أندرويد؟',['غوغل','آبل','مايكروسوفت','سامسونغ'],''],
+    [2,'إلى أي دولة تنتمي شركة سامسونغ؟',['كوريا الجنوبية','اليابان','الصين','أمريكا'],''],
+    [2,'إلى أي دولة تنتمي شركة هواوي؟',['الصين','كوريا الجنوبية','اليابان','تايوان'],''],
+    [2,'شنو حشوة «الكليجة» العراقية التقليدية؟',['تمر أو جوز','رز ولحم','باذنجان','عدس'],'حلوى العيد.'],
+    [1,'كم لوناً في علم العراق؟',['4','3','2','5'],'أحمر وأبيض وأسود، والكتابة خضراء.'],
+    [2,'ما الحيوان اللي يقدر يغيّر لون جلده؟',['الحرباء','السحلية','الضفدع','الثعبان'],''],
+    [2,'ما أطول حيوان في العالم؟',['الزرافة','الفيل','الجمل','النعامة'],''],
+    [2,'كم سنة في القرن؟',['100','10','1000','50'],''],
+    [2,'ما اسم الطائر اللي يقدر يطير للخلف؟',['الطنان','العصفور','الحمام','النسر'],'صغير جداً.'],
+    [3,'كم عدد أسنان الإنسان البالغ؟',['32','28','30','36'],'مع ضروس العقل.'],
+  ]));
+  add('capitals', [
+    [2,'كازاخستان',['أستانا','ألماتي','طشقند','بيشكك']],[2,'أوزبكستان',['طشقند','سمرقند','بخارى','أستانا']],[2,'أذربيجان',['باكو','تبليسي','يريفان','غنجة']],
+    [2,'جورجيا',['تبليسي','باتومي','باكو','يريفان']],[2,'أرمينيا',['يريفان','تبليسي','باكو','غيومري']],[3,'منغوليا',['أولان باتور','بكين','أستانا','بيشكك']],
+    [2,'نيجيريا',['أبوجا','لاغوس','كانو','أكرا']],[2,'إثيوبيا',['أديس أبابا','أسمرة','نيروبي','جوبا']],[2,'كينيا',['نيروبي','مومباسا','كمبالا','دار السلام']],
+    [3,'تنزانيا',['دودوما','دار السلام','زنجبار','نيروبي']],[2,'غانا',['أكرا','كوماسي','لومي','أبيدجان']],[2,'السنغال',['داكار','باماكو','نواكشوط','بانجول']],
+[2,'كولومبيا',['بوغوتا','ميديلين','كالي','كيتو']],[2,'البيرو',['ليما','كوسكو','كيتو','سانتياغو']],
+    [2,'تشيلي',['سانتياغو','فالبارايسو','ليما','بوينس آيرس']],[2,'فنزويلا',['كاراكاس','ماراكايبو','بوغوتا','هافانا']],[1,'النرويج',['أوسلو','بيرغن','ستوكهولم','كوبنهاغن']],
+    [1,'الدنمارك',['كوبنهاغن','آرهوس','أوسلو','ستوكهولم']],[2,'فنلندا',['هلسنكي','تامبيري','ستوكهولم','تالين']],[2,'البرتغال',['لشبونة','بورتو','مدريد','براغا']],
+  ].map(([lvl, country, o], i) => ({id:id('ycp', i), lvl, q:`ما عاصمة ${country}؟`, o, note:''})));
+  add('iq', mcq('yi', [
+    [2,'أكمل: 1، 1، 2، 3، 5، 8، ؟',['13','11','12','15'],'كل رقم = مجموع اللي قبله.'],
+    [2,'أكمل: 2، 6، 12، 20، ؟',['30','28','24','32'],'الفرق يزيد 2.'],
+    [2,'أكمل: 100، 50، 25، ؟',['12.5','10','15','20'],'نص.'],
+    [2,'إذا كان اليوم الأحد، شنو اليوم بعد 10 أيام؟',['الأربعاء','الثلاثاء','الخميس','الاثنين'],'أسبوع وثلاث أيام.'],
+    [3,'أكمل: 1، 4، 9، 16، 25، ؟',['36','30','35','49'],'مربعات.'],
+    [2,'نص الرقم زائد 10 يساوي 25. شنو الرقم؟',['30','15','20','35'],''],
+    [3,'ساعة تقدّم دقيقتين كل ساعة. بعد يوم كامل شكد تتقدّم؟',['48 دقيقة','24 دقيقة','12 دقيقة','ساعة'],'24 × 2.'],
+  ]));
+  add('logic', mcq('ylg', [
+    [2,'أبو سارة عنده 5 بنات: نونو، نانا، ني، نيني… شنو اسم الخامسة؟',['سارة','نونا','نيا','نينا'],'اقرأ أول السؤال.'],
+    [2,'شي كلما أخذت منه يكبر. شنو هو؟',['الحفرة','البالون','الدين','الكعكة'],''],
+    [2,'شي له رقبة وما له راس. شنو هو؟',['القنينة','القميص','الزرافة','المصباح'],''],
+    [2,'إذا سبقت اللي بالمركز الثاني بسباق، بأي مركز صرت؟',['الثاني','الأول','الثالث','الأخير'],'أخذت مكانه بس.'],
+    [3,'طبيب أعطاك 3 حبوب، وحدة كل نص ساعة. شكد تخلص؟',['ساعة','ساعة ونص','نص ساعة','ساعتين'],'الأولى فوراً.'],
+    [2,'شي يمشي بلا رجلين ويبكي بلا عيون. شنو هو؟',['الغيم','الساعة','النهر','الشمعة'],''],
+    [2,'كم شهر بالسنة بيه 28 يوم؟',['كل الشهور','شهر واحد','شهرين','ولا شهر'],'كلها بيها 28 على الأقل.'],
+  ]));
+  add('odd', odd([
+    [['إسبانيا','الأرجنتين','فرنسا','هولندا'], 'هولندا ما فازت بكأس العالم، والبقية فازت.', 'أبطال العالم.', 2],
+    [['أيمن حسين','علي الحمادي','مهند علي','سالم الدوسري'], 'سالم الدوسري سعودي، والبقية عراقيون.', 'المنتخب.', 1],
+    [['أستانا','طشقند','باكو','سمرقند'], 'سمرقند ليست عاصمة، والبقية عواصم.', 'عواصم آسيا الوسطى.', 3],
+    [['المسكوف','الدولمة','الباجة','البيتزا'], 'البيتزا مو أكلة عراقية.', 'المطبخ.', 1],
+  ], 'yod'));
+  add('rapid', [
+    [2,'صح أم خطأ: أحداث 2026',[['إسبانيا فازت بكأس العالم 2026.',true],['العراق تأهل لكأس العالم 2026.',true],['نهائي مونديال 2026 أقيم في المكسيك.',false],['هاري كين فاز بالكرة الذهبية 2026.',true],['آرسنال فاز بدوري أبطال أوروبا 2026.',false],['مبابي هدّاف مونديال 2026.',true],['شارك في مونديال 2026 32 منتخباً.',false],['باريس سان جيرمان فاز بدوري الأبطال مرتين متتاليتين.',true]]],
+    [2,'صح أم خطأ: العلوم',[['الألماس أصلب مادة طبيعية.',true],['عطارد أكبر كواكب المجموعة الشمسية.',false],['الضوء أسرع من الصوت.',true],['الشمس كوكب.',false],['الماء يغلي عند 100 درجة على مستوى البحر.',true],['للعنكبوت 6 أرجل.',false],['القمر يضيء بنفسه.',false],['الجلد أكبر عضو بالجسم.',true]]],
+  ].map(([lvl, q, tf], i) => ({id:id('yh', i), lvl, q, tf})));
+  add('lists', [
+    [2,'اذكروا الفائزين بالكرة الذهبية من 2008 إلى 2026',['كريستيانو رونالدو','ليونيل ميسي','لوكا مودريتش','كريم بنزيما','رودري','عثمان ديمبيلي','هاري كين']],
+    [2,'اذكروا المنتخبات العربية اللي شاركت في كأس العالم 2026',['العراق','الأردن','السعودية','قطر','المغرب','تونس','مصر','الجزائر']],
+    [2,'اذكروا المنتخبات التي فازت بكأس العالم (حتى 2026)',['البرازيل','ألمانيا','إيطاليا','الأرجنتين','فرنسا','الأوروغواي','إنجلترا','إسبانيا']],
+    [2,'اذكروا عواصم دول آسيا الوسطى',['أستانا','طشقند','بيشكك','دوشنبه','عشق آباد']],
+  ].map(([lvl, q, items], i) => ({id:id('yl', i), lvl, q, items})));
+  add('closest', [
+    [2,'كم هدفاً سجّل مبابي في مونديال 2026 (هدّاف البطولة)؟',10,'أهداف',''],
+    [2,'كم سنة غاب العراق عن كأس العالم قبل مونديال 2026؟',40,'سنة','من 1986 إلى 2026.'],
+    [3,'كم تصدّياً سجّل إيميليانو مارتينيز في نهائي مونديال 2026 (رقم قياسي)؟',11,'تصدياً',''],
+    [2,'كم كيلومتراً يبلغ طول نهر دجلة تقريباً؟',1850,'كم',''],
+    [3,'كم سنة عمر بغداد تقريباً (تأسست 762م)؟',1264,'سنة',''],
+  ].map(([lvl, q, num, unit, note], i) => ({id:id('yn', i), lvl, q, num, unit, note})));
 }
 const Q = []; for (const cat in BANK) for (const q of BANK[cat]) Q.push(prepCapital(prepColors(Object.assign({cat}, q))));
 const QBY = Object.fromEntries(Q.map(q => [q.id, q]));
 const RD = Object.fromEntries(ROUNDS.map(r => [r.id, r]));
-const qType = q => q.letters ? 'letters' : q.secret ? 'secret' : q.map ? 'tmap' : q.wordle ? 'wordle' : q.chain ? 'chain' : q.alike ? 'alike' : q.wrote ? 'wrote' : q.tclock ? 'tclock' : q.truth ? 'truth' : q.spy ? 'spy' : q.lie ? 'liar' : q.who ? 'who' : q.react ? 'react' : q.items ? 'list' : q.num != null ? 'num' : q.order ? 'order' : q.tf ? 'rapid' : q.words ? 'describe' : q.w ? 'reverse' : q.ex ? 'auction' : q.bomb ? 'bomb' : q.mem ? 'memory' : q.draw ? 'draw' : 'mcq';
+const qType = q => q.escape ? 'escape' : q.target ? 'target' : q.letters ? 'letters' : q.secret ? 'secret' : q.map ? 'tmap' : q.wordle ? 'wordle' : q.chain ? 'chain' : q.alike ? 'alike' : q.wrote ? 'wrote' : q.tclock ? 'tclock' : q.truth ? 'truth' : q.spy ? 'spy' : q.lie ? 'liar' : q.who ? 'who' : q.react ? 'react' : q.items ? 'list' : q.num != null ? 'num' : q.order ? 'order' : q.tf ? 'rapid' : q.words ? 'describe' : q.w ? 'reverse' : q.ex ? 'auction' : q.bomb ? 'bomb' : q.mem ? 'memory' : q.draw ? 'draw' : 'mcq';
 const revSpell = w => Array.from(w).reverse().filter(ch => ch !== ' ').join(' ');   // حروف الكلمة مقلوبة ومفصولة
 const stages = q => q.clues ? q.clues.length : (q.flag && q.cat === 'flags') ? TILE_STEPS.length : 0;
 function flagTiles(q, c){
@@ -2615,8 +2757,8 @@ function buildRound(){
   if (S.settings.llMode === 'round') S.teams.forEach(t => t.ll = freshLL());
 }
 function newCur(id, team){
-  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed'].includes(rt) ? rt : qType(q);
-  const ms = q.scene && t !== 'race' && t !== 'greed' ? q.scene.ms : (t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
+  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed', 'trust'].includes(rt) ? rt : qType(q);
+  const ms = q.scene && !['race', 'greed', 'trust'].includes(t) ? q.scene.ms : (t === 'escape' ? ESC_TIME : t === 'target' ? TG_TIME : t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
   return {id, team, t, stage: t === 'auction' ? 'bid' : (preStage(t) || t === 'buzz' || q.scene || NET_TYPES.includes(t)) ? 'ready' : 'answer',
     pk:[], picks:{}, votes:{}, fakes:{}, ferr:{}, opts:[], rx:{}, res2:null, spyKey:null, turn:[], buzzBy:null, nums:null, numBy:null, buzzer:null, textShown:false, recording:false, bid:AUCTION_START, bidder:null, cnt:0, wOrder: shuffle((q.words || []).map((_, i) => i)), wi:0, got:[], skipped:[], result:null, timeLeft:ms, max:ms, running:false, dbl:false, lock:null, gained:0,
     order:shuffle([0,1,2,3]), gone:[], hint:false, pick:null, spick:null, sres:null, sgained:0,
@@ -2633,6 +2775,8 @@ function startQuestion(){
   if (roundDef().pick && pickSetup(S.cur)) { S.phase = 'question'; save(); render(); return; }
   // «اطمع أو وقّف»: أسئلة السلم تُسحب واحداً واحداً من الأسهل للأصعب
   if (S.cur.t === 'greed') { greedSetup(S.cur); S.phase = 'question'; timerStart(); save(); render(); return; }
+  // «راهن على صاحبك»: الرهان أول، والسؤال يظهر بعده
+  if (S.cur.t === 'trust') { trustSetup(S.cur); S.used.push(id); markSeen(id); S.phase = 'question'; save(); render(); return; }
   initPQ(S.cur); goldMaybe(S.cur);
   S.used.push(id); markSeen(id);
   S.phase = 'question'; if (S.cur.stage === 'answer') timerStart(); save(); render();
@@ -2674,6 +2818,9 @@ function basePts(){
   if (c.t === 'race') return RACE_PER * m;
   if (c.t === 'greed') return GREED_STEPS[Math.min(c.gi || 0, GREED_STEPS.length - 1)] * m;
   if (c.t === 'letters') return LT_UNIQ * m;
+  if (c.t === 'escape') return ESC_PTS * m;
+  if (c.t === 'target') return TG_EXACT * m;
+  if (c.t === 'trust') return LEVEL_POINTS[q.lvl] * m * (c.bet != null ? TRUST_BETS[c.bet].x : 1);
   return (stages(q) ? cluePts(c) : LEVEL_POINTS[q.lvl]) * m * (c.gold ? 2 : 1);
 }
 const activeTeam = () => !S.cur ? null : (S.cur.t === 'num' || NET_TYPES.includes(S.cur.t) || (S.cur.t === 'auction' && S.cur.stage === 'bid') || (S.cur.t === 'buzz' && S.cur.buzzer === null)) ? null : (S.cur.stage === 'steal' ? 1 - S.cur.team : S.cur.team);
@@ -3352,6 +3499,38 @@ const PHONE = {
       head:`سؤال ${c.ri[t] + 1} من ${RACE_N}`, note:last ? (last.ok ? `✓ صح! +${basePts()}` : '') : 'أسرع واحد بالفريق يجاوب', tone:last && last.ok ? 'ok' : '', sub:vs};
   },
   split: coopPhone, coop: coopPhone, tmem: coopPhone,
+  escape(c, q, key, vid){
+    if (c.stage === 'ready') return {k:'wait', vid, title:'غرفة الهروب 🔐', text:'كل واحد يجيه لغز بجواله، وكل لغز يعطي رقم من رمز القفل'};
+    if (!c.pk.includes(key)) return {k:'wait', vid, title:'انتظر الجولة القادمة', text:''};
+    const t = pteam(key), e = c.esc[t];
+    if (c.stage === 'play') {
+      const lock = escLocked(c, t);
+      return {k:'escape', vid:vid + '.' + c.ea[t].length + (lock ? 'L' : ''), items:escMine(c, key).map(p => ({pos:AR_POS[p.pos], text:p.text})), tries:c.ea[t].slice(-4).map(a => ({code:a.code, ok:a.ok})), lock:Math.ceil(lock / 1000), solved:!!c.solved[t]};
+    }
+    return {k:'info', vid, label:'رمز قفلكم', big:e.code, tone:c.solved[t] ? 'ok' : 'no', text:c.solved[t] ? 'فتحتوا القفل! 🔓' : 'ما لحقتوا تفتحونه'};
+  },
+  target(c, q, key, vid){
+    if (c.stage === 'ready') return {k:'wait', vid, title:'هدف الأرقام 🎯', text:'جهّزوا عقولكم للحساب'};
+    if (!c.pk.includes(key)) return {k:'wait', vid, title:'انتظر الجولة القادمة', text:''};
+    const t = pteam(key), mine = c.tx[key], tb = tgBest(c, t);
+    if (c.stage === 'play') return {k:'target', vid, target:c.tg.target, nums:c.tg.nums, mine:mine ? {e:mine.e, v:mine.v, d:mine.d} : null, team:tb ? tb.d : null, err:c.terr[key] || ''};
+    const b = c.best && c.best[t];
+    return {k:'info', vid, label:`الهدف ${c.tg.target}`, big:b ? `${b.v}` : '—', tone:c.pts && c.pts[t] ? 'ok' : 'no', text:b ? `أقرب معادلة لفريقكم: ${b.e}` : 'ما أرسلتوا معادلة'};
+  },
+  trust(c, q, key, vid){
+    const t = pteam(key), who = c.who ? pname(c.who) : 'لاعب من الفريق', base = trustBase(c);
+    if (c.stage === 'bet') {
+      if (t === c.team && key !== c.who) return {k:'vote', vid:vid + '.b', prompt:`${who} راح يجاوب لحاله على سؤال ${CAT_NAMES[q.cat]} (${LEVEL_NAMES[q.lvl]}). شكد تراهنون عليه؟`, opts:TRUST_BETS.map((b, i) => ({v:String(i), l:`${b.n} ×${b.x}: صح +${base * b.x}${b.lose ? `، خطأ −${base * b.lose}` : '، خطأ ما تخسرون'}`})), mine:null};
+      if (key === c.who) return {k:'wait', vid, title:'إنت اللي راح تجاوب! 😬', text:'فريقك هسه يراهن عليك'};
+      return {k:'wait', vid, title:`فريق ${S.teams[c.team].name} يراهن`, text:`على ${who}`};
+    }
+    if (c.stage === 'answer') {
+      if (key === c.who) return {k:'choice', vid, head:`رهان فريقك: ×${TRUST_BETS[c.bet].x}`, note:'جاوب لحالك، بدون مساعدة!', prompt:q.q, opts:c.order.map(oi => q.o[oi]), mine:null, right:null};
+      return {k:'wait', vid, title:`${who} يجاوب لحاله 🤐`, text:t === c.team ? 'لا تساعدونه! ولا حتى بالعيون' : 'راقبوا وجهه'};
+    }
+    if (c.stage === 'done') return {k:'info', vid, label:'الجواب الصحيح', big:q.o[0], tone:c.result === 'correct' ? (t === c.team ? 'ok' : 'no') : (t === c.team ? 'no' : 'ok'), text:c.result === 'correct' ? `+${c.gained} لفريق ${S.teams[c.team].name}` : c.lost ? `−${c.lost} من فريق ${S.teams[c.team].name}` : 'ما أحد كسب'};
+    return null;
+  },
   secret(c, q, key, vid){
     if (c.stage === 'ready') return {k:'wait', vid, title:'الشخصية السرية', text:'واحد منكم سيعرف الشخصية، والباقون يسألونه'};
     if (!c.pk.includes(key)) return null;
@@ -3467,6 +3646,13 @@ function phoneAct(key, d){
     save(); render(); return;
   }
   if (c.t === 'race' && d.t === 'choice' && c.stage === 'play' && ins) { if (d.vid === raceVid(c, t) && !raceLocked(c, t)) raceAnswer(key, t, +d.v); return; }
+  if (c.t === 'escape' && d.t === 'code' && c.stage === 'play' && ins) { escTry(key, d.v); save(); render(); return; }
+  if (c.t === 'target' && d.t === 'expr' && c.stage === 'play' && ins && Array.isArray(d.v)) { tgSubmit(key, d.v.slice(0, 40)); save(); render(); return; }
+  if (c.t === 'trust') {
+    if (d.t === 'vote' && c.stage === 'bet' && t === c.team && key !== c.who) trustBet(+d.v, key);
+    else if (d.t === 'choice' && c.stage === 'answer' && key === c.who && c.order[+d.v] != null) trustPick(c.order[+d.v]);
+    return;
+  }
   if (c.pq && d.t === 'tvote') { pqVote(key, +d.v); return; }
   if (c.pq && d.t === 'life' && c.stage === 'answer' && t === c.team && LIFES_FOR.mcq.includes(d.v)) { useLife(d.v); return; }
   // خطوط الرسم تصل بسرعة: نرسمها مباشرة بدون إعادة رسم الصفحة
@@ -3548,7 +3734,9 @@ function netStart(){
   if (c.pk.length < need) { toast(`تحتاج ${need} لاعبين متصلين على الأقل`); return; }
   if (TEAM_TYPES.includes(c.t) && (!teamOnline(0).length || !teamOnline(1).length)) { toast('تحتاج لاعباً متصلاً واحداً على الأقل من كل فريق'); return; }
   c.order2 = shuffle(c.pk);
-  if (c.t === 'race') { if (!raceSetup(c)) { toast('ما فيه أسئلة كافية للسباق'); return; } c.stage = 'play'; c.t0 = Date.now(); timerStart(); }
+  if (c.t === 'escape') { escSetup(c); c.stage = 'play'; timerStart(); }
+  else if (c.t === 'target') { tgSetup(c); c.stage = 'play'; timerStart(); }
+  else if (c.t === 'race') { if (!raceSetup(c)) { toast('ما فيه أسئلة كافية للسباق'); return; } c.stage = 'play'; c.t0 = Date.now(); timerStart(); }
   else if (c.t === 'letters') { c.lw = {}; c.lbad = {}; c.stopBy = null; c.stage = 'write'; timerStart(); }
   else if (c.t === 'all') { c.stage = 'answer'; c.t0 = Date.now(); timerStart(); }
   else if (c.t === 'who') { c.stage = 'answer'; timerStart(); }
@@ -3914,6 +4102,146 @@ function coopPhone(c, q, key, vid){
   return {k:'info', vid, label:'الجواب', big:info.ans, tone:c.solved[t] ? 'ok' : 'no', text:c.solved[t] ? 'حللتوها!' : 'ما لحقتوا'};
 }
 
+/* --- غرفة الهروب: قفل من 4 أرقام، وكل رقم يطلع من لغز على جوال واحد من الفريق --- */
+const ESC_FACTS = [['عدد أيام الأسبوع',7],['عدد أرجل العنكبوت',8],['عدد قارات العالم',7],['عدد أضلاع المثلث',3],['عدد أضلاع المسدس',6],['عدد أصابع اليد الواحدة',5],
+  ['عدد أركان الإسلام',5],['عدد لاعبي كرة السلة لكل فريق داخل الملعب',5],['عدد ألوان قوس قزح',7],['عدد كواكب المجموعة الشمسية',8],['عدد أرجل الحشرة',6],
+  ['عدد عجلات الدراجة الهوائية',2],['عدد حواس الإنسان',5],['عدد فصول السنة',4],['عدد قلوب الأخطبوط',3],['عدد ألوان علم العراق',4],['كم صفر بالمليون؟',6],
+  ['عدد أشواط الطواف حول الكعبة',7],['عدد الصلوات المفروضة باليوم',5],['عدد زوايا المربع',4],['عدد الأشهر اللي بيها 31 يوماً',7],['عدد أرجل الطير',2],
+  ['عدد حجرات قلب الإنسان',4],['عدد دول مجلس التعاون الخليجي',6],['عدد الأنهار الكبيرة بالعراق (دجلة و…)',2],['عدد أقمار كوكب الزهرة',0],['عدد أقمار الأرض',1],
+  ['عدد لاعبي كرة الطائرة لكل فريق داخل الملعب',6],['عدد لاعبي البيسبول لكل فريق داخل الملعب',9],['عدد أيام الأسبوع اللي تبدأ بحرف الألف (الأحد، الاثنين، …)',3],
+  ['عدد أرقام رقم الطوارئ 911',3],['عدد أهداف مباراة انتهت 4-3',7],['عدد أطراف النجمة بعلم المغرب',5],['عدد الأرقام الفردية من 1 إلى 9',5]];
+const ESC_WORDS = {2:['يد','فم','أب'], 3:['قلم','باب','شمس','نهر','بحر'], 4:['كتاب','جبال','كرسي','شباك','سماء'], 5:['مدرسة','سيارة','طاولة','مكتبة'], 6:['برتقال','مستشفى'], 7:['برتقالة','تلفزيون']};
+const AR_POS = ['الأولى', 'الثانية', 'الثالثة', 'الرابعة'];
+function escPuzzle(rnd, d, lvl){
+  const r = (a, b) => a + Math.floor(rnd() * (b - a + 1)), kinds = ['math', 'seq', 'fact'].concat(ESC_WORDS[d] ? ['word'] : []);
+  const kind = kinds[Math.floor(rnd() * kinds.length)];
+  if (kind === 'fact') { const ok = ESC_FACTS.filter(f => f[1] === d); if (ok.length) return ok[Math.floor(rnd() * ok.length)][0] + '؟'; }
+  if (kind === 'word') { const w = ESC_WORDS[d][Math.floor(rnd() * ESC_WORDS[d].length)]; return `كم حرف بكلمة «${w}»؟`; }
+  if (kind === 'seq') {
+    if (lvl === 1) { const s = r(1, 3); return `${[4, 3, 2, 1].map(i => d + s * i).join('، ')}، ؟`; }
+    if (lvl === 2) { const s = r(2, 5); return `${[4, 3, 2, 1].map(i => d + s * i).join('، ')}، ؟`; }
+    return `${[10, 6, 3, 1].map(i => d + i).join('، ')}، ؟ (الفرق ينقص واحد كل مرة)`;
+  }
+  if (lvl === 1) { const y = r(3, 20); return `${d + y} − ${y} = ؟`; }
+  if (lvl === 2) { for (let k = 0; k < 20; k++) { const a = r(3, 9), b = r(3, 9), c = a * b - d; if (c >= 0) return `${a} × ${b} − ${c} = ؟`; } }
+  for (let k = 0; k < 30; k++) { const e = r(2, 4), a = r(3, 9), b = r(3, 9), c = a * b - d * e; if (c >= 0) return `(${a} × ${b} − ${c}) ÷ ${e} = ؟`; }
+  return `${d + 5} − 5 = ؟`;
+}
+function escMake(c, t){
+  const q = QBY[c.id], rnd = seeded(`${S.id}.${c.id}.${t}.esc`); for (let i = 0; i < 5; i++) rnd();
+  const dg = Array.from({length:3}, () => Math.floor(rnd() * 10));
+  // الخانة الرابعة تعتمد على خانات غيرها، حتى يضطر الفريق يتكلم
+  let last, rule;
+  if (q.lvl === 1 && dg[0] <= 8) { last = dg[0] + 1; rule = 'رقمك = رقم الخانة الأولى + 1'; }
+  else if (q.lvl === 3) { last = Math.abs(dg[0] - dg[2]); rule = 'رقمك = الفرق بين رقم الخانة الأولى ورقم الخانة الثالثة (الكبير ناقص الصغير)'; }
+  else { last = (dg[0] + dg[1]) % 10; rule = 'رقمك = رقم الخانة الأولى + رقم الخانة الثانية (إذا طلع أكبر من 9 خذ آخر رقم بس)'; }
+  const code = dg.concat([last]);
+  return {code:code.join(''), p:code.map((d, i) => ({pos:i, text:i === 3 ? rule : escPuzzle(rnd, d, q.lvl)}))};
+}
+function escSetup(c){
+  coopSetup(c); c.esc = [escMake(c, 0), escMake(c, 1)]; c.ea = [[], []]; c.elock = [0, 0];
+}
+const escLocked = (c, t) => Math.max(0, c.elock[t] - Date.now());
+const escMine = (c, key) => { const t = pteam(key), ks = c.tm[t], i = ks.indexOf(key); return i < 0 ? [] : c.esc[t].p.filter(p => p.pos % ks.length === i); };
+function escTry(key, v){
+  const c = S.cur, t = pteam(key), code = String(v || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, '');
+  if (code.length !== 4 || c.solved[t] || escLocked(c, t)) return;
+  const right = c.esc[t].code, ok = Array.from(code).filter((d, i) => d === right[i]).length;
+  c.ea[t].push({code, ok, by:key});
+  if (ok === 4) { escSolve(t, key); return; }
+  c.elock[t] = Date.now() + ESC_LOCK * 1000; sfx('lose');
+  setTimeout(() => { if (S && S.cur === c && c.stage === 'play') { render(); } }, ESC_LOCK * 1000 + 80);
+}
+function escSolve(t, by){
+  const c = S.cur; if (c.stage !== 'play' || c.solved[t]) return;
+  const order = c.solved.filter(Boolean).length;
+  c.solved[t] = {by, order, ms:Date.now() - c.t0}; if (by) star(by, 2);
+  c.acc[t] += (order ? ESC_PTS / 2 : ESC_PTS) * roundDef().mult; sfx('win');
+  if ([0, 1].every(x => c.solved[x] || !c.tm[x].length)) escEnd();
+}
+function escEnd(){ const c = S.cur; if (c.stage !== 'play') return; timerStop(); netAward(c, c.acc); c.stage = 'done'; }
+
+/* --- هدف الأرقام: ركّبوا معادلة من الأرقام الستة توصل للهدف --- */
+function tgMake(id, lvl, seed){
+  const rnd = seeded(`${seed}.${id}.tg`); for (let i = 0; i < 5; i++) rnd();
+  const r = (a, b) => a + Math.floor(rnd() * (b - a + 1)), BIG = [25, 50, 75, 100];
+  const nb = lvl === 1 ? 0 : lvl === 2 ? 1 : 2;
+  const nums = Array.from({length:6 - nb}, () => r(1, 10)).concat(Array.from({length:nb}, () => BIG[r(0, 3)]));
+  const [lo, hi] = lvl === 1 ? [11, 99] : lvl === 2 ? [101, 400] : [101, 999];
+  for (let k = 0; k < 400; k++) {
+    const idx = shuffle(nums.map((_, i) => i)).slice(0, r(3, 5));
+    let v = nums[idx[0]], tk = [idx[0]], ok = true;
+    for (const i of idx.slice(1)) {
+      const n = nums[i], ops = ['+', '-', '*', '/'].filter(o => o !== '/' || (n > 1 && v % n === 0)).filter(o => o !== '-' || v - n > 0);
+      const o = ops[Math.floor(rnd() * ops.length)]; if (!o) { ok = false; break; }
+      v = o === '+' ? v + n : o === '-' ? v - n : o === '*' ? v * n : v / n;
+      tk = tk.length > 1 ? ['('].concat(tk, [')', o, i]) : tk.concat([o, i]);
+    }
+    if (ok && v >= lo && v <= hi) return {nums, target:v, solT:tk, sol:tgText(tk, nums)};
+  }
+  const all = nums.flatMap((_, i) => i ? ['+', i] : [i]);
+  return {nums, target:nums.reduce((a, b) => a + b, 0), solT:all, sol:tgText(all, nums)};
+}
+// يحسب المعادلة: أرقام (بموقعها) وعمليات وأقواس. القسمة لازم تطلع بدون كسور
+function tgEval(tokens, nums){
+  if (!Array.isArray(tokens) || !tokens.length || tokens.length > 40) return null;
+  const used = new Set(); let i = 0;
+  const peek = () => tokens[i];
+  function atom(){
+    const tk = tokens[i++];
+    if (tk === '(') { const v = expr(); if (tokens[i++] !== ')') throw 0; return v; }
+    if (typeof tk === 'number' && Number.isInteger(tk) && tk >= 0 && tk < nums.length && !used.has(tk)) { used.add(tk); return nums[tk]; }
+    throw 0;
+  }
+  function term(){ let v = atom(); while (peek() === '*' || peek() === '/') { const o = tokens[i++], b = atom(); if (o === '*') v *= b; else { if (!b || v % b) throw 0; v /= b; } } return v; }
+  function expr(){ let v = term(); while (peek() === '+' || peek() === '-') { const o = tokens[i++], b = term(); v = o === '+' ? v + b : v - b; } return v; }
+  try { const v = expr(); return i === tokens.length && Number.isFinite(v) ? v : null; } catch(e) { return null; }
+}
+const tgText = (tokens, nums) => tokens.map(tk => typeof tk === 'number' ? nums[tk] : {'*':'×', '/':'÷', '-':'−'}[tk] || tk).join(' ').replace(/\( /g, '(').replace(/ \)/g, ')');
+function tgSetup(c){
+  const q = QBY[c.id]; c.tg = tgMake(c.id, q.lvl, S.id); c.tx = {}; c.terr = {};
+}
+const tgBest = (c, t) => c.pk.filter(k => pteam(k) === t && c.tx[k]).map(k => Object.assign({k}, c.tx[k])).sort((a, b) => a.d - b.d)[0] || null;
+function tgSubmit(key, tokens){
+  const c = S.cur, v = tgEval(tokens, c.tg.nums);
+  if (v == null) { c.terr[key] = 'المعادلة ناقصة، أو بيها رقم مكرر، أو قسمة تطلع كسور'; return; }
+  delete c.terr[key];
+  const d = Math.abs(v - c.tg.target), old = c.tx[key];
+  if (!old || d < old.d) c.tx[key] = {e:tgText(tokens, c.tg.nums), v, d};
+  sfx('tap');
+  if (d === 0 && [0, 1].every(t => { const b = tgBest(c, t); return b && b.d === 0; })) tgEnd();
+}
+function tgEnd(){
+  const c = S.cur; if (c.stage !== 'play') return; timerStop();
+  const m = roundDef().mult, b = [tgBest(c, 0), tgBest(c, 1)], pts = [0, 0];
+  [0, 1].forEach(t => { if (b[t] && b[t].d === 0) { pts[t] = TG_EXACT * m; star(b[t].k, 2); } });
+  if (!pts[0] && !pts[1]) {
+    const d = b.map(x => x ? x.d : Infinity);
+    if (d[0] < d[1]) pts[0] = TG_NEAR * m; else if (d[1] < d[0]) pts[1] = TG_NEAR * m; else if (d[0] !== Infinity) pts[0] = pts[1] = TG_NEAR / 2 * m;
+    [0, 1].forEach(t => { if (pts[t] && b[t]) star(b[t].k); });
+  }
+  c.best = b; netAward(c, pts); c.stage = 'done';
+}
+
+/* --- راهن على صاحبك: واحد يجاوب لحاله، والفريق يراهن عليه قبل ما يشوف السؤال --- */
+const TRUST_BETS = [{x:1, lose:0, n:'مضمون'}, {x:2, lose:1, n:'نثق بيه'}, {x:3, lose:2, n:'واثقين 100%'}];
+function trustSetup(c){
+  const ks = teamOnline(c.team).slice().sort();
+  c.who = ks.length ? ks[Math.floor(S.i / 2) % ks.length] : null; c.bet = null; c.betBy = null; c.stage = 'bet'; c.timeLeft = c.max = S.settings.time * 1000;
+}
+const trustBase = c => LEVEL_POINTS[QBY[c.id].lvl] * roundDef().mult;
+function trustBet(i, by){
+  const c = S.cur; if (!c || c.t !== 'trust' || c.stage !== 'bet' || !TRUST_BETS[i]) return;
+  c.bet = i; c.betBy = by || null; c.stage = 'answer'; sfx('reveal'); timerStart(); save(); render();
+}
+function trustPick(oi){
+  const c = S.cur; if (!c || c.t !== 'trust' || c.stage !== 'answer') return;
+  timerStop(); c.pick = oi; const b = TRUST_BETS[c.bet || 0], base = trustBase(c);
+  if (oi === 0) { c.result = 'correct'; award(c.team, base * b.x); c.gained = base * b.x; if (c.who) star(c.who, b.x); sfx('win'); }
+  else { c.result = oi == null ? 'timeout' : 'wrong'; c.lost = base * b.lose; S.teams[c.team].score = Math.max(0, S.teams[c.team].score - c.lost); sfx('lose'); }
+  c.stage = 'done'; save(); render();
+}
+
 /* --- الكلمة المخفية --- */
 const canonCh = ch => ({'أ':'ا', 'إ':'ا', 'آ':'ا', 'ة':'ه', 'ى':'ي', 'ؤ':'و', 'ئ':'ي'})[ch] || ch;
 const letters = w => Array.from(String(w).replace(/[\sً-ْـ]/g, ''));
@@ -4158,6 +4486,16 @@ function botDecide(k, v, m){
       return {t:'guess', v:opts.length ? bpick(opts) : bpick(BOT_WORDS), delay:1800 + Math.random() * 2000};
     }
     case 'collect': { if (m.n >= 8 || !q || !q.mem) return null; const left = q.mem.filter(w => !(v.found || []).includes(w)); return {t:'guess', v:left.length && chance(.6) ? bpick(left) : bpick(BOT_WORDS), delay:2000 + Math.random() * 2500}; }
+    case 'escape': {
+      if (v.solved || v.lock || m.n >= 3 || !c || !c.esc) return null;
+      const code = c.esc[pteam(k)].code, rnd4 = () => String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+      return {t:'code', v:chance(.45) ? code : rnd4(), delay:6000 + Math.random() * 8000};
+    }
+    case 'target': {
+      if (m.n >= 3 || !c || !c.tg) return null;
+      const n = v.nums.length, a = Math.floor(Math.random() * n), b = (a + 1 + Math.floor(Math.random() * (n - 1))) % n;
+      return {t:'expr', v:chance(.3) ? c.tg.solT : [a, bpick(['+', '*']), b], delay:5000 + Math.random() * 9000};
+    }
     case 'piece': { if (!v.answer || v.solved || m.n >= 5) return null; const ans = botAnswer(c, q); return {t:'guess', v:ans && m.n >= 1 && chance(.5) ? ans : bpick(BOT_WORDS), delay:4000 + Math.random() * 3000}; }
   }
   return null;
@@ -4250,6 +4588,9 @@ function timeout(){
   if (c.pq && (c.stage === 'answer' || c.stage === 'steal') && Object.keys(c.tv).length) { const m = pqMajority(c); if (m != null) { pqStars(c, m); pick(m); return; } }
   sfx('buzz');
   if (c.t === 'race') { if (c.stage === 'play') raceEnd(); save(); render(); return; }
+  if (c.t === 'escape') { if (c.stage === 'play') escEnd(); save(); render(); return; }
+  if (c.t === 'target') { if (c.stage === 'play') tgEnd(); save(); render(); return; }
+  if (c.t === 'trust') { if (c.stage === 'answer') trustPick(null); return; }
   if (c.t === 'letters') { if (c.stage === 'write') ltJudge(); save(); render(); return; }
   if (c.t === 'all') { if (c.stage === 'answer') allEnd(); save(); render(); return; }
   if (c.t === 'who') { if (c.stage === 'answer') whoEnd(); save(); render(); return; }
@@ -4523,7 +4864,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611141235';
+const GAME_VER = '202611141825';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -4571,6 +4912,9 @@ function viewIntro(){
   } else if (def.type === 'greed') {
     rules = [[S.plan.length / 2, 'سلم لكل فريق'], [ltr(GREED_STEPS[GREED_STEPS.length - 1] * def.mult), 'أعلى رصيد في السلم'], [GREED_TIME, 'ثانية لكل سؤال']];
     how = `كل فريق يصعد سلم من ${GREED_STEPS.length} أسئلة تصعب تدريجياً. بعد كل جواب صحيح يتضاعف الرصيد، والفريق يقرر: «وقّف» ويأخذ الرصيد، أو «اطمع» ويكمّل. جواب خطأ واحد أو انتهاء الوقت يضيّع الرصيد كله!`;
+  } else if (def.type === 'trust') {
+    rules = [[n, perTeamText(n)], ['×1 ×2 ×3', 'الرهان على صاحبكم'], [S.settings.time, 'ثانية للإجابة']];
+    how = `قبل كل سؤال يظهر اسم لاعب من الفريق، وهو اللي يجاوب لحاله بدون أي مساعدة. قبل ما يشوف السؤال، الفريق يراهن عليه: ×1 مضمون (الخطأ ما يخسّر)، ×2 (الخطأ يخسّر نقاط السؤال)، ×3 واثقين (الخطأ يخسّر ضعفها). تعرفون صاحبكم زين؟`;
   } else if (def.pick) {
     rules = [[n, perTeamText(n)], [ltr(LEVEL_POINTS[1] * def.mult + '–' + LEVEL_POINTS[3] * def.mult), 'حسب الصعوبة اللي يختارونها'], [S.settings.time, 'ثانية للإجابة']];
     how = `قبل كل سؤال، الفريق الثاني يختار لكم فئة من ثلاث، ثم الصعوبة: سهل ${ltr(LEVEL_POINTS[1] * def.mult)}، متوسط ${ltr(LEVEL_POINTS[2] * def.mult)}، صعب ${ltr(LEVEL_POINTS[3] * def.mult)}. إذا أخطأتم، الفريق اللي اختار يقدر يسرق السؤال بنص النقاط. يعني الصعب ممكن يكسبكم أكثر، أو يعطيهم فرصة سرقة!`;
@@ -4589,7 +4933,9 @@ function viewIntro(){
   const isNet = NET_TYPES.includes(def.type), need = def.net || 2, have = onlineKeys().length;
   if (isNet) {
     rules = [[S.plan.length, def.type === 'react' ? 'محاولات' : def.type === 'race' ? 'سباقات في الجولة' : 'أسئلة في الجولة'], [have, 'لاعبين متصلين'], [need, 'أقل عدد للعب']];
-    how = {letters:`حرف عشوائي، وكل لاعب يكتب من جواله ${LT_CATS.join(' و')} تبدأ بالحرف. أول من يكمّل يصير «ستوب!»، والجواب اللي ما كرره أحد ياخذ أكثر.`,
+    how = {escape:`كل فريق عنده قفل من 4 أرقام، وكل لاعب يجيه لغز بجواله جوابه رقم من الرمز. تعاونوا واجمعوا الأرقام، وأول فريق يفتح القفل ياخذ ${ltr(ESC_PTS)}.`,
+      target:`رقم هدف وستة أرقام. ركّبوا معادلة من جوالاتكم توصل للهدف، وكل رقم مرة وحدة. بالضبط ${ltr(TG_EXACT)}، وإلا الأقرب ${ltr(TG_NEAR)}.`,
+      letters:`حرف عشوائي، وكل لاعب يكتب من جواله ${LT_CATS.join(' و')} تبدأ بالحرف. أول من يكمّل يصير «ستوب!»، والجواب اللي ما كرره أحد ياخذ أكثر.`,
       race:`كل فريق تجيه ${RACE_N} أسئلة مختلفة على جوالاته بنفس الوقت، وأي لاعب بالفريق يجاوب. كل جواب صح ${ltr(RACE_PER)}، والخطأ يوقفكم ${RACE_LOCK} ثوانٍ، والفائز بالسباق ياخذ مكافأة ${ltr(RACE_BONUS)}.`,
       all:`كل لاعب يجاوب من جواله خلال ${ALL_TIME} ثانية. نقاط الفريق حسب نسبة لاعبيه اللي جاوبوا صح، ومكافأة لأسرع جواب صحيح.`,
       spy:'كل لاعب يرى كلمة سرية بجواله إلا الجاسوس. بالدور كل واحد يلمّح بكلمة، ثم تصويت لكشف الجاسوس.',
@@ -5262,6 +5608,45 @@ function partTmap(c, q, def){
   return head + `<div class="mapcols">${box(0)}${box(1)}</div>` + (done ? ptsLine(c) + nextBtn() : `<button class="btn ghost block" data-act="cpEnd">إنهاء</button>`);
 }
 
+const needBoth = () => teamOnline(0).length && teamOnline(1).length ? '' : '<div class="verdict no"><span>تحتاج لاعباً متصلاً واحداً على الأقل من كل فريق.</span></div>';
+function partEscape(c, q, def){
+  if (c.stage === 'ready') return readyCard(def, 'غرفة الهروب 🔐', `كل فريق عنده قفل من 4 أرقام. الألغاز مقسّمة على جوالات الفريق، وكل لغز جوابه رقم واحد بخانة معيّنة. قولوا أرقامكم لبعض، وأي واحد منكم يدخل الرمز كامل من جواله. الرمز الغلط يقفلكم ${ESC_LOCK} ثوانٍ، بس يكلكم كم رقم بمكانه الصح. أول فريق يفتح ${ltr(ESC_PTS)}، والثاني ${ltr(ESC_PTS / 2)}. عندكم ${ESC_TIME / 60} دقائق.`) + needBoth();
+  const done = c.stage === 'done';
+  const box = t => {
+    const s = c.solved[t], lock = !done && escLocked(c, t), e = c.esc[t];
+    const digits = Array.from(e.code).map(d => `<b>${done || s ? d : '•'}</b>`).join('');
+    return `<div class="panel tbox${done && s && !s.order ? ' win' : ''}" style="--tc:${TEAM_COLORS[t]}"><div class="row"><b style="color:var(--tc)">${esc(S.teams[t].name)}</b><span class="${s ? 'okline' : 'muted'}">${!c.tm[t].length ? 'ما فيه لاعبين' : s ? `🔓 فتحوه${s.order ? ' ثانياً' : ' أولاً!'} (${ltr(Math.round(s.ms / 1000))} ث)` : lock ? `🔒 مقفول ${ltr(Math.ceil(lock / 1000))} ث` : '🔒 يحاولون'}</span></div>
+      <div class="esclock" dir="ltr">${digits}</div>
+      ${c.ea[t].length ? `<div class="esctries">${c.ea[t].slice(-5).reverse().map(a => `<span class="${a.ok === 4 ? 'ok' : ''}"><bdi dir="ltr">${a.code}</bdi> · ${a.ok === 4 ? 'فتح!' : `${a.ok} بمكانها`}</span>`).join('')}</div>` : ''}
+      ${done ? `<ol class="escp">${e.p.map(p => `<li><small>الخانة ${AR_POS[p.pos]}</small> ${esc(p.text)} <b>${e.code[p.pos]}</b></li>`).join('')}</ol>` : ''}</div>`;
+  };
+  const head = `<article class="qcard"><div class="meta"><span class="chip">غرفة الهروب</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span></div><p class="qtext">${done ? 'هذي رموز القفلين وألغازها' : 'الألغاز على جوالاتكم. تعاونوا وافتحوا القفل!'}</p></article>`;
+  return head + box(0) + box(1) + (done ? ptsLine(c) + nextBtn() : `<button class="btn ghost block" data-act="esEnd">إنهاء</button>`);
+}
+function partTarget(c, q, def){
+  if (c.stage === 'ready') return readyCard(def, 'هدف الأرقام 🎯', `يظهر رقم هدف وستة أرقام. كل لاعب يركّب معادلة من جواله بالجمع والطرح والضرب والقسمة، وكل رقم يُستعمل مرة وحدة بس (مو لازم تستعملون الكل). تقدر ترسل أكثر من مرة وتنحسب أحسن محاولة. الوصول للهدف بالضبط ${ltr(TG_EXACT)}، وإذا ما أحد وصل فالفريق الأقرب ${ltr(TG_NEAR)}. عندكم ${TG_TIME} ثانية.`) + needBoth();
+  const done = c.stage === 'done', g = c.tg;
+  const nums = `<div class="tgnums" dir="ltr">${g.nums.map(n => `<span>${n}</span>`).join('')}</div>`;
+  const box = t => { const b = done ? c.best[t] : tgBest(c, t);
+    return `<div class="panel tbox${done && c.pts[t] ? ' win' : ''}" style="--tc:${TEAM_COLORS[t]}"><div class="row"><b style="color:var(--tc)">${esc(S.teams[t].name)}</b><span class="${b && b.d === 0 ? 'okline' : 'muted'}">${!b ? 'ما أرسلوا بعد' : b.d === 0 ? '🎯 وصلوا بالضبط!' : `أقرب شي: فرق ${ltr(b.d)}`}</span></div>
+      ${done && b ? `<div class="tgexpr" dir="ltr"><bdi>${esc(b.e)} = ${b.v}</bdi><small>${esc(pname(b.k))}</small></div>` : ''}</div>`; };
+  const head = `<article class="qcard"><div class="meta"><span class="chip">هدف الأرقام</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span></div><div class="tgtarget">${ltr(g.target)}</div>${nums}</article>`;
+  if (!done) return head + box(0) + box(1) + `<button class="btn ghost block" data-act="tgEnd">إنهاء</button>`;
+  return head + box(0) + box(1) + `<div class="verdict judge"><span class="label">حل ممكن</span><span class="big" dir="ltr" style="font-size:1.3rem"><bdi>${esc(g.sol)} = ${g.target}</bdi></span></div>` + ptsLine(c) + nextBtn();
+}
+function partTrust(c, q, def){
+  const tc = TEAM_COLORS[c.team], base = trustBase(c), who = c.who ? `<span style="color:${tc}">${esc(pname(c.who))}</span>` : 'واحد منكم';
+  const meta = `<div class="meta"><span class="chip">${CAT_NAMES[q.cat]}</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(basePts())}</span></div>`;
+  if (c.stage === 'bet') return `<article class="qcard">${meta}<p class="qtext">${who} راح يجاوب لحاله على سؤال ${CAT_NAMES[q.cat]}</p>
+      <div class="howround">${c.who ? '' : 'اختاروا واحد منكم يجاوب لحاله. '}الفريق يراهن عليه قبل ما يشوف السؤال${c.who ? '، من جوالاتكم أو من هنا' : ''}. شكد تثقون بيه؟</div></article>
+    <div class="opts">${TRUST_BETS.map((b, i) => `<button class="opt" style="--tc:${tc}" data-act="tsBet" data-i="${i}"><span class="k">×${b.x}</span><span>${b.n}<small class="who">صح ${ltr('+' + base * b.x)} · خطأ ${b.lose ? ltr('−' + base * b.lose) : 'ما تخسرون'}</small></span></button>`).join('')}</div>`;
+  const b = TRUST_BETS[c.bet || 0], done = c.stage === 'done';
+  const card = `<article class="qcard">${meta}<p class="qtext">${esc(q.q)}</p><div class="howround">${who} يجاوب لحاله · الرهان ×${b.x}${done ? '' : ' · ممنوع المساعدة!'}</div></article>`;
+  const opts = `<div class="opts">${c.order.map((oi, k) => `<button class="opt ${done ? (oi === 0 ? 'right' : oi === c.pick ? 'wrong' : '') : ''}" data-act="tsPick" data-i="${oi}" ${done ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>`;
+  if (!done) return card + opts + (c.who ? '<p class="subtle">يجاوب من جواله، أو اضغط هنا اللي يكوله.</p>' : '<p class="subtle">اضغط الجواب اللي يكوله.</p>');
+  const msg = c.result === 'correct' ? `صح! ${ltr('+' + c.gained)} لفريق ${tn(c.team)}` : c.lost ? `${c.result === 'timeout' ? 'انتهى الوقت' : 'خطأ'}، خسرتوا ${ltr(c.lost)} 😬` : (c.result === 'timeout' ? 'انتهى الوقت' : 'خطأ، بس الرهان كان مضمون');
+  return card + opts + `<div class="verdict ${c.result === 'correct' ? 'ok' : 'no'}"><span class="big">${msg}</span></div>` + nextBtn();
+}
 function partRace(c, q, def){
   const both = teamOnline(0).length && teamOnline(1).length;
   if (c.stage === 'ready') return readyCard(def, 'سباق الفريقين 🏁', `كل فريق تجيه ${RACE_N} أسئلة مختلفة على جوالاته بنفس الوقت. أي لاعب بالفريق يقدر يجاوب، وأول ضغطة هي جواب الفريق، فتفاهموا بسرعة! كل جواب صح ${ltr(RACE_PER)}، والجواب الخطأ يوقفكم ${RACE_LOCK} ثوانٍ. الفريق الأكثر أجوبة صحيحة (وعند التعادل الأسرع) ياخذ مكافأة ${ltr(RACE_BONUS)}. عندكم ${RACE_TIME} ثانية.`) + (both ? '' : '<div class="verdict no"><span>تحتاج لاعباً متصلاً واحداً على الأقل من كل فريق.</span></div>');
@@ -5318,7 +5703,7 @@ function viewQuestion(){
   const dots = S.plan.map((_, i) => `<i class="${i < S.i ? (S.res[i] === 'ok' ? 'ok' : S.res[i] === 'no' ? 'no' : '') : i === S.i ? 'now' : ''}"></i>`).join('');
   const sec = Math.ceil(c.timeLeft / 1000);
   const live = timerLive(c);
-  const body = c.stage === 'choose' ? partPick(c, def) : c.t === 'greed' ? partGreed(c, q, def) : c.t === 'letters' ? partLetters(c, q, def) : c.t === 'race' ? partRace(c, q, def) : c.t === 'secret' ? partSecret(c, q, def) : c.t === 'tmap' ? partTmap(c, q, def) : c.t === 'wordle' ? partWordle(c, q, def) : c.t === 'chain' ? partChain(c, q, def) : COOP_TYPES.includes(c.t) ? partCoop(c, q, def) : c.t === 'alike' ? partAlike(c, q, def) : c.t === 'wrote' ? partWrote(c, q, def) : c.t === 'pdraw' ? partPdraw(c, q, def) : c.t === 'fast' ? partFast(c, q, def) : c.t === 'tclock' ? partTclock(c, q, def) : c.t === 'truth' ? partTruth(c, q, def) : c.t === 'all' ? partAll(c, q, def) : c.t === 'who' ? partWho(c, q, def) : c.t === 'liar' ? partLiar(c, q, def) : c.t === 'spy' ? partSpy(c, q, def) : c.t === 'react' ? partReact(c, q, def) : c.t === 'list' ? partList(c, q, def) : c.t === 'num' ? partNum(c, q, def) : c.t === 'order' ? partOrder(c, q, def) : c.t === 'rapid' ? partRapid(c, q, def) : c.t === 'describe' ? partDescribe(c, q, def) : c.t === 'reverse' ? partReverse(c, q, def) : c.t === 'auction' ? partAuction(c, q, def) : c.t === 'bomb' ? partBomb(c, q, def) : c.t === 'buzz' ? partBuzz(c, q, def) : c.t === 'memory' ? partMemory(c, q, def) : c.t === 'draw' ? partDraw(c, q, def) : partMcq(c, q, def);
+  const body = c.stage === 'choose' ? partPick(c, def) : c.t === 'escape' ? partEscape(c, q, def) : c.t === 'target' ? partTarget(c, q, def) : c.t === 'trust' ? partTrust(c, q, def) : c.t === 'greed' ? partGreed(c, q, def) : c.t === 'letters' ? partLetters(c, q, def) : c.t === 'race' ? partRace(c, q, def) : c.t === 'secret' ? partSecret(c, q, def) : c.t === 'tmap' ? partTmap(c, q, def) : c.t === 'wordle' ? partWordle(c, q, def) : c.t === 'chain' ? partChain(c, q, def) : COOP_TYPES.includes(c.t) ? partCoop(c, q, def) : c.t === 'alike' ? partAlike(c, q, def) : c.t === 'wrote' ? partWrote(c, q, def) : c.t === 'pdraw' ? partPdraw(c, q, def) : c.t === 'fast' ? partFast(c, q, def) : c.t === 'tclock' ? partTclock(c, q, def) : c.t === 'truth' ? partTruth(c, q, def) : c.t === 'all' ? partAll(c, q, def) : c.t === 'who' ? partWho(c, q, def) : c.t === 'liar' ? partLiar(c, q, def) : c.t === 'spy' ? partSpy(c, q, def) : c.t === 'react' ? partReact(c, q, def) : c.t === 'list' ? partList(c, q, def) : c.t === 'num' ? partNum(c, q, def) : c.t === 'order' ? partOrder(c, q, def) : c.t === 'rapid' ? partRapid(c, q, def) : c.t === 'describe' ? partDescribe(c, q, def) : c.t === 'reverse' ? partReverse(c, q, def) : c.t === 'auction' ? partAuction(c, q, def) : c.t === 'bomb' ? partBomb(c, q, def) : c.t === 'buzz' ? partBuzz(c, q, def) : c.t === 'memory' ? partMemory(c, q, def) : c.t === 'draw' ? partDraw(c, q, def) : partMcq(c, q, def);
   let lifes = '';
   const allowed = LIFES_FOR[c.t];
   if (c.stage === (preStage(c.t) ? 'ready' : 'answer') && allowed.length) {
@@ -5505,6 +5890,10 @@ document.addEventListener('click', e => {
     case 'ltBad': if (c && c.t === 'letters' && c.stage === 'judge') { const k = el.dataset.k + '.' + el.dataset.i; if (c.lbad[k]) delete c.lbad[k]; else c.lbad[k] = true; save(); render(); } break;
     case 'pkCat': case 'pkLvl': if (c && c.stage === 'choose') pickStep(el.dataset.v, null); break;
     case 'pkBack': if (c && c.stage === 'choose') { c.pc.cat = null; save(); render(); } break;
+    case 'esEnd': if (c && c.t === 'escape' && c.stage === 'play') { escEnd(); save(); render(); } break;
+    case 'tgEnd': if (c && c.t === 'target' && c.stage === 'play') { tgEnd(); save(); render(); } break;
+    case 'tsBet': trustBet(+el.dataset.i, null); break;
+    case 'tsPick': trustPick(+el.dataset.i); break;
     case 'cpEnd': if (c && (c.t === 'split' || c.t === 'coop' || c.t === 'wordle' || c.t === 'tmap')) { coopEnd(); save(); render(); } break;
     case 'cpAccept': if (c && (c.t === 'split' || c.t === 'coop') && c.stage === 'play') { coopSolve(+el.dataset.t, c.ansr[+el.dataset.t]); save(); render(); } break;
     case 'tmEnd': if (c && c.t === 'tmem') { tmemEnd(); save(); render(); } break;
