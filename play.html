@@ -1,0 +1,600 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تحدي الخميس · اللاعب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Lalezar&display=swap">
+<style>
+/* صفحة اللاعب على جواله: شاشة واحدة كبيرة الأزرار، تتغير حسب ما يرسله التابلت */
+:root{
+  --felt:#0d2622; --felt-2:#133530; --felt-3:#1b473f; --rim:rgba(240,226,190,.14);
+  --ink:#f5eddb; --muted:#a7b8ad; --brass:#e3b553; --brass-deep:#9c7724; --brass-ink:#2b1e05;
+  --team-a:#f08a4b; --team-b:#5fb3e8; --good:#4fc98b; --bad:#ec5a5f;
+  --display:"Lalezar","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--felt);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;direction:rtl;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+input{-webkit-user-select:text;user-select:text}
+:focus-visible{outline:3px solid var(--brass);outline-offset:2px}
+bdi{unicode-bidi:isolate}
+.wrap{max-width:520px;min-height:100%;margin:0 auto;padding:max(14px,env(safe-area-inset-top,0px)) 16px 28px;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;align-items:center;gap:10px;min-height:40px}
+.me{display:flex;flex-direction:column;line-height:1.25;min-width:0}
+.me b{font-family:var(--display);font-weight:400;font-size:1.25rem;color:var(--tc,var(--ink));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.me small{color:var(--muted);font-size:.8rem}
+.scores{margin-inline-start:auto;display:flex;gap:8px;font-family:var(--display);font-size:1.15rem}
+.scores span{padding:2px 10px;border-radius:99px;background:var(--felt-2);border:1px solid var(--rim)}
+.card{background:var(--felt-2);border:1px solid var(--rim);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.label{font-size:.85rem;color:var(--muted)}
+h1,h2{font-family:var(--display);font-weight:400;margin:0;line-height:1.25;text-wrap:balance}
+h1{font-size:clamp(2rem,10vw,2.8rem);color:var(--brass);text-align:center}
+h2{font-size:1.5rem}
+.prompt{font-size:1.2rem;font-weight:700;line-height:1.55;margin:0}
+.center{text-align:center;align-items:center}
+.muted{color:var(--muted)}
+.btn{border:none;border-radius:16px;padding:14px 18px;font-weight:700;background:var(--felt-3);min-height:56px;width:100%}
+.btn.primary{background:var(--brass);color:var(--brass-ink);font-family:var(--display);font-weight:400;font-size:1.5rem;box-shadow:0 5px 0 var(--brass-deep)}
+.btn.team{background:var(--tc);color:var(--felt);font-family:var(--display);font-weight:400;font-size:1.4rem}
+.btn:disabled{opacity:.45}
+.link{background:none;border:none;color:var(--muted);text-decoration:underline;padding:8px}
+.field{width:100%;border-radius:14px;border:2px solid var(--rim);background:var(--felt);padding:12px 14px;font-size:1.3rem;text-align:center}
+.field:focus{border-color:var(--brass);outline:none}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tpick{border:3px solid transparent;border-radius:16px;padding:14px 8px;background:color-mix(in srgb,var(--tc) 22%,var(--felt-2));font-family:var(--display);font-size:1.35rem;color:var(--tc);min-height:64px}
+.tpick[aria-pressed="true"]{border-color:var(--tc);background:var(--tc);color:var(--felt)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;text-align:start;border:2px solid var(--rim);background:var(--felt-2);border-radius:16px;padding:14px;min-height:60px;font-weight:700;font-size:1.1rem}
+.opt .k{width:34px;height:34px;flex:none;border-radius:10px;background:var(--felt-3);display:grid;place-items:center;font-family:var(--display);color:var(--brass)}
+.opt[aria-pressed="true"]{border-color:var(--brass);background:color-mix(in srgb,var(--brass) 22%,var(--felt-2))}
+.opt.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 25%,var(--felt-2))}
+.opt.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 22%,var(--felt-2))}
+.big{font-family:var(--display);font-size:clamp(2rem,11vw,3.2rem);line-height:1.2;text-align:center;overflow-wrap:anywhere}
+.ok{color:var(--good)} .no{color:var(--bad)}
+.buzz{flex:1;min-height:52vh;border:none;border-radius:28px;background:var(--tc);color:var(--felt);font-family:var(--display);font-size:clamp(2.6rem,14vw,4rem);box-shadow:0 10px 0 color-mix(in srgb,var(--tc) 55%,#000)}
+.buzz:active{transform:translateY(6px);box-shadow:0 4px 0 color-mix(in srgb,var(--tc) 55%,#000)}
+.buzz:disabled{opacity:.55;transform:none}
+.react{flex:1;min-height:60vh;border:none;border-radius:28px;font-family:var(--display);font-size:clamp(2.2rem,12vw,3.4rem);color:#fff;background:#b23a3f}
+.react.go{background:#1f9d57}
+.secret{min-height:180px;border:2px dashed var(--rim);border-radius:20px;display:grid;place-items:center;text-align:center;padding:18px;background:var(--felt-2)}
+.secret .big{color:var(--brass)}
+.dots{display:inline-flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:var(--brass);animation:bl 1.2s infinite}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,100%{opacity:.25}50%{opacity:1}}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.clues{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:6px;font-weight:700}
+.opt .cnt{margin-inline-start:auto;color:var(--brass);letter-spacing:2px}
+.lls{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+.lls button{border:1px solid var(--rim);background:var(--felt-2);border-radius:12px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.8rem;font-weight:700}
+.lls b{font-family:var(--display);font-weight:400;font-size:1.2rem;color:var(--brass)}
+.ynbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ynbtns button{border:none;border-radius:22px;min-height:120px;font-family:var(--display);font-size:2.4rem;color:#fff}
+.ynbtns .yes{background:#2f9e5b}.ynbtns .no{background:#c94a4f}
+.ynbtns button:active{transform:scale(.97)}
+.mgrid{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:4px;direction:ltr;width:100%}
+.mgrid span{aspect-ratio:1;border-radius:7px;background:var(--felt-3);display:grid;place-items:center;font-size:1.3rem}
+.mgrid span.trap{background:color-mix(in srgb,var(--bad) 35%,var(--felt-3))}
+.mgrid span.goal{background:color-mix(in srgb,var(--brass) 45%,var(--felt-3))}
+.mgrid i{width:70%;height:70%;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.75)}
+.arrows{display:grid;grid-template-areas:". u ." "l . r" ". d .";grid-template-columns:repeat(3,1fr);gap:8px;direction:ltr;max-width:320px;margin:0 auto;width:100%}
+.arrows button{border:none;border-radius:16px;min-height:72px;background:var(--brass);color:var(--brass-ink);font-size:1.6rem;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
+.arrows small{font-size:.8rem;font-weight:700}
+.arrows button:active{transform:scale(.95)}
+.wgrid{display:flex;flex-direction:column;gap:6px;align-items:center}
+.wrow{display:flex;gap:6px;direction:rtl}
+.wrow span{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-size:1.6rem;background:var(--felt-3);color:#fff;border:2px solid var(--rim)}
+.wrow .m2{background:#2f9e5b;border-color:#2f9e5b}.wrow .m1{background:#c9a227;border-color:#c9a227}.wrow .m0{background:#4a5753;border-color:#4a5753}
+.chainp{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-items:center;direction:rtl}
+.chainp span{padding:2px 10px;border-radius:99px;background:var(--felt-3);font-weight:700}
+.chainp i{font-style:normal;color:var(--muted);font-size:.8rem}
+.pieces{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.pieces li{background:var(--felt-3);border-radius:12px;padding:10px 12px;font-weight:700;font-size:1.15rem;line-height:1.5}
+.code{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:center;direction:rtl}
+.code .cw{display:flex;gap:4px}
+.code b{min-width:34px;padding:5px 3px;border-radius:9px;background:var(--felt-3);color:var(--brass);font-family:var(--display);font-weight:400;font-size:1.25rem;text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{padding:3px 10px;border-radius:99px;background:color-mix(in srgb,var(--good) 25%,var(--felt-2));font-weight:700}
+.padwrap{background:#0a1d1a;border:2px solid var(--rim);border-radius:18px;overflow:hidden}
+#pad{display:block;width:100%;aspect-ratio:1;touch-action:none}
+.sw{flex:0 0 44px;height:44px;border-radius:50%;border:3px solid transparent}
+.sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--felt)}
+.trow{display:flex;gap:8px;align-items:stretch}
+.trow .field{font-size:1.05rem;text-align:start}
+.tlie{flex:none;border:2px solid var(--rim);background:var(--felt);border-radius:12px;padding:0 10px;font-weight:700;font-size:.9rem;color:var(--muted)}
+.tlie.on{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 25%,var(--felt));color:var(--ink)}
+.step{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.step button{border:none;border-radius:12px;background:var(--felt-3);padding:12px 0;font-weight:700}
+</style>
+<div class="wrap" id="app"></div>
+<script>
+/* ===== اللعب عبر الإنترنت =====
+   التابلت والجوالات يتصلون بخدمة MQTT مجانية عامة برمز غرفة من 6 أرقام.
+   الرسائل مشفّرة (AES-GCM) بمفتاح مأخوذ من رمز الغرفة، فالخدمة لا تقرأ محتواها.
+   المضيف يرى نفس أحداث خادم التابلت: hello / open / msg / close. */
+const RELAY = (() => {
+  const BROKERS = ['wss://broker.emqx.io:8084/mqtt', 'wss://broker.hivemq.com:8884/mqtt', 'wss://test.mosquitto.org:8081/mqtt'];
+  const N = BROKERS.length, te = new TextEncoder(), td = new TextDecoder();
+  const rnd = n => { const a = new Uint8Array(n); crypto.getRandomValues(a); return Array.from(a, x => 'abcdefghijklmnopqrstuvwxyz0123456789'[x % 36]).join(''); };
+  const newCode = () => { const a = new Uint32Array(1); crypto.getRandomValues(a); return String(100000 + a[0] % 900000); };
+  const cat = parts => { let n = 0; parts.forEach(p => n += p.length); const o = new Uint8Array(n); let i = 0; parts.forEach(p => { o.set(p, i); i += p.length; }); return o; };
+  const u16 = n => new Uint8Array([n >> 8 & 255, n & 255]);
+  const str = s => { const b = te.encode(s); return cat([u16(b.length), b]); };
+  const pkt = (h, body) => { const len = []; let n = body.length; do { let d = n % 128; n = Math.floor(n / 128); if (n) d |= 128; len.push(d); } while (n); return cat([new Uint8Array([h].concat(len)), body]); };
+  // اسم الغرفة على الخدمة (لا يكشف الرمز نفسه)
+  const fnv = s => { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return h.toString(36); };
+  const base = code => 'tahadi-khamis/v1/' + fnv('t1:' + code) + fnv('t2:' + code);
+
+  // عميل MQTT 3.1.1 صغير فوق WebSocket (QoS 0 فقط)
+  function Client(url, cid, will){
+    const c = {open:false, onopen:null, onmsg:null, onclose:null};
+    let ws, buf = new Uint8Array(0), pid = 1, ping = null, done = false;
+    const raw = b => { try { if (ws && ws.readyState === 1) ws.send(b); } catch(e){} };
+    const fin = () => { if (done) return; done = true; clearInterval(ping); const was = c.open; c.open = false; c.onclose && c.onclose(was); };
+    c.sub = t => { raw(pkt(0x82, cat([u16(pid++ & 0xffff || 1), str(t), new Uint8Array([0])]))); };
+    c.pub = (t, p) => { raw(pkt(0x30, cat([str(t), p]))); };
+    c.end = () => { raw(new Uint8Array([0xE0, 0])); try { ws && ws.close(); } catch(e){} fin(); };
+    try { ws = new WebSocket(url, ['mqtt']); } catch(e) { setTimeout(fin, 0); return c; }
+    ws.binaryType = 'arraybuffer';
+    const t0 = setTimeout(() => { if (!c.open) { try { ws.close(); } catch(e){} fin(); } }, 8000);
+    ws.onopen = () => {
+      const flags = 0x02 | (will ? 0x04 : 0);
+      const parts = [str('MQTT'), new Uint8Array([4, flags, 0, 30]), str(cid)];
+      if (will) parts.push(str(will.t), u16(will.p.length), will.p);
+      raw(pkt(0x10, cat(parts)));
+    };
+    ws.onmessage = e => {
+      if (!(e.data instanceof ArrayBuffer)) return;
+      buf = cat([buf, new Uint8Array(e.data)]);
+      for (;;) {
+        if (buf.length < 2) return;
+        let mul = 1, len = 0, i = 1, d;
+        do { if (i >= buf.length) return; d = buf[i++]; len += (d & 127) * mul; mul *= 128; } while (d & 128 && i < 5);
+        if (buf.length < i + len) return;
+        const h = buf[0], body = buf.slice(i, i + len); buf = buf.slice(i + len);
+        const type = h >> 4;
+        if (type === 2) {
+          clearTimeout(t0);
+          if (body[1] === 0) { c.open = true; ping = setInterval(() => raw(new Uint8Array([0xC0, 0])), 20000); c.onopen && c.onopen(); }
+          else { try { ws.close(); } catch(e){} }
+        } else if (type === 3) {
+          const tl = body[0] << 8 | body[1]; let p = 2 + tl; if (h >> 1 & 3) p += 2;
+          c.onmsg && c.onmsg(td.decode(body.subarray(2, 2 + tl)), body.subarray(p));
+        }
+      }
+    };
+    ws.onclose = () => { clearTimeout(t0); fin(); };
+    ws.onerror = () => {};
+    return c;
+  }
+
+  // التشفير: مفتاح من رمز الغرفة. إذا المتصفح ما يدعم التشفير تنرسل الرسائل كما هي.
+  const keys = {};
+  const keyFor = code => keys[code] || (keys[code] = (window.crypto && crypto.subtle
+    ? crypto.subtle.digest('SHA-256', te.encode('tahadi-key:' + code)).then(h => crypto.subtle.importKey('raw', h, 'AES-GCM', false, ['encrypt', 'decrypt'])).catch(() => null)
+    : Promise.resolve(null)));
+  async function seal(key, obj){
+    const b = te.encode(JSON.stringify(obj));
+    if (!key) return cat([new Uint8Array([0]), b]);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    return cat([new Uint8Array([1]), iv, new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, b))]);
+  }
+  async function unseal(key, b){
+    try {
+      if (b[0] === 0 && !key) return JSON.parse(td.decode(b.subarray(1)));
+      if (b[0] !== 1 || !key) return null;
+      return JSON.parse(td.decode(await crypto.subtle.decrypt({name:'AES-GCM', iv:b.subarray(1, 13)}, key, b.subarray(13))));
+    } catch(e) { return null; }
+  }
+
+  /* المضيف (التابلت). cb.ev(حدث) بنفس شكل خادم التابلت، cb.state(متصل؟, رقم الخدمة) */
+  function host(code, cb){
+    const B = base(code);
+    let cli = null, key = null, alive = true, bi = 0, seen = {}, q = Promise.resolve(), rq = Promise.resolve();
+    const drop = () => { Object.keys(seen).forEach(id => cb.ev({ev:'close', id})); seen = {}; };
+    const sweep = setInterval(() => {
+      const now = Date.now();
+      Object.keys(seen).forEach(id => { if (now - seen[id] > 35000) { delete seen[id]; cb.ev({ev:'close', id}); } });
+    }, 5000);
+    const beat = setInterval(() => send('*', {t:'ping'}), 15000);
+    async function start(){
+      if (!alive) return;
+      key = await keyFor(code);
+      const me = Client(BROKERS[bi % N], 'th-' + rnd(12), {t:B + '/a', p:await seal(key, {t:'hostgone'})});
+      cli = me;
+      me.onopen = () => { me.sub(B + '/h'); seen = {}; cb.state(true, bi % N); cb.ev({ev:'hello', ids:[]}); };
+      me.onmsg = (t, b) => { rq = rq.then(() => unseal(key, b)).then(m => {
+        if (!alive || cli !== me || !m || typeof m.i !== 'string') return;
+        const id = m.i.slice(0, 24), fresh = !(id in seen);
+        if (m.e === 'close') { if (!fresh) { delete seen[id]; cb.ev({ev:'close', id}); } return; }
+        seen[id] = Date.now();
+        if (fresh) cb.ev({ev:'open', id});
+        if (m.e === 'msg' && m.d && typeof m.d === 'object') cb.ev({ev:'msg', id, data:m.d});
+      }); };
+      me.onclose = was => { if (cli !== me) return; cli = null; drop(); if (!alive) return; cb.state(false, bi % N); if (!was) bi++; setTimeout(start, was ? 1500 : 2500); };
+    }
+    function send(to, data){
+      const c = cli; if (!c || !c.open) return;
+      const t = to === '*' ? B + '/a' : B + '/p/' + to;
+      q = q.then(() => seal(key, data)).then(b => { if (c.open) c.pub(t, b); }).catch(() => {});
+    }
+    start();
+    return {
+      send,
+      stop(){
+        alive = false; clearInterval(sweep); clearInterval(beat);
+        const c = cli; cli = null; seen = {};
+        if (c) q = q.then(() => seal(key, {t:'hostgone'})).then(b => { if (c.open) c.pub(B + '/a', b); }).catch(() => {}).then(() => c.end());
+      },
+    };
+  }
+
+  /* الجوال. cb.msg(رسالة من التابلت)، cb.state('off' | 'wait' | 'on') */
+  function phone(code, hint, cb){
+    const B = base(code);
+    let cli = null, key = null, alive = true, bi = hint || 0, pid = '', found = false, since = 0, heard = 0, q = Promise.resolve(), rq = Promise.resolve();
+    const up = obj => { const c = cli; if (!c || !c.open) return; const m = Object.assign({i:pid}, obj); q = q.then(() => seal(key, m)).then(b => { if (c.open) c.pub(B + '/h', b); }).catch(() => {}); };
+    const set = s => { found = s === 'on'; cb.state(s); };
+    const ping = setInterval(() => up({e:'ping'}), 12000);
+    // إذا ما رد التابلت على هذي الخدمة نجرب الخدمة التالية
+    const watch = setInterval(() => {
+      const c = cli, now = Date.now();
+      if (found && now - heard > 40000) set('wait');
+      if (c && c.open && !found && now - since > 7000) { bi++; c.end(); }
+    }, 2000);
+    async function start(){
+      if (!alive) return;
+      key = await keyFor(code); pid = 'p' + rnd(11);
+      const me = Client(BROKERS[bi % N], pid, {t:B + '/h', p:await seal(key, {i:pid, e:'close'})});
+      cli = me;
+      me.onopen = () => { since = Date.now(); me.sub(B + '/p/' + pid); me.sub(B + '/a'); set('wait'); up({e:'open'}); };
+      me.onmsg = (t, b) => { rq = rq.then(() => unseal(key, b)).then(d => {
+        if (!alive || cli !== me || !d) return;
+        if (d.t === 'hostgone') { since = Date.now(); set('wait'); return; }
+        heard = Date.now(); if (!found) set('on');
+        if (d.t !== 'ping') cb.msg(d);
+      }); };
+      me.onclose = was => { if (cli !== me) return; cli = null; found = false; cb.state('off'); if (!alive) return; if (!was) bi++; setTimeout(start, 1500); };
+    }
+    start();
+    return {
+      send: d => up({e:'msg', d}),
+      stop(){ alive = false; clearInterval(ping); clearInterval(watch); const c = cli; if (c) { up({e:'close'}); q = q.then(() => c.end()); } cli = null; },
+      retry(){ const c = cli; if (c) c.end(); },
+    };
+  }
+  return {newCode, host, phone, brokers:N};
+})();
+const qs = new URLSearchParams(location.search);
+const SKEY = 'tahadi.player' + (qs.get('as') || '');
+const store = {
+  get(){ try { return JSON.parse(localStorage.getItem(SKEY)) || null; } catch(e){ return null; } },
+  set(v){ try { localStorage.setItem(SKEY, JSON.stringify(v)); } catch(e){} },
+};
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ltr = s => `<bdi dir="ltr">${s}</bdi>`;
+const TC = ['var(--team-a)', 'var(--team-b)'];
+const LET = ['أ','ب','ج','د','هـ','و','ز','ح'];
+const PCOL = ['#f5eddb', '#f08a4b', '#5fb3e8', '#4fc98b', '#ec5a5f'];   // نفس ألوان التابلت
+
+// وضع التجربة: الصفحة تعمل داخل إطار على التابلت، وتتكلم مع اللعبة مباشرة بدل الشبكة
+const EMBED = qs.get('embed') === '1';
+let me = EMBED ? {key:qs.get('key'), name:qs.get('name') || 'لاعب', team:+qs.get('team') || 0} : store.get();   // {key, name, team}
+let ws = null, online = false, view = null, editing = !me, draftTeam = me ? me.team : null;
+let local = {vid:null};             // حالة محلية لكل شاشة (ضغطت، أرسلت...)
+let reactT0 = 0;
+const app = document.getElementById('app');
+
+// اللعب عبر الإنترنت: الصفحة مفتوحة من الإنترنت (مو من التابلت)، ورمز الغرفة بعد # في الرابط
+let NETPAGE = !EMBED && (location.protocol === 'https:' || location.protocol === 'file:' || /^#\d{6}/.test(location.hash));
+let room = null, roomHint = 0, relay = null, rstate = 'off';
+(function(){ const m = location.hash.match(/^#(\d{6})(?:-(\d))?/); if (m) { room = m[1]; roomHint = +(m[2] || 0); } })();
+function send(m){
+  if (EMBED) { try { parent.postMessage({tahadiEmbed:1, key:me.key, m}, '*'); } catch(_){} return; }
+  if (relay) { relay.send(m); return; }
+  if (ws && ws.readyState === 1) ws.send(JSON.stringify(m));
+}
+function onData(m){
+  if (m.t === 'who') hello();
+  else if (m.t === 'view') {
+    view = m.v; if (!local || local.vid !== view.vid) local = {vid:view.vid};
+    // المضيف قد ينقل اللاعب لفريق آخر
+    if (view.you && me && !editing && (view.you.team !== me.team || view.you.name !== me.name)) { me.team = view.you.team; me.name = view.you.name; store.set(me); } if (view.k === 'react' && view.go) reactT0 = 0; render(); buzzFx();
+  }
+  else if (m.t === 'kick') { me = null; editing = true; store.set(null); render(); }
+}
+function joinRoom(code, hint){
+  if (relay) { relay.stop(); relay = null; }
+  room = code; roomHint = hint || 0; online = false; view = null; rstate = 'off';
+  try { history.replaceState(null, '', code ? '#' + code + (hint ? '-' + hint : '') : location.pathname + location.search); } catch(_){}
+  if (code) relay = RELAY.phone(code, roomHint, {
+    msg: onData,
+    state: s => { const was = online; rstate = s; online = s === 'on'; if (online && !was) hello(); render(); },
+  });
+  render();
+}
+function hello(){ if (me && !editing) send({t:'hi', key:me.key, name:me.name, team:me.team}); }
+function connect(){
+  if (EMBED) {
+    online = true;
+    window.addEventListener('message', e => { const d = e.data; if (d && d.tahadiView) { view = d.tahadiView; if (!local || local.vid !== view.vid) local = {vid:view.vid}; if (view.you) { me.team = view.you.team; me.name = view.you.name; } render(); } });
+    try { parent.postMessage({tahadiReady:1, key:me.key}, '*'); } catch(_){}
+    render(); return;
+  }
+  if (NETPAGE) { if (!relay) joinRoom(room, roomHint); return; }
+  ws = new WebSocket(`ws://${location.host}/ws`);
+  ws.onopen = () => { online = true; hello(); render(); };
+  ws.onmessage = e => { let m; try { m = JSON.parse(e.data); } catch(_) { return; } onData(m); };
+  ws.onclose = () => { online = false; ws = null; render(); setTimeout(connect, 1500); };
+  ws.onerror = () => {};
+}
+let lastFx = null;
+function buzzFx(){ const k = view && view.k + (view.go ? 'go' : '') + view.vid; if (k !== lastFx) { lastFx = k; try { if (view.k === 'react' && view.go) navigator.vibrate && navigator.vibrate(60); } catch(e){} } }
+
+function header(){
+  const teams = (view && view.teams) || [];
+  const sc = view && view.scores;
+  return `<div class="top" style="--tc:${me ? TC[me.team] : 'var(--ink)'}">
+    <div class="me"><b>${me ? esc(me.name) : 'تحدي الخميس'}</b><small>${me && teams[me.team] ? 'فريق ' + esc(teams[me.team]) : (online ? 'متصل بالتابلت' : 'غير متصل')}</small></div>
+    ${sc ? `<div class="scores">${sc.map((s, i) => `<span style="color:${TC[i]}">${ltr(s)}</span>`).join('')}</div>` : ''}
+  </div>`;
+}
+const waiting = (title, text) => `<div class="card center"><h2>${title}</h2><div class="dots"><i></i><i></i><i></i></div>${text ? `<p class="muted" style="margin:0">${text}</p>` : ''}</div>`;
+
+function joinForm(){
+  const teams = (view && view.teams) || ['الفريق الأول', 'الفريق الثاني'];
+  return `<h1>تحدي الخميس</h1>
+  <div class="card">
+    <label class="label" for="nm">اسمك</label>
+    <input class="field" id="nm" maxlength="16" autocomplete="off" value="${esc(me ? me.name : '')}" placeholder="اكتب اسمك">
+    <span class="label">اختر فريقك</span>
+    <div class="teams">${teams.map((t, i) => `<button class="tpick" style="--tc:${TC[i]}" data-act="team" data-t="${i}" aria-pressed="${draftTeam === i}">${esc(t)}</button>`).join('')}</div>
+    <button class="btn primary" data-act="join">دخول</button>
+  </div>`;
+}
+
+function roomForm(){
+  return `<h1>تحدي الخميس</h1>
+  <div class="card">
+    <label class="label" for="rm">رمز الغرفة (يظهر على التابلت)</label>
+    <input class="field" id="rm" inputmode="numeric" pattern="[0-9]*" maxlength="7" autocomplete="off" placeholder="000000" dir="ltr" style="letter-spacing:.2em;font-size:1.8rem">
+    <button class="btn primary" data-act="room">دخول الغرفة</button>
+  </div>`;
+}
+function body(){
+  if (NETPAGE && !room) return roomForm();
+  if (!online && NETPAGE) return waiting(rstate === 'wait' ? 'نبحث عن التابلت' : 'نتصل عبر الإنترنت', `غرفة ${ltr(room)}. تأكد أن عندك إنترنت، وأن اللعبة مفتوحة على التابلت.`)
+    + '<button class="link" data-act="unroom">تغيير رمز الغرفة</button>';
+  if (!online) return waiting('نتصل بالتابلت', 'تأكد أن جوالك على نفس الواي فاي.');
+  if (editing || !me) return joinForm();
+  if (!view) return waiting('ننتظر التابلت', '');
+  const v = view;
+  switch (v.k) {
+    case 'join': return joinForm();
+    case 'lobby': return `<div class="card center"><span class="label">أنت في فريق</span><h1 style="color:${TC[me.team]}">${esc(v.teams[me.team])}</h1><p class="muted" style="margin:0">انتظر حتى يبدأ المضيف اللعبة.</p></div>
+      ${EMBED ? '' : '<button class="link" data-act="edit">تغيير الاسم أو الفريق</button>'}`;
+    case 'wait': return waiting(esc(v.title || 'انظروا إلى التابلت'), esc(v.text || ''));
+    case 'info': return `<div class="card center">${v.label ? `<span class="label">${esc(v.label)}</span>` : ''}<div class="big ${v.tone || ''}">${esc(v.big)}</div>${v.text ? `<p class="muted" style="margin:0">${esc(v.text)}</p>` : ''}</div>`;
+    case 'buzz': return `<p class="prompt" style="text-align:center">${esc(v.prompt || 'اضغط عندما تعرف الجواب!')}</p>
+      <button class="buzz" style="--tc:${TC[me.team]}" data-act="buzz" ${local.sent ? 'disabled' : ''}>${local.sent ? 'ضغطت!' : 'اضغط'}</button>`;
+    case 'number': return `<div class="card"><p class="prompt">${esc(v.prompt)}</p>
+      <input class="field" id="num" inputmode="decimal" autocomplete="off" placeholder="اكتب رقم فريقك" value="${v.mine != null ? esc(v.mine) : ''}">
+      <button class="btn primary" data-act="sendNum">${v.mine != null ? 'تعديل الرقم' : 'أرسل'}</button>
+      ${v.mine != null ? `<p class="muted center" style="margin:0">أرسل فريقك: ${ltr(esc(v.mine))}${v.by ? ' (' + esc(v.by) + ')' : ''}</p>` : ''}</div>`;
+    case 'text': return `<div class="card"><p class="prompt">${esc(v.prompt)}</p>
+      <input class="field" id="txt" maxlength="40" autocomplete="off" placeholder="${esc(v.ph || 'اكتب هنا')}" value="${esc(v.mine || '')}">
+      ${v.err ? `<p class="no center" style="margin:0;font-weight:700">${esc(v.err)}</p>` : ''}
+      <button class="btn primary" data-act="sendText">${v.mine ? 'تعديل' : 'أرسل'}</button>
+      ${v.mine ? `<p class="muted center" style="margin:0">وصل جوابك. تقدر تعدّله قبل انتهاء الوقت.</p>` : ''}</div>`;
+    case 'vote': return `<p class="prompt">${esc(v.prompt)}</p>
+      <div class="opts">${v.opts.map((o, i) => `<button class="opt" data-act="vote" data-v="${esc(o.v)}" aria-pressed="${v.mine === o.v}"><span class="k">${LET[i] || i + 1}</span><span>${esc(o.l)}</span></button>`).join('')}</div>
+      ${v.mine != null ? '<p class="muted" style="text-align:center;margin:0">وصل صوتك، وتقدر تغيّره قبل انتهاء الوقت.</p>' : ''}`;
+    case 'choice': return `${v.head || v.note ? `<div class="card center" style="padding:10px;gap:4px">${v.head ? `<span class="label">${esc(v.head)}</span>` : ''}${v.note ? `<b class="${v.tone || ''}">${esc(v.note)}</b>` : ''}${v.sub ? `<small class="muted">${esc(v.sub)}</small>` : ''}</div>` : ''}
+      <p class="prompt">${esc(v.prompt)}</p>
+      <div class="opts">${v.opts.map((o, i) => {
+        const cls = v.right != null ? (i === v.right ? 'right' : i === v.mine ? 'wrong' : '') : '';
+        return `<button class="opt ${cls}" data-act="choice" data-v="${i}" aria-pressed="${v.mine === i}" ${v.mine != null || v.right != null ? 'disabled' : ''}><span class="k">${LET[i]}</span><span>${esc(o)}</span></button>`;
+      }).join('')}</div>
+      ${v.mine != null && v.right == null ? '<p class="muted" style="text-align:center;margin:0">وصل جوابك، انتظر النتيجة.</p>' : ''}`;
+    case 'form': {
+      const f = local.f || (local.f = (v.mine || []).slice());
+      return `<div class="card center" style="padding:10px;gap:2px"><span class="label">الحرف</span><div class="big" style="color:var(--brass);font-size:3.4rem;line-height:1.1">${esc(v.letter)}</div>
+        ${v.stop ? `<b class="no">ستوب! ${esc(v.stop)} كمّل، أسرع!</b>` : '<small class="muted">كل الأجوبة تبدأ بهذا الحرف</small>'}</div>
+        <div class="card">${v.cats.map((c, i) => `<label class="label" for="f${i}">${esc(c)}</label><input class="field" id="f${i}" data-fi="${i}" maxlength="30" autocomplete="off" value="${esc(f[i] || '')}" placeholder="${esc(c)} يبدأ بـ${esc(v.letter)}">`).join('')}
+        <button class="btn primary" data-act="sendForm">${v.mine ? 'تعديل' : 'أرسل'}</button>
+        <p class="muted center" style="margin:0">${v.mine ? 'وصلت أجوبتك، وتقدر تعدّلها قبل الوقت. ' : ''}أول من يكمّل الخمسة يوقف الكل!</p></div>`;
+    }
+    case 'secret': return `<div class="card center"><span class="label">${esc(v.label || 'كلمتك السرية')}</span>
+      <div class="secret" id="secret" data-hold="1"><span class="muted">اضغط مطوّلاً هنا لترى كلمتك،<br>وخبّئ الشاشة عن غيرك</span></div>
+      ${v.text ? `<p class="muted" style="margin:0">${esc(v.text)}</p>` : ''}</div>`;
+    case 'react': {
+      if (local.res) return `<div class="card center"><div class="big ${local.res.early ? 'no' : 'ok'}">${local.res.early ? 'مبكر جداً!' : ltr(local.res.ms) + ' ms'}</div><p class="muted" style="margin:0">${local.res.early ? 'ضغطت قبل الأخضر.' : 'وصل وقتك للتابلت.'}</p></div>`;
+      return `<button class="react${v.go ? ' go' : ''}" data-act="react" id="react">${v.go ? 'اضغط!' : 'انتظر الأخضر…'}</button>`;
+    }
+    case 'tvote': return `${v.steal ? '<div class="card center" style="padding:10px"><div class="big ok" style="font-size:1.6rem">فرصة سرقة! صوّتوا بسرعة</div></div>' : ''}
+      <p class="prompt">${esc(v.prompt)}</p>
+      ${v.clues ? `<ol class="clues">${v.clues.map(x => `<li>${esc(x)}</li>`).join('')}</ol>` : ''}
+      ${v.hint ? `<div class="card" style="border-color:var(--brass);padding:12px"><span class="label">تلميح</span><span>${esc(v.hint)}</span></div>` : ''}
+      <div class="opts">${v.opts.map((o, i) => `<button class="opt" data-act="tvote" data-v="${o.v}" aria-pressed="${v.mine === o.v}"><span class="k">${LET[i]}</span><span>${esc(o.l)}</span>${o.n ? `<small class="cnt">${'●'.repeat(o.n)}</small>` : ''}</button>`).join('')}</div>
+      <p class="muted" style="text-align:center;margin:0">صوّت ${ltr(v.done)} من ${ltr(v.total)} من فريقكم · ${ltr(v.pts)} نقطة · الأغلبية تفوز</p>
+      ${v.ll.length ? `<span class="label">وسائل المساعدة (لكل الفريق)</span><div class="lls">${v.ll.map(l => `<button data-act="life" data-v="${l.id}" data-n="${esc(l.n)}"><b>${esc(l.g)}</b><span>${esc(l.n)}</span></button>`).join('')}</div>` : ''}`;
+    case 'yn': return `<div class="card center"><span class="label">الشخصية السرية (${esc(v.cat)}) · لا تخلّي أحد يشوف</span><div class="big" style="color:var(--brass)">${esc(v.name)}</div>
+      <p class="muted" style="margin:0">جاوب على أسئلتهم بصدق. سؤال ${ltr(v.count)} من ${ltr(v.max)}${v.last.length ? ' · آخر أجوبتك: ' + v.last.map(esc).join('، ') : ''}</p></div>
+      <div class="ynbtns"><button class="yes" data-act="yn" data-v="y">نعم</button><button class="no" data-act="yn" data-v="n">لا</button></div>
+      <div class="row"><button class="btn" data-act="yn" data-v="m">مو متأكد</button><button class="btn" data-act="yn" data-v="undo">تراجع</button></div>`;
+    case 'map': {
+      const has = (l, x, y) => (l || []).some(([a, b]) => a === x && b === y);
+      let cells = '';
+      for (let y = 0; y < v.n; y++) for (let x = 0; x < v.n; x++) {
+        const here = v.pos[0] === x && v.pos[1] === y, trap = has(v.traps, x, y), hit = has(v.hits, x, y), goal = v.goal && v.goal[0] === x && v.goal[1] === y, st = v.start[0] === x && v.start[1] === y;
+        cells += `<span class="${trap || hit ? 'trap' : ''}${goal ? ' goal' : ''}">${here ? `<i style="background:${TC[me ? me.team : 0]}"></i>` : trap || hit ? '💣' : goal ? '💎' : st ? '🚩' : ''}</span>`;
+      }
+      const status = v.solved ? '<div class="big ok">وصلتوا الكنز!</div>' : v.over ? '<div class="big no">خلصت الخطوات</div>' : '';
+      return `<div class="card center"><span class="label">${v.done ? 'الخريطة كاملة' : v.guide ? 'أنت الموجّه! وجّه فريقك بالكلام فقط، ولا تخلّيهم يشوفون جوالك' : `اسمعوا توجيهات ${esc(v.guideName)}`} · ${ltr(v.moves)} من ${ltr(v.max)} خطوة</span>
+        <div class="mgrid" style="--n:${v.n}">${cells}</div>${status}</div>
+        ${v.mover ? `<div class="arrows"><button data-act="mv" data-v="u" style="grid-area:u">▲<small>فوق</small></button><button data-act="mv" data-v="l" style="grid-area:l">◀<small>يسار</small></button><button data-act="mv" data-v="r" style="grid-area:r">▶<small>يمين</small></button><button data-act="mv" data-v="d" style="grid-area:d">▼<small>تحت</small></button></div>` : ''}`;
+    }
+    case 'wordle': {
+      const rows = Array.from({length:v.max}, (_, r) => { const row = v.board[r]; return `<div class="wrow">${Array.from({length:v.len}, (_, i) => `<span class="m${row ? row.m[i] : 'x'}">${row ? esc(row.g[i] || '') : ''}</span>`).join('')}</div>`; }).join('');
+      return `<div class="card center"><span class="label">كلمة من ${ltr(v.len)} حروف · تعاونوا!</span><div class="wgrid">${rows}</div>
+        <p class="muted" style="margin:0;font-size:.85rem">أخضر: الحرف بمكانه · أصفر: موجود بمكان ثاني · رمادي: غير موجود</p></div>
+        ${v.word ? `<div class="card center"><span class="label">الكلمة</span><div class="big">${esc(v.word)}</div></div>`
+          : v.solved ? '<div class="card center"><div class="big ok">عرفتوها!</div></div>'
+          : v.over ? '<div class="card center"><div class="big no">خلصت المحاولات</div></div>'
+          : v.mine ? `<div class="card"><span class="label">دورك تكتب تخمين الفريق</span><input class="field" id="gs" maxlength="12" autocomplete="off" placeholder="${v.len} حروف">${v.err ? `<p class="no center" style="margin:0;font-weight:700">${esc(v.err)}</p>` : ''}<button class="btn primary" data-act="sendGuess">جرّب</button></div>`
+          : `<p class="muted" style="text-align:center;margin:0">الدور على ${esc(v.writer)} يكتب تخمين الفريق</p>`}`;
+    }
+    case 'chain': return `<div class="card center"><span class="label">الفئة: ${esc(v.cat)} · سلسلتكم ${ltr(v.count)} كلمة</span>
+      <div class="chainp">${v.words.map(w => `<span>${esc(w)}</span>`).join('<i>←</i>')}</div>
+      <div class="big" style="color:var(--brass)">«${esc(v.need)}»</div><p class="muted" style="margin:0">الكلمة الجاية تبدأ بهذا الحرف</p></div>
+      ${v.mine ? `<div class="card"><span class="label">دورك!</span><input class="field" id="gs" maxlength="30" autocomplete="off" placeholder="كلمة تبدأ بـ«${esc(v.need)}»">${v.err ? `<p class="no center" style="margin:0;font-weight:700">${esc(v.err)}</p>` : ''}<button class="btn primary" data-act="sendGuess">أرسل</button></div>`
+        : `<p class="muted" style="text-align:center;margin:0">الدور على ${esc(v.turn)}، ساعدوه!</p>`}`;
+    case 'piece': return `${v.prompt ? `<p class="prompt">${esc(v.prompt)}</p>` : ''}
+      ${v.code ? `<div class="code">${v.code.map(w => `<span class="cw">${w.map(n => `<b>${esc(n)}</b>`).join('')}</span>`).join('')}</div>` : ''}
+      <div class="card"><span class="label">${esc(v.label)}</span>${(v.items || []).length ? `<ul class="pieces">${v.items.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}</div>
+      ${v.solved ? '<div class="card center"><div class="big ok">حللتوها!</div></div>'
+        : v.answer ? `<div class="card"><span class="label">أنت اللي يرسل جواب الفريق</span>
+            <input class="field" id="gs" maxlength="40" autocomplete="off" placeholder="جواب الفريق">
+            <button class="btn primary" data-act="sendGuess">أرسل الجواب</button>
+            ${(v.tries || []).length ? `<p class="muted center" style="margin:0">خطأ: ${v.tries.map(t => esc(t)).join('، ')}</p>` : ''}</div>`
+        : v.ansName ? `<p class="muted" style="text-align:center;margin:0">${esc(v.ansName)} هو اللي يرسل جواب فريقكم</p>` : ''}`;
+    case 'collect': return `<div class="card"><p class="prompt">${esc(v.prompt)}</p>
+      <input class="field" id="gs" maxlength="30" autocomplete="off" placeholder="كلمة وحدة">
+      <button class="btn primary" data-act="sendGuess">أرسل</button>
+      <span class="label">تذكّر فريقكم ${ltr((v.found || []).length)} من ${ltr(v.total)}</span>
+      ${(v.found || []).length ? `<div class="chips">${v.found.map(w => `<span>${esc(w)}</span>`).join('')}</div>` : ''}
+      ${(v.tries || []).length ? `<p class="muted center" style="margin:0">ليست من القائمة: ${v.tries.map(t => esc(t)).join('، ')}</p>` : ''}</div>`;
+    case 'draw': return `<div class="card center" style="padding:12px"><span class="label">ارسم هذه الكلمة (لا تكتب حروفاً)</span><div class="big" style="font-size:clamp(1.6rem,9vw,2.4rem);color:var(--brass)">${esc(v.word)}</div></div>
+      <div class="padwrap"><canvas id="pad"></canvas></div>
+      <div class="row">${PCOL.map((c, i) => `<button class="sw${(local.col || 0) === i ? ' on' : ''}" style="background:${c}" data-act="col" data-i="${i}" aria-label="لون"></button>`).join('')}<button class="btn" style="min-height:44px;padding:8px" data-act="clr">مسح</button></div>`;
+    case 'guess': return `<div class="card"><p class="prompt">${esc(v.prompt)}</p>
+      <input class="field" id="gs" maxlength="40" autocomplete="off" placeholder="اكتب تخمينك">
+      <button class="btn primary" data-act="sendGuess">أرسل</button>
+      ${(v.tries || []).length ? `<p class="muted center" style="margin:0">خطأ: ${v.tries.map(t => esc(t)).join('، ')}</p>` : ''}</div>`;
+    case 'tclock': {
+      if (v.sent || local.ms != null) return `<div class="card center"><span class="label">الهدف ${esc(v.target)} ثانية</span><div class="big ok">وصل!</div><p class="muted" style="margin:0">انتظر حتى يخلص الباقون، والنتيجة على التابلت.</p></div>`;
+      if (local.t0) return `<p class="prompt" style="text-align:center">عدّ في رأسك حتى ${esc(v.target)}…</p><button class="buzz" style="--tc:var(--bad)" data-act="tcStop">توقف</button>`;
+      return `<div class="card center"><span class="label">الهدف</span><div class="big" style="color:var(--brass)">${esc(v.target)} ثانية</div><p class="muted" style="margin:0">اضغط «ابدأ»، وعدّ في رأسك بدون ساعة، ثم اضغط «توقف» عند ${esc(v.target)} بالضبط.</p></div>
+        <button class="buzz" style="--tc:var(--good)" data-act="tcStart">ابدأ</button>`;
+    }
+    case 'truth3': return `<div class="card"><p class="prompt">اكتب 3 معلومات عن نفسك: حقيقتان وكذبة، ثم حدّد الكذبة.</p>
+      ${[0, 1, 2].map(i => `<div class="trow"><input class="field" id="tr${i}" maxlength="70" autocomplete="off" placeholder="المعلومة ${i + 1}" value="${esc(local['tr' + i] || '')}"><button class="tlie${local.lie === i ? ' on' : ''}" data-act="tlie" data-i="${i}">${local.lie === i ? 'الكذبة' : 'كذبة؟'}</button></div>`).join('')}
+      <button class="btn primary" data-act="sendTruth">أرسل</button>
+      <p class="muted center" style="margin:0">لا أحد يشوف جوالك! والكذبة لازم تكون مقنعة.</p></div>`;
+    case 'bet': return `<div class="card"><p class="prompt">${esc(v.prompt)}</p>
+      <div class="big" style="color:${TC[me.team]}">${ltr(local.bet != null ? local.bet : (v.mine || 0))}</div>
+      <p class="muted center" style="margin:0">من 0 إلى ${ltr(v.max)}</p>
+      <div class="step">${[-100, -50, 50, 100].map(d => `<button data-act="bAdj" data-d="${d}">${ltr((d > 0 ? '+' : '') + d)}</button>`).join('')}</div>
+      <div class="row"><button class="btn" data-act="bSet" data-v="0">صفر</button><button class="btn" data-act="bSet" data-v="${v.max}">الكل ${ltr(v.max)}</button></div>
+      <button class="btn team" style="--tc:${TC[me.team]}" data-act="bLock">${v.locked ? 'ثبّتنا ' + ltr(v.mine) + ' (اضغط للتعديل)' : 'ثبّت رهان الفريق'}</button>
+      ${v.by ? `<p class="muted center" style="margin:0">آخر تعديل من ${esc(v.by)}</p>` : ''}</div>`;
+  }
+  return waiting('انظروا إلى التابلت', '');
+}
+
+function render(){
+  const f = document.activeElement && document.activeElement.id;
+  const val = f && document.getElementById(f) ? document.getElementById(f).value : null;
+  app.innerHTML = header() + body();
+  if (f && document.getElementById(f)) { const el = document.getElementById(f); if (val != null) el.value = val; el.focus(); }
+  // يبدأ القياس لحظة ظهور الأخضر على الشاشة
+  if (view && view.k === 'react' && view.go && !local.res && !local.t0) { const l = local; l.t0 = performance.now(); requestAnimationFrame(() => { if (!l.res) l.t0 = performance.now(); }); }
+  mountPad();
+  const sec = document.getElementById('secret');
+  if (sec) {
+    const show = on => { sec.innerHTML = on ? `<div><div class="big">${esc(view.word)}</div>${view.sub ? `<div class="muted">${esc(view.sub)}</div>` : ''}</div>` : '<span class="muted">اضغط مطوّلاً هنا لترى كلمتك،<br>وخبّئ الشاشة عن غيرك</span>'; };
+    sec.addEventListener('pointerdown', e => { e.preventDefault(); show(true); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => sec.addEventListener(ev, () => show(false)));
+    sec.addEventListener('contextmenu', e => e.preventDefault());
+  }
+}
+
+/* لوحة الرسم: الخطوط تُرسم هنا وتُرسل للتابلت على دفعات صغيرة (إحداثيات من 0 إلى 1000) */
+let padQ = [], padTimer = null;
+function flushPad(){ if (!padQ.length) return; const by = {}; padQ.forEach(([s, c, x, y]) => { (by[s] = by[s] || {c, p:[]}).p.push([x, y]); }); padQ = []; Object.entries(by).forEach(([s, o]) => send({t:'stroke', s:+s, c:o.c, p:o.p})); }
+function paintPad(cv){
+  const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  cv.width = Math.round(r.width * dpr); cv.height = Math.round(r.height * dpr);
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.lineCap = g.lineJoin = 'round'; g.lineWidth = Math.max(3, r.width / 110);
+  (local.strokes || []).forEach(s => { g.strokeStyle = PCOL[s.c]; g.beginPath(); s.p.forEach(([x, y], i) => { const X = x / 1000 * r.width, Y = y / 1000 * r.height; i ? g.lineTo(X, Y) : (g.moveTo(X, Y), g.lineTo(X + .1, Y)); }); g.stroke(); });
+}
+function mountPad(){
+  const cv = document.getElementById('pad'); if (!cv) return;
+  local.strokes = local.strokes || []; local.sid = local.sid || 0;
+  paintPad(cv);
+  let cur = null;
+  const pt = e => { const r = cv.getBoundingClientRect(); return [Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 1000), Math.round(Math.max(0, Math.min(1, (e.clientY - r.top) / r.height)) * 1000)]; };
+  const add = p => { cur.p.push(p); padQ.push([cur.id, cur.c, p[0], p[1]]); const g = cv.getContext('2d'), r = cv.getBoundingClientRect(), n = cur.p.length; const a = cur.p[Math.max(0, n - 2)]; g.strokeStyle = PCOL[cur.c]; g.lineWidth = Math.max(3, r.width / 110); g.lineCap = 'round'; g.beginPath(); g.moveTo(a[0] / 1000 * r.width, a[1] / 1000 * r.height); g.lineTo(p[0] / 1000 * r.width + (n === 1 ? .1 : 0), p[1] / 1000 * r.height); g.stroke(); };
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); try { cv.setPointerCapture(e.pointerId); } catch(_){} cur = {id:Math.floor(Math.random() * 1e9), c:local.col || 0, p:[]}; local.strokes.push(cur); add(pt(e)); if (!padTimer) padTimer = setInterval(flushPad, 70); });
+  cv.addEventListener('pointermove', e => { if (!cur) return; e.preventDefault(); const p = pt(e), l = cur.p[cur.p.length - 1]; if (Math.abs(p[0] - l[0]) + Math.abs(p[1] - l[1]) >= 4) add(p); });
+  const up = () => { if (cur) { cur = null; flushPad(); } };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+}
+app.addEventListener('input', e => { const id = e.target.id || ''; if (/^tr\d$/.test(id)) local[id] = e.target.value; if (/^f\d$/.test(id)) { local.f = local.f || []; local.f[+id.slice(1)] = e.target.value; } });
+app.addEventListener('pointerdown', e => {
+  // زر ردّة الفعل يقيس من لحظة اللمس، لا من رفع الإصبع
+  const el = e.target.closest('[data-act="react"]'); if (!el || !view || view.k !== 'react' || local.res) return;
+  if (view.go) { const ms = Math.max(0, Math.round(performance.now() - (local.t0 || performance.now()))); local.res = {ms}; send({t:'react', vid:view.vid, ms}); }
+  else { local.res = {early:true}; send({t:'react', vid:view.vid, early:true}); }
+  try { navigator.vibrate && navigator.vibrate(40); } catch(_){}
+  render();
+});
+app.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const a = el.dataset.act;
+  if (a === 'room') {
+    const inp = document.getElementById('rm');
+    const v = (inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, '');
+    if (v.length !== 6) { inp.focus(); alert('الرمز 6 أرقام'); return; }
+    joinRoom(v, 0); return;
+  }
+  if (a === 'unroom') { joinRoom(null); return; }
+  if (a === 'team') { draftTeam = +el.dataset.t; const nm = document.getElementById('nm'); const keep = nm ? nm.value : ''; render(); const n2 = document.getElementById('nm'); if (n2) n2.value = keep; }
+  else if (a === 'join') {
+    const name = (document.getElementById('nm').value || '').trim().slice(0, 16);
+    if (!name) { document.getElementById('nm').focus(); return; }
+    if (draftTeam == null) { alert('اختر فريقك'); return; }
+    me = {key: me ? me.key : Math.random().toString(36).slice(2) + Date.now().toString(36), name, team: draftTeam};
+    store.set(me); editing = false; hello(); render();
+  }
+  else if (a === 'edit') { editing = true; draftTeam = me ? me.team : null; render(); }
+  else if (a === 'buzz') { if (!local.sent) { local.sent = true; send({t:'buzz', vid:view.vid}); try { navigator.vibrate && navigator.vibrate(80); } catch(_){} render(); } }
+  else if (a === 'sendNum') { const v = (document.getElementById('num').value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[,،\s]/g, ''); if (v === '' || isNaN(+v)) return; send({t:'num', vid:view.vid, v:+v}); document.activeElement && document.activeElement.blur(); }
+  else if (a === 'sendText') { const v = (document.getElementById('txt').value || '').trim().slice(0, 40); if (!v) return; send({t:'text', vid:view.vid, v}); document.activeElement && document.activeElement.blur(); }
+  else if (a === 'sendForm') { const v = (view.cats || []).map((_, i) => { const el2 = document.getElementById('f' + i); return el2 ? el2.value.trim().slice(0, 30) : ''; }); if (!v.some(Boolean)) return; local.f = v.slice(); send({t:'form', vid:view.vid, v}); document.activeElement && document.activeElement.blur(); }
+  else if (a === 'vote') { send({t:'vote', vid:view.vid, v:el.dataset.v}); }
+  else if (a === 'choice') { if (view.mine == null) send({t:'choice', vid:view.vid, v:+el.dataset.v}); }
+  else if (a === 'bAdj' || a === 'bSet') {
+    const cur = local.bet != null ? local.bet : (view.mine || 0);
+    local.bet = Math.max(0, Math.min(view.max, a === 'bSet' ? +el.dataset.v : cur + +el.dataset.d)); render();
+  }
+  else if (a === 'tvote') { send({t:'tvote', vid:view.vid, v:+el.dataset.v}); try { navigator.vibrate && navigator.vibrate(25); } catch(_){} }
+  else if (a === 'life') { if (confirm(`تستعملون «${el.dataset.n}»؟ تنحسب على الفريق كله.`)) send({t:'life', vid:view.vid, v:el.dataset.v}); }
+  else if (a === 'yn') { send({t:'yn', vid:view.vid, v:el.dataset.v}); try { navigator.vibrate && navigator.vibrate(30); } catch(_){} }
+  else if (a === 'mv') { send({t:'move', vid:view.vid, v:el.dataset.v}); }
+  else if (a === 'col') { local.col = +el.dataset.i; render(); }
+  else if (a === 'clr') { local.strokes = []; padQ = []; send({t:'clear', vid:view.vid}); render(); }
+  else if (a === 'sendGuess') { const inp = document.getElementById('gs'); const v = (inp.value || '').trim().slice(0, 40); if (!v) return; send({t:'guess', vid:view.vid, v}); inp.value = ''; inp.focus(); }
+  else if (a === 'tcStart') { local.t0 = performance.now(); render(); }
+  else if (a === 'tcStop') { if (!local.t0) return; local.ms = Math.round(performance.now() - local.t0); send({t:'tclock', vid:view.vid, ms:local.ms}); try { navigator.vibrate && navigator.vibrate(60); } catch(_){} render(); }
+  else if (a === 'tlie') { local.lie = +el.dataset.i; render(); }
+  else if (a === 'sendTruth') {
+    const s = [0, 1, 2].map(i => (document.getElementById('tr' + i).value || '').trim());
+    if (s.some(x => !x)) { alert('اكتب المعلومات الثلاث'); return; }
+    if (local.lie == null) { alert('حدّد أيّها الكذبة'); return; }
+    send({t:'truth3', vid:view.vid, s, lie:local.lie});
+  }
+  else if (a === 'bLock') { const v = local.bet != null ? local.bet : (view.mine || 0); send({t:'bet', vid:view.vid, v}); }
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') return;
+  if (relay) { if (!online) relay.retry(); return; }
+  if (!ws || ws.readyState > 1) { try { ws && ws.close(); } catch(e){} }
+});
+window.addEventListener('hashchange', () => { const m = location.hash.match(/^#(\d{6})(?:-(\d))?/); if (!EMBED && m && m[1] !== room) { NETPAGE = true; if (ws) { const w = ws; ws = null; w.onclose = null; try { w.close(); } catch(_){} } joinRoom(m[1], +(m[2] || 0)); } });
+render();
+connect();
+</script>
