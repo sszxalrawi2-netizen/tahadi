@@ -3148,7 +3148,7 @@ const BOT_KEYS = Object.keys(BOTS), isBot = k => k in BOTS;
 function botsSync(){ BOT_KEYS.forEach(k => { if (P.test) { if (!PL[k]) PL[k] = Object.assign({}, BOTS[k]); } else delete PL[k]; }); }
 const savePL = () => store.set(PKEY, Object.fromEntries(Object.entries(PL).filter(([k]) => !isBot(k))));
 // رابط صفحة اللاعب على الإنترنت (يتغير من خانة «رابط صفحة اللاعب» إذا رفعتها لمكان ثاني)
-const PLAY_ONLINE = '';
+const PLAY_ONLINE = 'https://sszxalrawi2-netizen.github.io/tahadi/play.html';
 const ROOM_KEY = 'tahadi.room.v1';
 const playOnline = () => {
   const u = (P.playUrl || PLAY_ONLINE || '').trim();
