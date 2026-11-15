@@ -152,6 +152,8 @@ h2{font-size:1.5rem}
 .arrows button{border:none;border-radius:16px;min-height:72px;background:var(--brass);color:var(--brass-ink);font-size:1.6rem;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
 .arrows small{font-size:.8rem;font-weight:700}
 .arrows button:active{transform:scale(.95)}
+.mzpad{max-width:380px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.mzpad button{min-height:110px;font-size:2.6rem}
 .wgrid{display:flex;flex-direction:column;gap:6px;align-items:center}
 .wrow{display:flex;gap:6px;direction:rtl}
 .wrow span{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;font-family:var(--display);font-size:1.6rem;background:var(--felt-3);color:#fff;border:2px solid var(--rim)}
@@ -579,6 +581,19 @@ function body(){
       return `<div class="card center"><span class="label">الهدف</span><div class="big" style="color:var(--brass)">${esc(v.target)} ثانية</div><p class="muted" style="margin:0">اضغط «ابدأ»، وعدّ في رأسك بدون ساعة، ثم اضغط «توقف» عند ${esc(v.target)} بالضبط.</p></div>
         <button class="buzz" style="--tc:var(--good)" data-act="tcStart">ابدأ</button>`;
     }
+    case 'iclock': {
+      if (v.sent || local.done) return `<div class="card center"><div class="big ok">وصل!</div><p class="muted" style="margin:0">انتظر الباقين، والنتيجة على التابلت.</p></div>`;
+      const mk = v.marks, got = (local.ms || []).length;
+      if (!local.t0) return `<div class="card center"><span class="label">${{laps:'المحطات', fake:'العدّاد الكذاب', vanish:'العدّاد يختفي'}[v.mode]}</span>
+        <p style="margin:0">${v.mode === 'laps' ? `اضغط «محطة» عند ${mk.join(' و ')} ثانية من البداية، بدون ساعة` : v.mode === 'fake' ? `عدّ لحد ${mk[0]} ثانية واضغط «توقف». العداد اللي راح يطلع كذاب، لا تصدقه!` : `عدّ تنازلي من ${mk[0]} راح يختفي بعد ${v.show} ثواني. كمّل براسك واضغط عند الصفر`}</p></div>
+        <button class="buzz" style="--tc:var(--good)" data-act="icStart">ابدأ</button>`;
+      const label = v.mode === 'laps' ? `محطة ${got + 1}<small style="display:block;font-size:1.2rem">عند ${mk[got]} ث</small>` : v.mode === 'fake' ? 'توقف' : 'صفر!';
+      return `<div class="card center"><div class="big" id="icnum" style="font-size:4rem;color:var(--brass);min-height:1.2em">${esc(icShow())}</div>${v.mode === 'laps' && got ? `<small class="muted">ضغطت ${got} من ${mk.length}</small>` : ''}</div>
+        <button class="buzz" style="--tc:var(--bad)" data-act="icTap">${label}</button>`;
+    }
+    case 'maze': return `<div class="card center" style="padding:12px"><span class="label">${v.solved ? 'طلعتوا! 🏁' : 'أنت تتحكم بهذا الاتجاه. طالع التابلت وتفاهم ويه فريقك'}</span></div>
+      ${v.solved ? '' : `<div class="arrows mzpad">${v.dirs.map(d => `<button data-act="mz" data-v="${d}" style="grid-area:${d}">${MZG[d]}<small>${MZN[d]}</small></button>`).join('')}</div>`}
+      ${(v.mates || []).length ? `<p class="muted center" style="margin:0">${v.mates.map(m => `${esc(m.n)}: ${esc(m.d)}`).join(' · ')}</p>` : ''}`;
     case 'truth3': return `<div class="card"><p class="prompt">اكتب 3 معلومات عن نفسك: حقيقتان وكذبة، ثم حدّد الكذبة.</p>
       ${[0, 1, 2].map(i => `<div class="trow"><input class="field" id="tr${i}" maxlength="70" autocomplete="off" placeholder="المعلومة ${i + 1}" value="${esc(local['tr' + i] || '')}"><button class="tlie${local.lie === i ? ' on' : ''}" data-act="tlie" data-i="${i}">${local.lie === i ? 'الكذبة' : 'كذبة؟'}</button></div>`).join('')}
       <button class="btn primary" data-act="sendTruth">أرسل</button>
@@ -643,6 +658,22 @@ function tgEvalP(tokens, nums){
   try { const v = expr(); return i === tokens.length ? v : null; } catch(e) { return null; }
 }
 app.addEventListener('input', e => { const id = e.target.id || ''; if (id === 'code') local.code = e.target.value; if (/^tr\d$/.test(id)) local[id] = e.target.value; if (/^f\d$/.test(id)) { local.f = local.f || []; local.f[+id.slice(1)] = e.target.value; } });
+// «الساعة الداخلية»: الرقم اللي يطلع بالجوال (كذاب أو يختفي)
+const MZG = {u:'▲', r:'▶', d:'▼', l:'◀'}, MZN = {u:'فوق', r:'يمين', d:'تحت', l:'يسار'};
+function icShow(){
+  if (!view || view.k !== 'iclock' || !local.t0) return '';
+  const s = (performance.now() - local.t0) / 1000;
+  if (view.mode === 'fake') return String(Math.floor(s * view.f));
+  if (view.mode === 'vanish') return s < view.show ? String(Math.max(0, Math.ceil(view.marks[0] - s))) : '؟';
+  return '🤫';
+}
+setInterval(() => { const el = document.getElementById('icnum'); if (el) { const t = icShow(); if (el.textContent !== t) el.textContent = t; } }, 100);
+// أسهم المتاهة ترسل لحظة اللمس حتى تكون الحركة سريعة
+app.addEventListener('pointerdown', e => {
+  const el = e.target.closest('[data-act="mz"]'); if (!el || !view || view.k !== 'maze') return;
+  e.preventDefault(); send({t:'move', vid:view.vid, v:el.dataset.v});
+  try { navigator.vibrate && navigator.vibrate(15); } catch(_){}
+});
 app.addEventListener('pointerdown', e => {
   // زر ردّة الفعل يقيس من لحظة اللمس، لا من رفع الإصبع
   const el = e.target.closest('[data-act="react"]'); if (!el || !view || view.k !== 'react' || local.res) return;
@@ -689,6 +720,14 @@ app.addEventListener('click', e => {
   else if (a === 'sendGuess') { const inp = document.getElementById('gs'); const v = (inp.value || '').trim().slice(0, 40); if (!v) return; send({t:'guess', vid:view.vid, v}); inp.value = ''; inp.focus(); }
   else if (a === 'tcStart') { local.t0 = performance.now(); render(); }
   else if (a === 'tcStop') { if (!local.t0) return; local.ms = Math.round(performance.now() - local.t0); send({t:'tclock', vid:view.vid, ms:local.ms}); try { navigator.vibrate && navigator.vibrate(60); } catch(_){} render(); }
+  else if (a === 'icStart') { local.t0 = performance.now(); local.ms = []; render(); }
+  else if (a === 'icTap') {
+    if (!local.t0 || local.done) return;
+    local.ms.push(Math.round(performance.now() - local.t0));
+    try { navigator.vibrate && navigator.vibrate(50); } catch(_){}
+    if (local.ms.length >= view.marks.length) { local.done = true; send({t:'iclock', vid:view.vid, ms:local.ms}); }
+    render();
+  }
   else if (a === 'tlie') { local.lie = +el.dataset.i; render(); }
   else if (a === 'sendTruth') {
     const s = [0, 1, 2].map(i => (document.getElementById('tr' + i).value || '').trim());
