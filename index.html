@@ -225,6 +225,20 @@ details.panel[open] summary::after{content:"−"}
 .pqbox{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:16px;border:2px solid color-mix(in srgb,var(--tc) 55%,transparent);background:color-mix(in srgb,var(--tc) 10%,var(--felt))}
 .pqbox b{color:var(--tc)}
 /* سباق الفريقين */
+.bgrid{display:grid;grid-template-columns:repeat(var(--n),1fr);gap:6px}
+.bhead{text-align:center;font-weight:700;font-size:clamp(.72rem,2.3vw,.95rem);color:var(--brass);padding:6px 2px;line-height:1.3;display:flex;align-items:flex-end;justify-content:center}
+.bcell{min-height:clamp(46px,9vw,64px);border-radius:12px;border:1.5px solid var(--rim);background:var(--felt-2);font-family:var(--display);font-weight:400;font-size:clamp(1.1rem,3.6vw,1.6rem);color:var(--brass);display:grid;place-items:center}
+button.bcell:active{transform:scale(.96)}
+.bcell.used{background:color-mix(in srgb,var(--tc,var(--felt-3)) 22%,var(--felt));color:var(--tc,var(--muted));font-size:clamp(.9rem,2.8vw,1.15rem);border-style:dashed}
+.bcell.idle{opacity:.6}
+.mfcard .qtext b{font-weight:700}
+.mfplayers{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.mfplayers span{position:relative;display:flex;flex-direction:column;align-items:center;padding:8px 14px;border-radius:14px;background:var(--felt-2);border:1px solid var(--rim);min-width:90px}
+.mfplayers span.dead{opacity:.5;text-decoration:line-through}
+.mfplayers small{color:var(--muted);text-decoration:none}
+.mfplayers i{position:absolute;top:-8px;inset-inline-end:-6px;font-style:normal}
+.mftally{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.mftally span{padding:4px 12px;border-radius:99px;background:var(--felt-3)}
 .duboard{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
 .duside{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 8px;border-radius:16px;background:color-mix(in srgb,var(--tc) 16%,var(--felt-2));border:2px solid color-mix(in srgb,var(--tc) 40%,transparent);text-align:center;min-width:0}
 .duside.win{border-color:var(--tc);box-shadow:0 0 0 3px color-mix(in srgb,var(--tc) 35%,transparent)}
@@ -1606,6 +1620,7 @@ const ROUNDS = [
   {id:'flags', group:'ثقافة وذكاء', name:'أعلام الدول', desc:'اعرف الدولة من علمها، وبعضها متشابه جداً', cats:['flags'], levels:[1,2], mult:1, type:'mcq'},
   {id:'flagcolors', group:'ثقافة وذكاء', name:'ألوان الأعلام', desc:'نعطيك اسم الدولة، فما ألوان علمها وبأي ترتيب؟', cats:['flagcolors'], levels:[1,2], mult:1, type:'mcq'},
   {id:'capitals', group:'ثقافة وذكاء', name:'عواصم الدول', desc:'العاصمة كثيراً ما تكون غير أكبر مدينة، فانتبه', cats:['capitals'], levels:[1,2], mult:1, type:'mcq'},
+  {id:'board', group:'ثقافة وذكاء', name:'لوحة الأسئلة', desc:'لوحة بـ5 فئات وأسئلة من 100 لـ500، وكل فريق بدوره يختار الفئة والقيمة. ووراء مربع واحد سؤال ذهبي ⭐', cats:['general','capitals','football','iq','logic','seqs','calc','odd','anagram'], levels:[1,2,3], mult:1, type:'board', count:() => 1},
   {id:'pickfor', group:'ثقافة وذكاء', name:'اختار لخصمك', desc:'الفريق الثاني يختار لكم الفئة والصعوبة، وإذا أخطأتم يسرقون السؤال', cats:['general','capitals','football','iq','logic','seqs','calc','odd','anagram','flagcolors'], levels:[1,2,3], mult:1, type:'mcq', pick:true},
   {id:'iq', group:'تحديات الذكاء', name:'أسئلة ذكاء', desc:'متتاليات ومنطق وحساب ذهني', cats:['iq'], levels:[2], mult:1, type:'mcq'},
   {id:'logic', group:'تحديات الذكاء', name:'ألغاز المنطق', desc:'ألغاز فيها فخ، والجواب الأول غالباً خطأ', cats:['logic'], levels:[1,2,3], mult:1, type:'mcq'},
@@ -1626,6 +1641,7 @@ const ROUNDS = [
   {id:'rapid', group:'تحديات تفاعلية', name:'صح أم خطأ', desc:'8 عبارات سريعة في 45 ثانية، بلا وقت للتفكير الطويل', cats:['rapid'], levels:[1,2,3], mult:1, type:'rapid'},
   {id:'allq', group:'من الجوال', name:'الكل يجاوب', desc:'السؤال على التابلت، وكل لاعب يجاوب من جواله، والأسرع يكسب أكثر', cats:['general','football','capitals','iq','calc','seqs','logic','odd'], levels:[1,2], mult:1, type:'all', net:2, count:n => n * 3},
   {id:'race', group:'من الجوال', name:'سباق الفريقين', desc:'كل فريق تجيه 5 أسئلة مختلفة على جوالاته بنفس الوقت، والأسرع والأدق يفوز', cats:['general','capitals','football','iq','logic','seqs','calc','odd'], levels:[1,2], mult:1, type:'race', net:2, count:n => n},
+  {id:'mafia', group:'من الجوال', name:'المافيا', desc:'أدوار سرية بالجوالات: مافيا وطبيب ومحقق ومواطنين. بالليل المافيا تقتل، وبالنهار الكل يتناقش ويصوّت', cats:['general'], levels:[1,2,3], mult:1, type:'mafia', net:4, count:() => 1},
   {id:'duel', group:'من الجوال', name:'المواجهة', desc:'لاعب من كل فريق وجهاً لوجه من جوالاتهم، والأسرع بالجواب الصح ياخذ النقطة. أول واحد يوصل 3 يفوز لفريقه', cats:['general','capitals','football','iq','logic','odd'], levels:[1,2], mult:1, type:'duel', net:2, count:n => n},
   {id:'target', group:'من الجوال', name:'هدف الأرقام', desc:'ستة أرقام ورقم هدف، ركّبوا معادلة توصل له من جوالاتكم، والأقرب يكسب', cats:['target'], levels:[1,2,3], mult:1, type:'target', net:2, count:n => n},
   {id:'letters', group:'من الجوال', name:'حروف', desc:'حرف عشوائي، والكل يكتب من جواله اسم وحيوان ونبات وجماد وبلد. أول من يكمّل يقول «ستوب!»', cats:['letters'], levels:[1], mult:1, type:'letters', net:2, count:n => n},
@@ -1692,7 +1708,7 @@ const ESC_PTS = 300, ESC_TIME = 180, ESC_LOCK = 8;
 const TG_EXACT = 200, TG_NEAR = 100, TG_TIME = 90;
 const DUEL_WIN = 3, DUEL_PTS = 300, DUEL_TIME = 150;
 const TEAM_TYPES = COOP_TYPES.concat(['wordle', 'chain', 'tmap', 'race', 'escape', 'target', 'duel']);   // تحتاج لاعباً من كل فريق
-const NET_TYPES = ['duel', 'escape', 'target', 'race', 'letters', 'all', 'spy', 'liar', 'who', 'react', 'alike', 'wrote', 'pdraw', 'fast', 'tclock', 'truth', 'split', 'coop', 'tmem', 'wordle', 'chain', 'secret', 'tmap'];
+const NET_TYPES = ['mafia', 'duel', 'escape', 'target', 'race', 'letters', 'all', 'spy', 'liar', 'who', 'react', 'alike', 'wrote', 'pdraw', 'fast', 'tclock', 'truth', 'split', 'coop', 'tmem', 'wordle', 'chain', 'secret', 'tmap'];
 const PEN_COLORS = ['--ink', '--team-a', '--team-b', '--good', '--brass'];   // وقت الانفجار عشوائي ومخفي (بالثواني)
 const TILE_STEPS = [2, 4, 7, 12];   // عدد مربعات العلم المكشوفة في كل مرحلة (من 12)
 const LIFES = [
@@ -1702,7 +1718,7 @@ const LIFES = [
   {id:'dbl', g:'×2', name:'مضاعفة'},
   {id:'swap', g:'⇄', name:'تبديل السؤال'},
 ];
-const LIFES_FOR = {mcq:['fifty','hint','time','dbl','swap'], list:['time','dbl','swap'], num:[], order:['hint','time','dbl','swap'], rapid:['time','dbl','swap'], describe:['time','dbl'], reverse:['time','dbl'], auction:[], bomb:[], buzz:[], memory:['time','dbl'], draw:['time','dbl'], all:[], spy:[], liar:[], who:[], react:[], alike:[], wrote:[], pdraw:[], fast:[], tclock:[], truth:[], split:[], coop:[], tmem:[], wordle:[], chain:[], secret:[], tmap:[], race:[], letters:[], greed:['fifty','time'], escape:[], target:[], trust:[], duel:[]};
+const LIFES_FOR = {mcq:['fifty','hint','time','dbl','swap'], list:['time','dbl','swap'], num:[], order:['hint','time','dbl','swap'], rapid:['time','dbl','swap'], describe:['time','dbl'], reverse:['time','dbl'], auction:[], bomb:[], buzz:[], memory:['time','dbl'], draw:['time','dbl'], all:[], spy:[], liar:[], who:[], react:[], alike:[], wrote:[], pdraw:[], fast:[], tclock:[], truth:[], split:[], coop:[], tmem:[], wordle:[], chain:[], secret:[], tmap:[], race:[], letters:[], greed:['fifty','time'], escape:[], target:[], trust:[], duel:[], board:[], mafia:[]};
 const preStage = t => t === 'describe' || t === 'reverse' || t === 'bomb' || t === 'memory' || t === 'draw';   // فقرات تبدأ بشاشة تحضير قبل الوقت
 const STEAL_SECONDS = 20;
 const LETTERS = ['أ','ب','ج','د'];
@@ -2947,8 +2963,8 @@ function buildRound(){
   if (S.settings.llMode === 'round') S.teams.forEach(t => t.ll = freshLL());
 }
 function newCur(id, team){
-  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed', 'trust', 'duel'].includes(rt) ? rt : qType(q);
-  const ms = q.scene && !['race', 'greed', 'trust', 'duel'].includes(t) ? q.scene.ms : (t === 'duel' ? DUEL_TIME : t === 'escape' ? ESC_TIME : t === 'target' ? TG_TIME : t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
+  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed', 'trust', 'duel', 'board', 'mafia'].includes(rt) ? rt : qType(q);
+  const ms = q.scene && !['race', 'greed', 'trust', 'duel', 'board', 'mafia'].includes(t) ? q.scene.ms : (t === 'duel' ? DUEL_TIME : t === 'escape' ? ESC_TIME : t === 'target' ? TG_TIME : t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
   return {id, team, t, stage: t === 'auction' ? 'bid' : (preStage(t) || t === 'buzz' || q.scene || NET_TYPES.includes(t)) ? 'ready' : 'answer',
     pk:[], picks:{}, votes:{}, fakes:{}, ferr:{}, opts:[], rx:{}, res2:null, spyKey:null, turn:[], buzzBy:null, nums:null, numBy:null, buzzer:null, textShown:false, recording:false, bid:AUCTION_START, bidder:null, cnt:0, wOrder: shuffle((q.words || []).map((_, i) => i)), wi:0, got:[], skipped:[], result:null, timeLeft:ms, max:ms, running:false, dbl:false, lock:null, gained:0,
     order:shuffle([0,1,2,3]), gone:[], hint:false, pick:null, spick:null, sres:null, sgained:0,
@@ -2966,6 +2982,7 @@ function startQuestion(){
   // «اطمع أو وقّف»: أسئلة السلم تُسحب واحداً واحداً من الأسهل للأصعب
   if (S.cur.t === 'greed') { greedSetup(S.cur); S.phase = 'question'; timerStart(); save(); render(); return; }
   // «راهن على صاحبك»: الرهان أول، والسؤال يظهر بعده
+  if (S.cur.t === 'board') { boardSetup(S.cur); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'trust') { trustSetup(S.cur); S.used.push(id); markSeen(id); S.phase = 'question'; save(); render(); return; }
   initPQ(S.cur); goldMaybe(S.cur);
   S.used.push(id); markSeen(id);
@@ -3009,12 +3026,14 @@ function basePts(){
   if (c.t === 'greed') return GREED_STEPS[Math.min(c.gi || 0, GREED_STEPS.length - 1)] * m;
   if (c.t === 'letters') return LT_UNIQ * m;
   if (c.t === 'duel') return DUEL_PTS * m;
+  if (c.t === 'board') return c.bc ? boardPts(c) : BOARD_VALS[0] * m;
+  if (c.t === 'mafia') return MF_PTS * m;
   if (c.t === 'escape') return ESC_PTS * m;
   if (c.t === 'target') return TG_EXACT * m;
   if (c.t === 'trust') return LEVEL_POINTS[q.lvl] * m * (c.bet != null ? TRUST_BETS[c.bet].x : 1);
   return (stages(q) ? cluePts(c) : LEVEL_POINTS[q.lvl]) * m * (c.gold ? 2 : 1);
 }
-const activeTeam = () => !S.cur ? null : (S.cur.t === 'num' || NET_TYPES.includes(S.cur.t) || (S.cur.t === 'auction' && S.cur.stage === 'bid') || (S.cur.t === 'buzz' && S.cur.buzzer === null)) ? null : (S.cur.stage === 'steal' ? 1 - S.cur.team : S.cur.team);
+const activeTeam = () => !S.cur ? null : S.cur.t === 'board' && S.cur.bd ? (S.cur.stage === 'done' ? null : boardTeam(S.cur)) : S.cur.t === 'mafia' ? null : (S.cur.t === 'num' || NET_TYPES.includes(S.cur.t) || (S.cur.t === 'auction' && S.cur.stage === 'bid') || (S.cur.t === 'buzz' && S.cur.buzzer === null)) ? null : (S.cur.stage === 'steal' ? 1 - S.cur.team : S.cur.team);
 const remaining = () => [0,1,2,3].filter(i => !S.cur.gone.includes(i) && i !== S.cur.pick);
 const canSteal = () => S.settings.steal && remaining().length >= 2;
 function award(t, pts){ S.teams[t].score += pts; S.teams[t].correct++; bump = bump === null || bump === t ? t : 'both'; }
@@ -3691,6 +3710,45 @@ const PHONE = {
       head:`سؤال ${c.ri[t] + 1} من ${RACE_N}`, note:last ? (last.ok ? `✓ صح! +${basePts()}` : '') : 'أسرع واحد بالفريق يجاوب', tone:last && last.ok ? 'ok' : '', sub:vs};
   },
   split: coopPhone, coop: coopPhone, tmem: coopPhone,
+  board(c, q, key, vid){
+    const t = pteam(key), tn2 = x => S.teams[x].name;
+    if (c.stage === 'pick') {
+      if (t !== c.bt) return {k:'wait', vid:vid + '.' + Object.keys(c.bd.res).length, title:`فريق ${tn2(c.bt)} يختار`, text:'لوحة الأسئلة على التابلت'};
+      return {k:'vote', vid:vid + '.' + Object.keys(c.bd.res).length, prompt:'اختاروا الفئة والقيمة (أول ضغطة تحسب)', opts:boardLeft(c).map(([ci, vi]) => ({v:bKey(ci, vi), l:`${CAT_NAMES[c.bd.cats[ci]]} · ${BOARD_VALS[vi]}`})), mine:null};
+    }
+    if (c.stage === 'answer' || c.stage === 'bsteal') {
+      const bq = QBY[c.bc.id], at = boardTeam(c);
+      if (t !== at) return {k:'wait', vid:vid + '.' + bKey(c.bc.ci, c.bc.vi), title:`دور فريق ${tn2(at)}`, text:c.stage === 'bsteal' ? 'يحاولون يسرقون السؤال!' : `${CAT_NAMES[c.bd.cats[c.bc.ci]]} · ${BOARD_VALS[c.bc.vi]}`};
+      return {k:'choice', vid:vidBase() + '.' + c.id + '.b.' + c.stage + '.' + bKey(c.bc.ci, c.bc.vi), head:`${CAT_NAMES[c.bd.cats[c.bc.ci]]} · ${boardPts(c) / (c.stage === 'bsteal' ? 2 : 1)} نقطة${c.bc.gold ? ' ⭐' : ''}`, note:c.stage === 'bsteal' ? 'سرقة! أول ضغطة من فريقكم تحسب' : 'أول ضغطة من فريقكم تحسب، تفاهموا!', prompt:bq.q, opts:boardOpts(c).map(oi => bq.o[oi]), mine:null, right:null};
+    }
+    if (c.stage === 'bwrong') return {k:'wait', vid:vid + '.w', title:'جواب خاطئ!', text:'المضيف يقرر إذا السرقة متاحة'};
+    if (c.stage === 'breveal') { const bq = QBY[c.bc.id], r = c.bd.res[bKey(c.bc.ci, c.bc.vi)]; return {k:'info', vid:vid + '.' + bKey(c.bc.ci, c.bc.vi), label:'الجواب الصحيح', big:bq.o[0], tone:r && r.t === t ? 'ok' : r && r.t != null ? 'no' : '', text:r && r.t != null ? `+${r.p} لفريق ${tn2(r.t)}` : 'ما أحد كسبه'}; }
+    if (c.stage === 'done') return {k:'info', vid, label:'انتهت اللوحة', big:`${c.pts[0]} – ${c.pts[1]}`, text:''};
+    return null;
+  },
+  mafia(c, q, key, vid){
+    if (c.stage === 'ready') return {k:'wait', vid, title:'المافيا 🔪', text:'جهّزوا وجوه البوكر'};
+    const mf = c.mf; if (!mf || !mf.roles[key]) return {k:'wait', vid, title:'المافيا', text:'انتظر الجولة القادمة'};
+    const role = mf.roles[key], R = MF_ROLES[role], alive = mf.alive.includes(key), v = vid + '.' + mf.round;
+    const others = ks => ks.filter(k => k !== key).map(k => ({v:k, l:pname(k)}));
+    if (c.stage === 'roles') return {k:'mrole', vid, role, name:R.n, emoji:R.e, desc:R.d, mates:role === 'mafia' ? mfAlive(c, 'mafia').filter(k => k !== key).map(pname) : [], seen:!!mf.seen[key]};
+    if (c.stage === 'done') { const won = (mf.win === 'mafia') === (role === 'mafia') && mf.win !== 'none'; return {k:'info', vid, label:`كنت: ${R.n} ${R.e}`, big:mf.win === 'mafia' ? 'فازت المافيا 🔪' : mf.win === 'town' ? 'فاز المواطنين 🎉' : 'انتهت', tone:won ? 'ok' : 'no', text:won ? 'فريقك فاز!' : 'خسرتوا هالمرة'}; }
+    if (!alive) return {k:'info', vid:v + c.stage, label:`مت 💀 (كنت ${R.n})`, big:'اتفرّج بس', tone:'no', text:'لا تحچي ولا تلمّح للأحياء!'};
+    if (c.stage === 'night') {
+      const n = mf.night;
+      if (role === 'mafia') return {k:'vote', vid:v + 'n', prompt:`🔪 اختاروا ضحية الليلة${mfAlive(c, 'mafia').length > 1 ? ` (جماعتك: ${mfAlive(c, 'mafia').filter(k => k !== key).map(pname).join('، ')})` : ''}`, opts:mf.alive.filter(k => mf.roles[k] !== 'mafia').map(k => ({v:k, l:pname(k) + (Object.entries(n.kill).some(([m, x]) => m !== key && x === k) ? ' ← اختيار جماعتك' : '')})), mine:n.kill[key] || null};
+      if (role === 'doctor') return {k:'vote', vid:v + 'n', prompt:'💉 منو تحمي الليلة؟', opts:mf.alive.map(k => ({v:k, l:k === key ? pname(k) + ' (نفسك)' : pname(k)})), mine:n.save};
+      if (role === 'detective') {
+        if (n.check) { const isM = mf.roles[n.check] === 'mafia'; return {k:'info', vid:v + 'nc', label:`🔍 فحصت ${pname(n.check)}`, big:isM ? 'مافيا! 🔪' : 'مو مافيا ✓', tone:isM ? 'no' : 'ok', text:'احفظها بقلبك، وخلّي وجهك ثابت'}; }
+        return {k:'vote', vid:v + 'n', prompt:'🔍 منو تفحص الليلة؟', opts:others(mf.alive), mine:null};
+      }
+      return {k:'vote', vid:v + 'n', prompt:'😴 الكل نايم… اختار شخص تشك بيه (ما يأثر، بس حتى ما ينكشف دورك)', opts:others(mf.alive), mine:n.decoy[key] || null};
+    }
+    if (c.stage === 'day') return {k:'wait', vid:v + 'd', title:'☀️ النهار: منو المافيا؟', text:mf.death ? `المافيا قتلت ${pname(mf.death)} 💀` : 'ما مات أحد الليلة!'};
+    if (c.stage === 'vote') return {k:'vote', vid:v + 'v', prompt:'🗳️ منو تطلعون من اللعبة؟', opts:others(mf.alive).concat([{v:'none', l:'ما أحد'}]), mine:mf.votes[key] || null};
+    if (c.stage === 'result') return {k:'info', vid:v + 'r', label:'نتيجة التصويت', big:mf.elim ? `طلع ${pname(mf.elim)}` : 'ما طلع أحد', tone:'', text:mf.elim ? `وكان: ${MF_ROLES[mf.roles[mf.elim]].n} ${MF_ROLES[mf.roles[mf.elim]].e}` : 'الأصوات تعادلت'};
+    return null;
+  },
   duel(c, q, key, vid){
     if (c.stage === 'ready') return {k:'wait', vid, title:'المواجهة ⚔️', text:'لاعب من كل فريق راح يواجه الثاني. استعدوا!'};
     const nm = t => pname(c.duo[t]), board = `${nm(0)} ${c.ds[0]} – ${c.ds[1]} ${nm(1)}`;
@@ -3847,6 +3905,28 @@ function phoneAct(key, d){
     save(); render(); return;
   }
   if (c.t === 'race' && d.t === 'choice' && c.stage === 'play' && ins) { if (d.vid === raceVid(c, t) && !raceLocked(c, t)) raceAnswer(key, t, +d.v); return; }
+  if (c.t === 'board') {
+    if (d.t === 'vote' && c.stage === 'pick' && t === c.bt) { const [ci, vi] = String(d.v).split('_').map(Number); boardPick(ci, vi); }
+    else if (d.t === 'choice' && (c.stage === 'answer' || c.stage === 'bsteal') && t === boardTeam(c) && d.vid === vidBase() + '.' + c.id + '.b.' + c.stage + '.' + bKey(c.bc.ci, c.bc.vi)) { const oi = boardOpts(c)[+d.v]; if (oi != null) boardAnswer(oi); }
+    return;
+  }
+  if (c.t === 'mafia') {
+    const mf = c.mf; if (!mf) return;
+    const alive = mf.alive.includes(key), role = mf.roles[key], v = String(d.v || '');
+    if (d.t === 'mfSeen' && c.stage === 'roles' && role) { mf.seen[key] = true; if (c.pk.every(k => mf.seen[k])) { mfNight(); return; } }
+    else if (d.t === 'vote' && c.stage === 'night' && alive && mf.alive.includes(v)) {
+      if (role === 'mafia' && mf.roles[v] !== 'mafia') mf.night.kill[key] = v;
+      else if (role === 'doctor') mf.night.save = v;
+      else if (role === 'detective' && v !== key && !mf.night.check) { mf.night.check = v; (mf.checks[key] = mf.checks[key] || []).push([v, mf.roles[v] === 'mafia']); }
+      else if (role === 'citizen' && v !== key) mf.night.decoy[key] = v;
+      else return;
+      sfx('tap');
+      if (mf.alive.every(k => mfActed(c, k))) setTimeout(() => { if (S && S.cur === c && c.stage === 'night') mfMorning(); }, 3000);
+    }
+    else if (d.t === 'vote' && c.stage === 'vote' && alive && (v === 'none' || (mf.alive.includes(v) && v !== key))) { mf.votes[key] = v; sfx('tap'); if (mf.alive.every(k => mf.votes[k])) { mfVoteEnd(); return; } }
+    else return;
+    save(); render(); return;
+  }
   if (c.t === 'duel' && d.t === 'choice' && c.stage === 'play') { if (d.vid === duelVid(c) && c.dord[+d.v] != null) { duelAnswer(key, c.dord[+d.v]); save(); render(); } return; }
   if (c.t === 'escape' && d.t === 'code' && c.stage === 'play' && ins) { escTry(key, d.v); save(); render(); return; }
   if (c.t === 'target' && d.t === 'expr' && c.stage === 'play' && ins && Array.isArray(d.v)) { tgSubmit(key, d.v.slice(0, 40)); save(); render(); return; }
@@ -3936,7 +4016,8 @@ function netStart(){
   if (c.pk.length < need) { toast(`تحتاج ${need} لاعبين متصلين على الأقل`); return; }
   if (TEAM_TYPES.includes(c.t) && (!teamOnline(0).length || !teamOnline(1).length)) { toast('تحتاج لاعباً متصلاً واحداً على الأقل من كل فريق'); return; }
   c.order2 = shuffle(c.pk);
-  if (c.t === 'duel') { if (!duelSetup(c)) { toast('ما فيه أسئلة كافية للمواجهة'); return; } c.stage = 'play'; timerStart(); }
+  if (c.t === 'mafia') { if (c.pk.length < 4) { toast('المافيا تحتاج 4 لاعبين متصلين على الأقل'); return; } mfSetup(c); }
+  else if (c.t === 'duel') { if (!duelSetup(c)) { toast('ما فيه أسئلة كافية للمواجهة'); return; } c.stage = 'play'; timerStart(); }
   else if (c.t === 'escape') { escSetup(c); c.stage = 'play'; timerStart(); }
   else if (c.t === 'target') { tgSetup(c); c.stage = 'play'; timerStart(); }
   else if (c.t === 'race') { if (!raceSetup(c)) { toast('ما فيه أسئلة كافية للسباق'); return; } c.stage = 'play'; c.t0 = Date.now(); timerStart(); }
@@ -4111,6 +4192,115 @@ function truthEnd(){
 }
 /* --- سباق الفريقين: كل فريق عنده أسئلته على جوالاته، وأول ضغطة من أي لاعب بالفريق هي جواب الفريق --- */
 const plainMcq = q => q && qType(q) === 'mcq' && !q.scene && !stages(q) && !q.swatch;
+/* --- لوحة الأسئلة: 5 فئات × 5 قيم، وكل فريق بدوره يختار --- */
+const BOARD_VALS = [100, 200, 300, 400, 500], BOARD_LVL = [1, 1, 2, 2, 3];
+const BOARD_CATS = ['general', 'capitals', 'football', 'iq', 'logic', 'seqs', 'calc', 'odd', 'anagram'];
+function boardSetup(c){
+  const used = new Set([...S.used, ...S.plan]), seen = new Set(store.get(SEEN) || []), taken = new Set();
+  const pickQ = (cat, lvl) => {
+    const ok = Q.filter(q => q.cat === cat && plainMcq(q) && !used.has(q.id) && !taken.has(q.id));
+    const lv = ok.filter(q => q.lvl === lvl), list = lv.length ? lv : ok, fresh = list.filter(q => !seen.has(q.id)), arr = fresh.length ? fresh : list;
+    return arr.length ? arr[Math.floor(Math.random() * arr.length)].id : null;
+  };
+  const cats = shuffle(BOARD_CATS.slice()).slice(0, 5);
+  c.bd = {cats, cells:cats.map(cat => BOARD_LVL.map(l => { const id = pickQ(cat, l); if (id) taken.add(id); return id; })), res:{}, gold:Math.floor(Math.random() * 25)};
+  c.bt = c.team; c.bc = null; c.stage = 'pick'; c.timeLeft = c.max = S.settings.time * 1000;
+}
+const bKey = (ci, vi) => ci + '_' + vi;
+const boardLeft = c => c.bd.cats.flatMap((_, ci) => BOARD_VALS.map((_, vi) => [ci, vi])).filter(([ci, vi]) => c.bd.cells[ci][vi] && !c.bd.res[bKey(ci, vi)]);
+const boardPts = c => BOARD_VALS[c.bc.vi] * (c.bc.gold ? 2 : 1) * roundDef().mult;
+const boardTeam = c => c.stage === 'bsteal' ? 1 - c.bc.team : c.bc ? c.bc.team : c.bt;
+const boardOpts = c => c.border.filter(oi => !(c.stage === 'bsteal' && oi === c.bpick));
+function boardPick(ci, vi){
+  const c = S.cur; if (!c || c.t !== 'board' || c.stage !== 'pick' || !c.bd.cells[ci] || !c.bd.cells[ci][vi] || c.bd.res[bKey(ci, vi)]) return;
+  c.bc = {ci, vi, id:c.bd.cells[ci][vi], gold:ci * 5 + vi === c.bd.gold, team:c.bt}; c.border = shuffle([0, 1, 2, 3]); c.bpick = null;
+  S.used.push(c.bc.id); markSeen(c.bc.id);
+  c.stage = 'answer'; c.timeLeft = c.max = S.settings.time * 1000; sfx(c.bc.gold ? 'reveal' : 'tap'); timerStart(); save(); render();
+}
+function boardAnswer(oi){
+  const c = S.cur; if (!c || c.t !== 'board' || (c.stage !== 'answer' && c.stage !== 'bsteal')) return; timerStop();
+  const b = c.bc, steal = c.stage === 'bsteal', t = steal ? 1 - b.team : b.team;
+  if (!steal) c.bpick = oi;
+  if (oi === 0) { const p = steal ? Math.round(boardPts(c) / 2) : boardPts(c); award(t, p); c.bd.res[bKey(b.ci, b.vi)] = {t, p, steal}; c.bok = true; sfx('win'); c.stage = 'breveal'; }
+  else if (!steal && S.settings.steal) { sfx('lose'); c.stage = 'bwrong'; }
+  else { c.bd.res[bKey(b.ci, b.vi)] = {t:null, p:0}; c.bok = false; c.bspick = steal ? oi : null; sfx('lose'); c.stage = 'breveal'; }
+  save(); render();
+}
+function boardSteal(go){
+  const c = S.cur; if (!c || c.stage !== 'bwrong') return;
+  if (go) { c.stage = 'bsteal'; c.timeLeft = c.max = STEAL_SECONDS * 1000; timerStart(); }
+  else { c.bd.res[bKey(c.bc.ci, c.bc.vi)] = {t:null, p:0}; c.bok = false; c.stage = 'breveal'; }
+  save(); render();
+}
+function boardNext(){
+  const c = S.cur; if (!c || c.stage !== 'breveal') return;
+  c.bt = 1 - c.bc.team; c.bc = null; c.bspick = null;
+  if (!boardLeft(c).length) boardEnd(); else c.stage = 'pick';
+  save(); render();
+}
+function boardEnd(){
+  const c = S.cur; timerStop();
+  c.pts = [0, 1].map(t => Object.values(c.bd.res).filter(r => r.t === t).reduce((s, r) => s + r.p, 0));
+  c.gained = c.pts[0] + c.pts[1]; c.result = c.gained ? 'correct' : 'wrong'; c.stage = 'done';
+}
+
+/* --- المافيا: أدوار سرية، ليل ونهار وتصويت --- */
+const MF_ROLES = {
+  mafia:{n:'مافيا', e:'🔪', d:'كل ليلة تختار مع جماعتك ضحية. بالنهار اخفِ نفسك وبعّد الشك عنك.'},
+  doctor:{n:'الطبيب', e:'💉', d:'كل ليلة تختار شخص تحميه، حتى نفسك. إذا اختارته المافيا ينجو.'},
+  detective:{n:'المحقق', e:'🔍', d:'كل ليلة تفحص شخص وتعرف إذا هو مافيا لو لا. استعمل المعلومة بذكاء.'},
+  citizen:{n:'مواطن', e:'🙂', d:'ما عندك قوة بالليل. بالنهار ناقش وصوّت حتى تكشفون المافيا.'},
+};
+const MF_DAY = 120, MF_VOTE = 45, MF_PTS = 100;
+function mfSetup(c){
+  const ks = shuffle(c.pk.slice()), n = ks.length, nm = n <= 6 ? 1 : n <= 9 ? 2 : 3, roles = {};
+  ks.forEach((k, i) => { roles[k] = i < nm ? 'mafia' : i === nm ? 'doctor' : i === nm + 1 && n >= 5 ? 'detective' : 'citizen'; });
+  c.mf = {roles, alive:c.pk.slice(), seen:{}, round:0, night:null, votes:{}, log:[], death:null, saved:false, elim:null, win:null, checks:{}};
+  c.stage = 'roles';
+}
+const mfAlive = (c, role) => c.mf.alive.filter(k => !role || c.mf.roles[k] === role);
+const mfActed = (c, k) => { const n = c.mf.night, r = c.mf.roles[k]; return r === 'mafia' ? !!n.kill[k] : r === 'doctor' ? !!n.save : r === 'detective' ? !!n.check : !!n.decoy[k]; };
+function mfNight(){
+  const c = S.cur; if (!c || c.t !== 'mafia' || !['roles', 'result'].includes(c.stage)) return;
+  c.mf.round++; c.mf.night = {kill:{}, save:null, check:null, decoy:{}}; c.mf.death = null; c.mf.saved = false; c.mf.elim = null;
+  c.stage = 'night'; timerStop(); sfx('reveal'); save(); render();
+}
+function mfMorning(){
+  const c = S.cur; if (!c || c.stage !== 'night') return;
+  const n = c.mf.night, tally = {};
+  Object.values(n.kill).forEach(k => { if (c.mf.alive.includes(k)) tally[k] = (tally[k] || 0) + 1; });
+  const top = Object.entries(tally).sort((a, b) => b[1] - a[1]), ties = top.filter(x => top.length && x[1] === top[0][1]);
+  const target = ties.length ? ties[Math.floor(Math.random() * ties.length)][0] : null;
+  c.mf.saved = !!target && n.save === target;
+  c.mf.death = target && !c.mf.saved ? target : null;
+  if (c.mf.death) c.mf.alive = c.mf.alive.filter(k => k !== target);
+  c.mf.log.push({r:c.mf.round, death:c.mf.death, saved:c.mf.saved});
+  if (!mfWin()) { c.stage = 'day'; c.timeLeft = c.max = MF_DAY * 1000; timerStart(); sfx(c.mf.death ? 'lose' : 'win'); }
+  save(); render();
+}
+function mfVoteStart(){
+  const c = S.cur; if (!c || c.stage !== 'day') return; timerStop();
+  c.mf.votes = {}; c.stage = 'vote'; c.timeLeft = c.max = MF_VOTE * 1000; timerStart(); sfx('bell'); save(); render();
+}
+function mfVoteEnd(){
+  const c = S.cur; if (!c || c.stage !== 'vote') return; timerStop();
+  const tally = {}; Object.values(c.mf.votes).forEach(v => { if (v !== 'none' && c.mf.alive.includes(v)) tally[v] = (tally[v] || 0) + 1; });
+  const top = Object.entries(tally).sort((a, b) => b[1] - a[1]);
+  c.mf.elim = top.length && (top.length === 1 || top[0][1] > top[1][1]) ? top[0][0] : null; c.mf.tally = tally;
+  if (c.mf.elim) c.mf.alive = c.mf.alive.filter(k => k !== c.mf.elim);
+  c.mf.log.push({r:c.mf.round, elim:c.mf.elim});
+  if (!mfWin()) { c.stage = 'result'; sfx(c.mf.elim ? 'reveal' : 'tap'); }
+  save(); render();
+}
+function mfWin(force){
+  const c = S.cur, m = mfAlive(c, 'mafia').length, rest = c.mf.alive.length - m;
+  const win = force || (m === 0 ? 'town' : m >= rest ? 'mafia' : null); if (!win) return false;
+  timerStop(); c.mf.win = win;
+  const pts = [0, 0], mult = roundDef().mult;
+  if (win !== 'none') c.pk.forEach(k => { if ((win === 'mafia') === (c.mf.roles[k] === 'mafia')) { pts[pteam(k)] += MF_PTS * mult; star(k, 2); } });
+  netAward(c, pts); c.stage = 'done'; return true;
+}
+
 /* --- المواجهة: لاعب من كل فريق، نفس السؤال، والأسرع بالجواب الصح ياخذ النقطة --- */
 const DUEL_N = 9;
 function duelSetup(c){
@@ -4699,7 +4889,7 @@ function botDecide(k, v, m){
     case 'tvote': return v.mine == null && v.opts.length ? {t:'tvote', v:chance(.55) && v.opts.some(o => o.v === 0) ? 0 : bpick(v.opts).v, delay:1500 + Math.random() * 3500} : null;
     case 'choice': {
       if (v.mine != null || v.right != null) return null;
-      const t = pteam(k), duel = c && c.t === 'duel', right = duel ? c.dord.indexOf(0) : c && c.t === 'race' && c.ro ? c.ro[t][c.ri[t]].indexOf(0) : c && c.order ? c.order.indexOf(0) : -1;
+      const t = pteam(k), duel = c && c.t === 'duel', right = c && c.t === 'board' && c.bc ? boardOpts(c).indexOf(0) : duel ? c.dord.indexOf(0) : c && c.t === 'race' && c.ro ? c.ro[t][c.ri[t]].indexOf(0) : c && c.order ? c.order.indexOf(0) : -1;
       return {t:'choice', v:right >= 0 && chance(c && (c.t === 'race' || duel) ? .65 : .5) ? right : Math.floor(Math.random() * v.opts.length), delay:c && (c.t === 'race' || duel) ? 1500 + Math.random() * 4000 : undefined};
     }
     case 'vote': return v.mine == null && v.opts.length ? {t:'vote', v:bpick(v.opts).v} : null;
@@ -4726,6 +4916,7 @@ function botDecide(k, v, m){
       return {t:'guess', v:opts.length ? bpick(opts) : bpick(BOT_WORDS), delay:1800 + Math.random() * 2000};
     }
     case 'collect': { if (m.n >= 8 || !q || !q.mem) return null; const left = q.mem.filter(w => !(v.found || []).includes(w)); return {t:'guess', v:left.length && chance(.6) ? bpick(left) : bpick(BOT_WORDS), delay:2000 + Math.random() * 2500}; }
+    case 'mrole': return !v.seen && m.n === 0 ? {t:'mfSeen', delay:2000 + Math.random() * 3000} : null;
     case 'escape': {
       if (v.solved || v.lock || m.n >= 3 || !c || !c.esc) return null;
       const code = c.esc[pteam(k)].code, rnd4 = () => String(Math.floor(Math.random() * 10000)).padStart(4, '0');
@@ -4829,6 +5020,8 @@ function timeout(){
   sfx('buzz');
   if (c.t === 'race') { if (c.stage === 'play') raceEnd(); save(); render(); return; }
   if (c.t === 'duel') { if (c.stage === 'play') duelEnd(); save(); render(); return; }
+  if (c.t === 'board') { if (c.stage === 'answer' || c.stage === 'bsteal') boardAnswer(null); return; }
+  if (c.t === 'mafia') { if (c.stage === 'day') mfVoteStart(); else if (c.stage === 'vote') mfVoteEnd(); return; }
   if (c.t === 'escape') { if (c.stage === 'play') escEnd(); save(); render(); return; }
   if (c.t === 'target') { if (c.stage === 'play') tgEnd(); save(); render(); return; }
   if (c.t === 'trust') { if (c.stage === 'answer') trustPick(null); return; }
@@ -5110,7 +5303,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611150926';
+const GAME_VER = '202611151053';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -5158,6 +5351,9 @@ function viewIntro(){
   } else if (def.type === 'greed') {
     rules = [[S.plan.length / 2, 'سلم لكل فريق'], [ltr(GREED_STEPS[GREED_STEPS.length - 1] * def.mult), 'أعلى رصيد في السلم'], [GREED_TIME, 'ثانية لكل سؤال']];
     how = `كل فريق يصعد سلم من ${GREED_STEPS.length} أسئلة تصعب تدريجياً. بعد كل جواب صحيح يتضاعف الرصيد، والفريق يقرر: «وقّف» ويأخذ الرصيد، أو «اطمع» ويكمّل. جواب خطأ واحد أو انتهاء الوقت يضيّع الرصيد كله!`;
+  } else if (def.type === 'board') {
+    rules = [['5 × 5', 'فئات وقيم'], [ltr(BOARD_VALS[0] * def.mult + '–' + BOARD_VALS[4] * def.mult), 'نقاط السؤال'], [S.settings.time, 'ثانية للإجابة']];
+    how = `لوحة بيها 5 فئات، وبكل فئة أسئلة بقيم من ${ltr(BOARD_VALS[0])} إلى ${ltr(BOARD_VALS[4])}، وكل ما زادت القيمة صعب السؤال. كل فريق بدوره يختار مربع ويجاوب${S.settings.steal ? '، وإذا أخطأ يقدر الفريق الثاني يسرقه بنص النقاط' : ''}. ووراء مربع واحد مخفي سؤال ذهبي ⭐ نقاطه مضاعفة!`;
   } else if (def.type === 'trust') {
     rules = [[n, perTeamText(n)], ['×1 ×2 ×3', 'الرهان على صاحبكم'], [S.settings.time, 'ثانية للإجابة']];
     how = `قبل كل سؤال يظهر اسم لاعب من الفريق، وهو اللي يجاوب لحاله بدون أي مساعدة. قبل ما يشوف السؤال، الفريق يراهن عليه: ×1 مضمون (الخطأ ما يخسّر)، ×2 (الخطأ يخسّر نقاط السؤال)، ×3 واثقين (الخطأ يخسّر ضعفها). تعرفون صاحبكم زين؟`;
@@ -5179,7 +5375,8 @@ function viewIntro(){
   const isNet = NET_TYPES.includes(def.type), need = def.net || 2, have = onlineKeys().length;
   if (isNet) {
     rules = [[S.plan.length, def.type === 'react' ? 'محاولات' : def.type === 'race' ? 'سباقات في الجولة' : 'أسئلة في الجولة'], [have, 'لاعبين متصلين'], [need, 'أقل عدد للعب']];
-    how = {duel:`لاعب من كل فريق وجهاً لوجه من جوالاتهم، ونفس السؤال للاثنين. أسرع جواب صحيح ياخذ النقطة، وأول واحد يوصل ${DUEL_WIN} يكسب ${ltr(DUEL_PTS)} لفريقه.`,
+    how = {mafia:`كل لاعب ياخذ دور سري بجواله: مافيا أو طبيب أو محقق أو مواطن. بالليل المافيا تختار ضحية، وبالنهار الكل يتناقش ويصوّت منو يطلع. كل لاعب بالجهة الفائزة يكسب ${ltr(MF_PTS)} لفريقه.`,
+      duel:`لاعب من كل فريق وجهاً لوجه من جوالاتهم، ونفس السؤال للاثنين. أسرع جواب صحيح ياخذ النقطة، وأول واحد يوصل ${DUEL_WIN} يكسب ${ltr(DUEL_PTS)} لفريقه.`,
       escape:`كل فريق عنده قفل من 4 أرقام، وكل لاعب يجيه لغز بجواله جوابه رقم من الرمز. تعاونوا واجمعوا الأرقام، وأول فريق يفتح القفل ياخذ ${ltr(ESC_PTS)}.`,
       target:`رقم هدف وستة أرقام. ركّبوا معادلة من جوالاتكم توصل للهدف، وكل رقم مرة وحدة. بالضبط ${ltr(TG_EXACT)}، وإلا الأقرب ${ltr(TG_NEAR)}.`,
       letters:`حرف عشوائي، وكل لاعب يكتب من جواله ${LT_CATS.join(' و')} تبدأ بالحرف. أول من يكمّل يصير «ستوب!»، والجواب اللي ما كرره أحد ياخذ أكثر.`,
@@ -5856,6 +6053,41 @@ function partTmap(c, q, def){
 }
 
 const needBoth = () => teamOnline(0).length && teamOnline(1).length ? '' : '<div class="verdict no"><span>تحتاج لاعباً متصلاً واحداً على الأقل من كل فريق.</span></div>';
+function partBoard(c, q, def){
+  const tnm = t => `<span style="color:${TEAM_COLORS[t]}">${esc(S.teams[t].name)}</span>`;
+  const grid = (live) => `<div class="bgrid" style="--n:${c.bd.cats.length}">${c.bd.cats.map(cat => `<div class="bhead">${CAT_NAMES[cat]}</div>`).join('')}
+    ${BOARD_VALS.map((val, vi) => c.bd.cats.map((_, ci) => { const k = bKey(ci, vi), r = c.bd.res[k], none = !c.bd.cells[ci][vi];
+      if (r || none) return `<div class="bcell used" style="${r && r.t != null ? `--tc:${TEAM_COLORS[r.t]}` : ''}">${r && r.t != null ? `${ltr('+' + r.p)}` : none ? '—' : '✗'}</div>`;
+      return live ? `<button type="button" class="bcell" data-act="bPick" data-ci="${ci}" data-vi="${vi}">${ltr(val * def.mult)}</button>` : `<div class="bcell idle">${ltr(val * def.mult)}</div>`; }).join('')).join('')}</div>`;
+  if (c.stage === 'pick') return `<article class="qcard"><div class="meta"><span class="chip">لوحة الأسئلة</span><span>باقي ${ltr(boardLeft(c).length)} سؤال</span></div><p class="qtext">دور فريق ${tnm(c.bt)} يختار</p>${phonesOn() ? '<div class="howround">اختاروا من هنا أو من جوالاتكم.</div>' : ''}</article>`
+    + grid(true) + `<button class="link" data-act="bEnd">إنهاء اللوحة</button>`;
+  if (c.stage === 'done') return grid(false) + ptsLine(c) + nextBtn();
+  const b = c.bc, bq = QBY[b.id], steal = c.stage === 'bsteal', reveal = c.stage === 'breveal';
+  const head = `${b.gold && !reveal ? '<div class="goldban">⭐ السؤال الذهبي! النقاط مضاعفة</div>' : ''}<article class="qcard"><div class="meta"><span class="chip">${CAT_NAMES[c.bd.cats[b.ci]]}</span>${lvlDots(bq.lvl)}<span class="pts">${ltr(steal ? Math.round(boardPts(c) / 2) : boardPts(c))}</span></div><p class="qtext">${esc(bq.q)}</p>
+    <div class="howround">${steal ? `سرقة! فريق ${tnm(1 - b.team)} يجاوب بنص النقاط` : `يجاوب فريق ${tnm(b.team)}`}</div></article>`;
+  const cls = oi => !reveal && c.stage !== 'bwrong' ? '' : oi === 0 && reveal ? 'right' : (oi === c.bpick || oi === c.bspick) ? 'wrong' : '';
+  const opts = `<div class="opts">${c.border.map((oi, k) => { const off = (steal && oi === c.bpick) || reveal || c.stage === 'bwrong'; return `<button class="opt ${cls(oi)}" data-act="bAns" data-i="${oi}" ${off ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(bq.o[oi])}</span></button>`; }).join('')}</div>`;
+  if (c.stage === 'bwrong') return head + opts + `<div class="verdict no"><span class="big">جواب خاطئ!</span></div><div class="actions"><button class="btn team" style="--tc:${TEAM_COLORS[1 - b.team]}" data-act="bSteal">سرقة لفريق ${esc(S.teams[1 - b.team].name)}</button><button class="btn ghost" data-act="bNoSteal">بدون سرقة</button></div>`;
+  if (reveal) { const r = c.bd.res[bKey(b.ci, b.vi)]; return head + opts + `<div class="verdict ${r && r.t != null ? 'ok' : 'no'}"><span class="big">${r && r.t != null ? `${ltr('+' + r.p)} لفريق ${tnm(r.t)}${r.steal ? ' (سرقة)' : ''}` : 'ما أحد كسب هالسؤال'}</span>${bq.note ? `<span class="note">${esc(bq.note)}</span>` : ''}</div><button class="btn primary block" data-act="bNext">${boardLeft(c).length ? 'رجوع للوحة' : 'النتيجة'}</button>`; }
+  return head + opts + (phonesOn() ? '<p class="subtle">يجاوبون من جوالاتهم، أو اضغط الجواب اللي يكولونه.</p>' : '');
+}
+function partMafia(c, q, def){
+  if (c.stage === 'ready') return readyCard(def, 'المافيا 🔪', `كل لاعب ياخذ دور سري بجواله: <b>مافيا</b> (${'1 لكل 5 تقريباً'})، و<b>طبيب</b> يحمي شخص كل ليلة، و<b>محقق</b> يفحص شخص كل ليلة، والباقين <b>مواطنين</b>. بالليل الكل يغمض عيونه والمافيا تختار ضحية من جوالاتها. بالنهار الكل يتناقش ويصوّت منو يطلع. المواطنين يفوزون إذا طلّعوا كل المافيا، والمافيا تفوز إذا صار عددها يساوي الباقين. كل لاعب بالجهة الفائزة يكسب ${ltr(MF_PTS)} لفريقه.`);
+  const mf = c.mf, nm = k => `<b style="color:${TEAM_COLORS[pteam(k)]}">${esc(pname(k))}</b>`;
+  const showAll = c.stage === 'done';
+  const players = `<div class="mfplayers">${c.pk.map(k => { const dead = !mf.alive.includes(k), R = MF_ROLES[mf.roles[k]]; return `<span class="${dead ? 'dead' : ''}">${nm(k)}${dead || showAll ? `<small>${R.e} ${R.n}</small>` : ''}${dead ? '<i>💀</i>' : ''}</span>`; }).join('')}</div>`;
+  const card = (title, text) => `<article class="qcard mfcard"><div class="meta"><span class="chip">المافيا</span>${mf.round ? `<span>الليلة ${ltr(mf.round)}</span>` : ''}<span>${ltr(mf.alive.length)} أحياء</span></div><p class="qtext">${title}</p>${text ? `<div class="howround">${text}</div>` : ''}</article>`;
+  if (c.stage === 'roles') return card('🎭 كل واحد يشوف دوره بالسر', 'لا تخلي أحد يشوف جوالك! بعد ما تشوف دورك اضغط «شفت دوري».') + progress(c.pk.filter(k => mf.seen[k]).length, c.pk.length, 'شافوا أدوارهم') + players + `<button class="btn primary block" data-act="mfNight">ابدأ الليل 🌙</button>`;
+  if (c.stage === 'night') return card(`🌙 الليلة ${ltr(mf.round)}: الكل يغمض عيونه…`, 'المضيف يقرا بصوت: «المافيا تفتح عيونها وتختار ضحية… الطبيب يختار منو يحمي… المحقق يفحص شخص». كل الأحياء يضغطون على جوالاتهم حتى ما ينكشف أحد.')
+    + progress(mf.alive.filter(k => mfActed(c, k)).length, mf.alive.length, 'اختاروا') + players + `<button class="btn primary block" data-act="mfMorning">طلع الصبح ☀️</button>`;
+  if (c.stage === 'day') return card('☀️ صباح الخير… ', mf.death ? `💀 المافيا قتلت ${nm(mf.death)} الليلة. كان دوره: ${MF_ROLES[mf.roles[mf.death]].n}.` : mf.saved ? '😇 المافيا حاولت تقتل، بس الطبيب أنقذ الضحية! ما مات أحد.' : 'ما مات أحد الليلة.')
+    + `<p class="subtle">ناقشوا: منو تشكون بيه؟ عندكم ${MF_DAY / 60} دقائق.</p>` + players + `<button class="btn primary block" data-act="mfVote">يلا التصويت 🗳️</button>`;
+  if (c.stage === 'vote') return card('🗳️ التصويت: منو يطلع؟', 'كل الأحياء يصوّتون من جوالاتهم. الأكثر أصوات يطلع، والتعادل ما يطلّع أحد.') + progress(mf.alive.filter(k => mf.votes[k]).length, mf.alive.length, 'صوّتوا') + players + `<button class="btn ghost block" data-act="mfVoteEnd">اكشف النتيجة</button>`;
+  const tally = mf.tally ? `<div class="mftally">${Object.entries(mf.tally).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<span>${nm(k)} ${ltr(n)}</span>`).join('')}</div>` : '';
+  if (c.stage === 'result') return card(mf.elim ? `طلع ${nm(mf.elim)}…` : 'ما اتفقتوا، ما طلع أحد', mf.elim ? `وكان دوره: ${MF_ROLES[mf.roles[mf.elim]].e} <b>${MF_ROLES[mf.roles[mf.elim]].n}</b>` : '') + tally + players + `<button class="btn primary block" data-act="mfNight">الليلة الجاية 🌙</button>`;
+  const last = mf.log[mf.log.length - 1] || {};
+  return card(mf.win === 'mafia' ? '🔪 فازت المافيا!' : mf.win === 'town' ? '🎉 فاز المواطنين!' : 'انتهت اللعبة', last.elim ? `آخر واحد طلع: ${nm(last.elim)} (${MF_ROLES[mf.roles[last.elim]].n})` : last.death ? `آخر ضحية: ${nm(last.death)}` : '') + players + ptsLine(c) + nextBtn();
+}
 function partDuel(c, q, def){
   if (c.stage === 'ready') return readyCard(def, 'المواجهة ⚔️', `لاعب واحد من كل فريق (بالدور) يواجه الثاني من جواله. نفس السؤال يظهر للاثنين وهنا للكل، وأسرع جواب صحيح ياخذ النقطة. الجواب الخطأ يخلّي السؤال لخصمك. أول واحد يوصل ${DUEL_WIN} نقاط يكسب ${ltr(DUEL_PTS)} لفريقه، والباقين يشجّعون!`) + needBoth();
   const nm = t => esc(pname(c.duo[t])), done = c.stage === 'done';
@@ -5964,7 +6196,7 @@ function viewQuestion(){
   const dots = S.plan.map((_, i) => `<i class="${i < S.i ? (S.res[i] === 'ok' ? 'ok' : S.res[i] === 'no' ? 'no' : '') : i === S.i ? 'now' : ''}"></i>`).join('');
   const sec = Math.ceil(c.timeLeft / 1000);
   const live = timerLive(c);
-  const body = c.stage === 'choose' ? partPick(c, def) : c.t === 'duel' ? partDuel(c, q, def) : c.t === 'escape' ? partEscape(c, q, def) : c.t === 'target' ? partTarget(c, q, def) : c.t === 'trust' ? partTrust(c, q, def) : c.t === 'greed' ? partGreed(c, q, def) : c.t === 'letters' ? partLetters(c, q, def) : c.t === 'race' ? partRace(c, q, def) : c.t === 'secret' ? partSecret(c, q, def) : c.t === 'tmap' ? partTmap(c, q, def) : c.t === 'wordle' ? partWordle(c, q, def) : c.t === 'chain' ? partChain(c, q, def) : COOP_TYPES.includes(c.t) ? partCoop(c, q, def) : c.t === 'alike' ? partAlike(c, q, def) : c.t === 'wrote' ? partWrote(c, q, def) : c.t === 'pdraw' ? partPdraw(c, q, def) : c.t === 'fast' ? partFast(c, q, def) : c.t === 'tclock' ? partTclock(c, q, def) : c.t === 'truth' ? partTruth(c, q, def) : c.t === 'all' ? partAll(c, q, def) : c.t === 'who' ? partWho(c, q, def) : c.t === 'liar' ? partLiar(c, q, def) : c.t === 'spy' ? partSpy(c, q, def) : c.t === 'react' ? partReact(c, q, def) : c.t === 'list' ? partList(c, q, def) : c.t === 'num' ? partNum(c, q, def) : c.t === 'order' ? partOrder(c, q, def) : c.t === 'rapid' ? partRapid(c, q, def) : c.t === 'describe' ? partDescribe(c, q, def) : c.t === 'reverse' ? partReverse(c, q, def) : c.t === 'auction' ? partAuction(c, q, def) : c.t === 'bomb' ? partBomb(c, q, def) : c.t === 'buzz' ? partBuzz(c, q, def) : c.t === 'memory' ? partMemory(c, q, def) : c.t === 'draw' ? partDraw(c, q, def) : partMcq(c, q, def);
+  const body = c.stage === 'choose' ? partPick(c, def) : c.t === 'board' ? partBoard(c, q, def) : c.t === 'mafia' ? partMafia(c, q, def) : c.t === 'duel' ? partDuel(c, q, def) : c.t === 'escape' ? partEscape(c, q, def) : c.t === 'target' ? partTarget(c, q, def) : c.t === 'trust' ? partTrust(c, q, def) : c.t === 'greed' ? partGreed(c, q, def) : c.t === 'letters' ? partLetters(c, q, def) : c.t === 'race' ? partRace(c, q, def) : c.t === 'secret' ? partSecret(c, q, def) : c.t === 'tmap' ? partTmap(c, q, def) : c.t === 'wordle' ? partWordle(c, q, def) : c.t === 'chain' ? partChain(c, q, def) : COOP_TYPES.includes(c.t) ? partCoop(c, q, def) : c.t === 'alike' ? partAlike(c, q, def) : c.t === 'wrote' ? partWrote(c, q, def) : c.t === 'pdraw' ? partPdraw(c, q, def) : c.t === 'fast' ? partFast(c, q, def) : c.t === 'tclock' ? partTclock(c, q, def) : c.t === 'truth' ? partTruth(c, q, def) : c.t === 'all' ? partAll(c, q, def) : c.t === 'who' ? partWho(c, q, def) : c.t === 'liar' ? partLiar(c, q, def) : c.t === 'spy' ? partSpy(c, q, def) : c.t === 'react' ? partReact(c, q, def) : c.t === 'list' ? partList(c, q, def) : c.t === 'num' ? partNum(c, q, def) : c.t === 'order' ? partOrder(c, q, def) : c.t === 'rapid' ? partRapid(c, q, def) : c.t === 'describe' ? partDescribe(c, q, def) : c.t === 'reverse' ? partReverse(c, q, def) : c.t === 'auction' ? partAuction(c, q, def) : c.t === 'bomb' ? partBomb(c, q, def) : c.t === 'buzz' ? partBuzz(c, q, def) : c.t === 'memory' ? partMemory(c, q, def) : c.t === 'draw' ? partDraw(c, q, def) : partMcq(c, q, def);
   let lifes = '';
   const allowed = LIFES_FOR[c.t];
   if (c.stage === (preStage(c.t) ? 'ready' : 'answer') && allowed.length) {
@@ -6160,6 +6392,16 @@ document.addEventListener('click', e => {
     case 'ltBad': if (c && c.t === 'letters' && c.stage === 'judge') { const k = el.dataset.k + '.' + el.dataset.i; if (c.lbad[k]) delete c.lbad[k]; else c.lbad[k] = true; save(); render(); } break;
     case 'pkCat': case 'pkLvl': if (c && c.stage === 'choose') pickStep(el.dataset.v, null); break;
     case 'pkBack': if (c && c.stage === 'choose') { c.pc.cat = null; save(); render(); } break;
+    case 'bPick': boardPick(+el.dataset.ci, +el.dataset.vi); break;
+    case 'bAns': boardAnswer(+el.dataset.i); break;
+    case 'bSteal': boardSteal(true); break;
+    case 'bNoSteal': boardSteal(false); break;
+    case 'bNext': boardNext(); break;
+    case 'bEnd': if (c && c.t === 'board' && confirm('تنهون اللوحة هسه؟ النقاط اللي أخذتوها تبقى.')) { boardEnd(); save(); render(); } break;
+    case 'mfNight': mfNight(); break;
+    case 'mfMorning': mfMorning(); break;
+    case 'mfVote': mfVoteStart(); break;
+    case 'mfVoteEnd': mfVoteEnd(); break;
     case 'duNext': if (c && c.t === 'duel' && c.stage === 'play') { duelNext(); save(); render(); } break;
     case 'duEnd': if (c && c.t === 'duel' && c.stage === 'play') { duelEnd(); save(); render(); } break;
     case 'esEnd': if (c && c.t === 'escape' && c.stage === 'play') { escEnd(); save(); render(); } break;

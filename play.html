@@ -460,6 +460,10 @@ function body(){
       <div class="big" style="color:var(--brass)">«${esc(v.need)}»</div><p class="muted" style="margin:0">الكلمة الجاية تبدأ بهذا الحرف</p></div>
       ${v.mine ? `<div class="card"><span class="label">دورك!</span><input class="field" id="gs" maxlength="30" autocomplete="off" placeholder="كلمة تبدأ بـ«${esc(v.need)}»">${v.err ? `<p class="no center" style="margin:0;font-weight:700">${esc(v.err)}</p>` : ''}<button class="btn primary" data-act="sendGuess">أرسل</button></div>`
         : `<p class="muted" style="text-align:center;margin:0">الدور على ${esc(v.turn)}، ساعدوه!</p>`}`;
+    case 'mrole': return `<div class="card center">${local.show
+        ? `<div style="font-size:4.5rem;line-height:1">${esc(v.emoji)}</div><h1>${esc(v.name)}</h1><p style="margin:0">${esc(v.desc)}</p>${(v.mates || []).length ? `<p class="no" style="margin:0">جماعتك المافيا: ${v.mates.map(esc).join('، ')}</p>` : ''}<button class="btn" data-act="mrHide">خبّي الدور 🙈</button>`
+        : `<div style="font-size:3rem">🎭</div><span class="label">دورك سري! تأكد ماكو أحد يشوف شاشتك</span><button class="btn primary" data-act="mrShow">👁 اكشف دوري</button>`}</div>
+      ${v.seen ? '<p class="muted center" style="margin:0">تمام، انتظر الباقين…</p>' : '<button class="btn primary" data-act="mrSeen">شفت دوري ✓</button>'}`;
     case 'escape': return `<div class="card"><span class="label">ألغازك: حلّها وقول الرقم لفريقك</span>
         ${(v.items || []).length ? `<ul class="pieces">${v.items.map(x => `<li><small class="muted">الخانة ${esc(x.pos)}</small><br>${esc(x.text)}</li>`).join('')}</ul>` : '<p class="muted" style="margin:0">ما عندك لغز هالمرة، ساعد فريقك بالحل.</p>'}</div>
       ${v.solved ? '<div class="card center"><div class="big ok">🔓 فتحتوا القفل!</div></div>'
@@ -624,6 +628,9 @@ app.addEventListener('click', e => {
     if (local.lie == null) { alert('حدّد أيّها الكذبة'); return; }
     send({t:'truth3', vid:view.vid, s, lie:local.lie});
   }
+  else if (a === 'mrShow') { local.show = true; render(); }
+  else if (a === 'mrHide') { local.show = false; render(); }
+  else if (a === 'mrSeen') { local.show = false; send({t:'mfSeen', vid:view.vid}); }
   else if (a === 'sendCode') { const inp = document.getElementById('code'); const v = (inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, ''); if (v.length !== 4) { inp.focus(); return; } local.code = ''; send({t:'code', vid:view.vid, v}); try { navigator.vibrate && navigator.vibrate(30); } catch(_){} }
   else if (a === 'tgN') { local.tok = (local.tok || []).concat([+el.dataset.i]); render(); }
   else if (a === 'tgO') { local.tok = (local.tok || []).concat([el.dataset.o]); render(); }
