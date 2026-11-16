@@ -350,12 +350,7 @@ button.bcell:active{transform:scale(.96)}
 .stars{display:flex;flex-direction:column;gap:8px}
 .stars li{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:var(--felt-2);border-inline-start:4px solid var(--tc)}
 .stars .medal{font-size:1.6rem}
-/* سهرات جاهزة وقرعة الفرق */
-.presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
-.presets button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;border-radius:14px;border:2px solid var(--rim);background:var(--felt-2);text-align:start}
-.presets button:active{transform:scale(.97);border-color:var(--brass)}
-.presets b{font-size:1rem}
-.presets small{font-size:.78rem;color:var(--muted)}
+/* قرعة الفرق */
 .pcols.drawn .pchip{animation:drawpop .5s cubic-bezier(.3,1.6,.5,1) both}
 .pcols.drawn .pchip:nth-child(3){animation-delay:.1s}.pcols.drawn .pchip:nth-child(4){animation-delay:.2s}.pcols.drawn .pchip:nth-child(5){animation-delay:.3s}.pcols.drawn .pchip:nth-child(6){animation-delay:.4s}.pcols.drawn .pchip:nth-child(n+7){animation-delay:.5s}
 @keyframes drawpop{from{transform:scale(0) rotate(-12deg);opacity:0}}
@@ -3350,7 +3345,7 @@ const poolCount = r => Q.filter(q => r.cats.includes(q.cat) && r.levels.includes
 const lvlDots = l => `<span class="lvl" title="${LEVEL_NAMES[l]}">${[1,2,3].map(n => `<i class="${n <= l ? 'f' : ''}"></i>`).join('')}</span>`;
 function perTeamText(n){ return n === 2 ? 'سؤالان لكل فريق' : `${n} أسئلة لكل فريق`; }
 
-const DEFAULTS = {names:['الصقور','النسور'], perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, comeback:true, test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
+const DEFAULTS = {names:['الصقور','النسور'], perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
 const WAGER_FLOOR = 300;   // الفريق المتأخر يقدر يراهن حتى هذا الرقم حتى لو نقاطه أقل
 const WAGER_DEF = {cats:['general','football','iq','capitals'], levels:[3]};
 let P = Object.assign({}, DEFAULTS, store.get(PREFS) || {});
@@ -5799,47 +5794,6 @@ const applyTheme = () => { const t = P.theme || 'fun'; if (document.documentElem
 // الجولة الصعبة لا تدخل العجلة وتبقى في الختام
 const wheelOpts = r => S.rounds.slice(r).filter(id => id !== 'hard');
 const wheelNeeded = r => !!S.settings.wheel && r < S.rounds.length && wheelOpts(r).length > 1;
-/* سهرات جاهزة: مجموعة فقرات بضغطة وحدة */
-const PRESETS = [
-  ['laugh', '😂 سهرة ضحك', 'رسم وكذب وتمثيل', ['describe', 'draw', 'reverse', 'liar', 'wrote', 'alike', 'pdraw', 'who', 'truth', 'spy']],
-  ['brain', '🧠 سهرة ذكاء', 'ألغاز وأرقام ومنطق', ['iq', 'logic', 'seqs', 'calc', 'anagram', 'odd', 'snum', 'target', 'cipher', 'escape', 'hard']],
-  ['ball', '⚽ سهرة كرة', 'لاعبين ومسيرات', ['football', 'players', 'career', 'lists', 'closest', 'buzz', 'hard']],
-  ['family', '👨‍👩‍👧 سهرة عائلية', 'سهلة وتناسب الصغار', ['general', 'flags', 'capitals', 'memory', 'look', 'rapid', 'buzz', 'bomb', 'draw', 'describe']],
-  ['phones', '📱 كلها جوالات', 'الكل يلعب بنفس الوقت', ['allq', 'race', 'fast', 'react', 'tclock', 'iclock', 'maze', 'relay', 'wordle', 'mafia']],
-  ['mix', '🎲 خلطة عشوائية', '7 فقرات مفاجأة', null],
-];
-function presetIds(p){
-  if (!p[3]) { const pool = shuffle(ROUNDS.filter(r => roundOk(r) && r.id !== 'hard').map(r => r.id)).slice(0, 7); return ROUNDS.map(r => r.id).filter(id => pool.includes(id)); }
-  return ROUNDS.filter(r => p[3].includes(r.id) && roundOk(r)).map(r => r.id);
-}
-/* فرصة العودة: إذا فريق متأخر كلش، قبل الجولة الجاية ينطيه سؤال واحد صعب بنقاط كبيرة (مرتين باللعبة كحد أقصى) */
-const CB_MIN_GAP = 500;
-function comebackCheck(){
-  if (S.settings.comeback === false || S.r + 1 >= S.rounds.length || (S.cbN || 0) >= 2 || S.cbR === S.r) return false;
-  const sc = S.teams.map(t => t.score), lead = sc[0] >= sc[1] ? 0 : 1, gap = sc[lead] - sc[1 - lead];
-  if (gap < Math.max(CB_MIN_GAP, sc[lead] * .35)) return false;
-  const [qid] = drawQuestions({cats:['general', 'iq', 'capitals', 'football'], levels:[2, 3]}, 1, 3);
-  if (!qid || !QBY[qid].o) return false;
-  S.used.push(qid); markSeen(qid);
-  S.cbN = (S.cbN || 0) + 1; S.cbR = S.r;
-  S.cb = {team:1 - lead, qid, gap, pts:Math.min(1000, Math.max(300, Math.round(gap / 2 / 50) * 50)), stage:'intro', order:shuffle([0, 1, 2, 3].slice(0, QBY[qid].o.length)), pick:null};
-  S.phase = 'cback'; sfx('fanfare'); return true;
-}
-function viewComeback(){
-  const cb = S.cb, q = QBY[cb.qid], t = cb.team, tc = TEAM_COLORS[t];
-  const head = `<div class="stage" style="--tc:${tc}"><div class="num">قبل الجولة الجاية</div><h2 style="color:${tc}">🔥 فرصة العودة</h2>
-    <p>فريق ${tn(t)} متأخر بـ${ltr(cb.gap)} نقطة. سؤال واحد صعب، إذا جاوبوه صح ياخذون <b style="color:var(--brass-deep)">${ltr(cb.pts)}</b> نقطة.</p></div>`;
-  if (cb.stage === 'intro') return `<div class="screen">${scorebar(t)}${head}<button class="btn team block" style="--tc:${tc}" data-act="cbGo">اعرض السؤال</button></div>`;
-  const done = cb.stage === 'done';
-  return `<div class="screen">${scorebar(t)}${head}
-    <section class="qcard" style="--tc:${tc}"><p class="qtext">${esc(q.q)}</p>
-      <div class="opts">${cb.order.map((oi, n) => `<button type="button" class="opt${done ? (oi === 0 ? ' right' : oi === cb.pick ? ' wrong' : ' dim') : ''}" data-act="cbPick" data-v="${oi}" ${done ? 'disabled' : ''}><span class="k">${['أ', 'ب', 'ج', 'د'][n]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>
-      ${done ? '' : '<p class="subtle">الفريق يكول جوابه، والمضيف يضغط عليه.</p>'}
-    </section>
-    ${done ? `<div class="verdict ${cb.pick === 0 ? 'ok' : 'no'}"><span class="big">${cb.pick === 0 ? `رجعوا للمنافسة! +${ltr(cb.pts)}` : 'ضاعت الفرصة'}</span>${q.note ? `<span class="note">${esc(q.note)}</span>` : ''}</div>
-      <button class="btn primary block" data-act="cbNext">الجولة الجاية</button>` : ''}
-  </div>`;
-}
 function prepRound(){
   if (wheelNeeded(S.r)) { S.wh = {opts:wheelOpts(S.r), team:S.r % 2, rot:0, spun:false, spinning:false, choice:null}; S.cur = null; S.phase = 'wheel'; return; }
   S.wh = null; buildRound();
@@ -6022,9 +5976,6 @@ function viewHome(){
     <section class="panel">
       <h2>الفقرات</h2>
       ${roundEdit ? '<p class="subtle">اضغط 🗑 جنب الفقرة حتى تختفي من القائمة ومن اللعب. تقدر ترجعها بأي وقت من «الفقرات المخفية».</p>' : ''}
-      <div class="label">سهرات جاهزة: اضغط وحدة وتنختار فقراتها كلها</div>
-      <div class="presets">${PRESETS.map(p => `<button type="button" data-act="preset" data-v="${p[0]}"><b>${p[1]}</b><small>${p[2]}</small></button>`).join('')}</div>
-      <div class="label">أو اختار الفقرات بنفسك</div>
       <div class="rlist">${rounds}</div>
       ${hiddenBox}
     </section>
@@ -6040,7 +5991,6 @@ function viewHome(){
       ${sw('wheel', 'بكرة الفقرات 🎰', 'كل فريق بدوره يسحب الذراع وتختار البكرة الفقرة الجاية')}
       ${sw('sound', 'الأصوات', '')}
       ${NET.avail || P.test ? sw('phoneQ', 'الأسئلة على جوالات الفريق', 'في الفقرات العادية: السؤال يظهر على جوالات الفريق اللي عليه الدور، ويجاوبون بتصويت الأغلبية') : ''}
-      ${sw('comeback', 'فرصة العودة 🔥', 'إذا فريق تأخر كلش، ينطيه سؤال صعب بنقاط كبيرة قبل الجولة الجاية (مرتين باللعبة كحد أقصى)')}
       ${sw('vib', 'اهتزاز الجوالات 📳', 'جوال اللاعب يهتز من يجي دوره، وبآخر 5 ثواني، ومن فريقه ياخذ نقاط أو يربح')}
       ${sw('fun', 'مفاجآت ⭐🔥', 'سؤال ذهبي بنقاط مضاعفة يظهر فجأة، ومكافأة للفريق اللي يجاوب 3 مرات صح ورا بعض')}
       ${sw('test', 'وضع التجربة', '4 لاعبين تجريبيين بدل الجوالات، وتشوف شاشة جوال كل لاعب من زر «📱»')}
@@ -6085,7 +6035,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611162106';
+const GAME_VER = '202611162118';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7271,7 +7221,6 @@ function render(){
   else if (S.phase === 'wheel' && S.wh) app.innerHTML = viewWheel();
   else if (S.phase === 'wager' && S.w) app.innerHTML = viewWager();
   else if (S.phase === 'end') app.innerHTML = viewEnd();
-  else if (S.phase === 'cback' && S.cb) app.innerHTML = viewComeback();
   else app.innerHTML = viewHome();
   $('#sheet').innerHTML = viewSheet();
   bump = null; newClue = false;
@@ -7351,7 +7300,7 @@ document.addEventListener('click', e => {
       P.names = names; savePrefs();
       const rs = P.rounds.filter(id => roundOk(RD[id]));
       if (!rs.length) { toast('اختر فقرة واحدة على الأقل'); break; }
-      go(() => newGame({perTeam:P.perTeam, time:P.time, steal:P.steal, direct:P.direct, wager:P.wager, wheel:P.wheel, llMode:P.llMode, phoneQ:!!P.phoneQ && (NET.avail || P.test), fun:P.fun !== false, comeback:P.comeback !== false, rounds:rs}, names));
+      go(() => newGame({perTeam:P.perTeam, time:P.time, steal:P.steal, direct:P.direct, wager:P.wager, wheel:P.wheel, llMode:P.llMode, phoneQ:!!P.phoneQ && (NET.avail || P.test), fun:P.fun !== false, rounds:rs}, names));
       sfx('life'); break;
     }
     case 'wGo': if (S.w && S.w.stage === 'intro') {
@@ -7429,10 +7378,6 @@ document.addEventListener('click', e => {
     case 'plDraw': teamDraw(); netChanged(); setTimeout(() => { if (onHome || !S) netChanged(); }, 2600); break;
     case 'badQ': if (S && S.cur) { const id = S.cur.id; P.bad = (P.bad || []).concat(id); savePrefs(); menuOpen = false; menuResume = false; toast('🚩 انشال السؤال، وما راح يطلع مرة ثانية'); go(() => nextQuestion(true)); } break;
     case 'badReset': P.bad = []; savePrefs(); toast('رجعت كل الأسئلة المحذوفة'); render(); break;
-    case 'preset': { const p = PRESETS.find(x => x[0] === el.dataset.v); if (!p) break; const ids = presetIds(p); if (!ids.length) { toast('هاي السهرة تحتاج جوالات اللاعبين'); break; } P.rounds = ids; savePrefs(); toast(`${p[1]}: ${ids.length} فقرات`); render(); break; }
-    case 'cbGo': if (S.cb && S.cb.stage === 'intro') { S.cb.stage = 'q'; sfx('reveal'); save(); render(); } break;
-    case 'cbPick': if (S.cb && S.cb.stage === 'q') { const cb = S.cb; cb.pick = +el.dataset.v; cb.stage = 'done'; if (cb.pick === 0) { S.teams[cb.team].score += cb.pts; S.teams[cb.team].correct++; bump = cb.team; sfx('fanfare'); } else sfx('lose'); save(); render(); } break;
-    case 'cbNext': S.cb = null; S.r++; prepRound(); save(); go(render); break;
     case 'plTeam': { const k = el.dataset.k; if (PL[k]) { PL[k].team = 1 - PL[k].team; savePL(); netChanged(); } break; }
     case 'netMode': {
       const m = el.dataset.m, fresh = el.dataset.fresh === '1';
@@ -7529,7 +7474,7 @@ document.addEventListener('click', e => {
       if (!confirmEnd) { confirmEnd = true; render(); break; }
       menuOpen = false; confirmEnd = false; menuResume = false; timerStop(); S.cur = null; S.phase = 'end'; sfx('fanfare'); save(); go(render); break;
     case 'home': menuOpen = false; menuResume = false; timerStop(); save(); onHome = true; go(render); break;
-    case 'nextRound': if (!comebackCheck()) { S.r++; prepRound(); } save(); go(render); break;
+    case 'nextRound': S.r++; prepRound(); save(); go(render); break;
     case 'whSpin': { const lv = document.getElementById('lever'); if (lv && lv._pull) lv._pull(); else wheelSpin(); break; }
     case 'whGo': if (S.wh && S.wh.spun) { const id = S.wh.choice, k = S.rounds.indexOf(id, S.r); S.rounds.splice(k, 1); S.rounds.splice(S.r, 0, id); S.wh = null; buildRound(); save(); go(render); } break;
     case 'again': { const names = S.teams.map(t => t.name); go(() => newGame(Object.assign({}, S.settings), names)); break; }
