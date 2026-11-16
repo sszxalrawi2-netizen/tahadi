@@ -419,6 +419,30 @@ button.bcell:active{transform:scale(.96)}
 .stars{display:flex;flex-direction:column;gap:8px}
 .stars li{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:14px;background:var(--felt-2);border-inline-start:4px solid var(--tc)}
 .stars .medal{font-size:1.6rem}
+/* بطل التحدي */
+.champ{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:16px;background:color-mix(in srgb,var(--brass) 14%,var(--felt-2));border:2px solid color-mix(in srgb,var(--brass) 45%,transparent)}
+.champ .cup{font-size:2.2rem;line-height:1}
+.champ span{display:flex;flex-direction:column;line-height:1.3;min-width:0}
+.champ small{color:var(--muted);font-size:.8rem}
+.champ b{font-family:var(--display);font-weight:400;font-size:1.45rem;color:var(--brass-deep);overflow-wrap:anywhere}
+.champ .cstar{margin-inline-start:auto;text-align:end}
+.champ .cstar b{font-family:var(--body);font-weight:700;font-size:1rem;color:var(--ink)}
+.lgtable{width:100%;border-collapse:collapse;font-size:.92rem}
+.lgtable th,.lgtable td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--rim);white-space:nowrap}
+.lgtable thead th{color:var(--muted);font-weight:500;font-size:.8rem}
+.lgtable tbody th{text-align:start;font-weight:700;white-space:normal}
+.lgtable .pt{font-family:var(--display);font-size:1.2rem;color:var(--brass-deep)}
+.lgtable tr.top th::after{content:" 🏆"}
+.results{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.results li{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;background:var(--felt);border:1px solid var(--rim)}
+.results .rd{font-size:.78rem;color:var(--muted);flex:none;max-width:6.5em;line-height:1.3}
+.results .rs{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;min-width:0;flex:1}
+.results .rs b{font-weight:500}
+.results .rs b.w{color:var(--tc);font-weight:800}
+.results .rs i{font-style:normal;color:var(--muted)}
+.results .iconbtn{margin-inline-start:0;font-size:1.1rem;padding:4px 10px}
+.cardwrap{display:grid;place-items:center;min-height:200px}
+.cardimg{display:block;width:100%;max-width:420px;height:auto;border-radius:14px;box-shadow:0 8px 24px var(--shade)}
 .stars b{color:var(--tc);font-size:1.1rem}
 .stars span{margin-inline-start:auto;font-family:var(--display);color:var(--brass);font-size:1.2rem}
 .fxflash{position:fixed;inset:0;pointer-events:none;z-index:60;animation:fxf .7s ease-out forwards}
@@ -3386,7 +3410,7 @@ const poolCount = r => Q.filter(q => r.cats.includes(q.cat) && r.levels.includes
 const lvlDots = l => `<span class="lvl" title="${LEVEL_NAMES[l]}">${[1,2,3].map(n => `<i class="${n <= l ? 'f' : ''}"></i>`).join('')}</span>`;
 function perTeamText(n){ return n === 2 ? 'سؤالان لكل فريق' : `${n} أسئلة لكل فريق`; }
 
-const DEFAULTS = {names:['الصقور','النسور'], perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
+const DEFAULTS = {names:['الصقور','النسور'], perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
 const WAGER_FLOOR = 300;   // الفريق المتأخر يقدر يراهن حتى هذا الرقم حتى لو نقاطه أقل
 const WAGER_DEF = {cats:['general','football','iq','capitals'], levels:[3]};
 let P = Object.assign({}, DEFAULTS, store.get(PREFS) || {});
@@ -4120,7 +4144,8 @@ function netIn(m){
 }
 function viewFor(key){
   let v; try { v = key && PL[key] ? phoneView(key) : {k:'join', vid:'join'}; } catch(e) { v = {k:'wait', vid:'err', title:'انظروا إلى التابلت'}; }
-  v.teams = teamNames(); v.scores = S && !onHome ? S.teams.map(t => t.score) : null; v.you = key ? PL[key] : null; v.th = P.theme || 'fun';
+  v.teams = teamNames(); v.scores = S && !onHome ? S.teams.map(t => t.score) : null; v.you = key ? PL[key] : null; v.th = P.theme || 'fun'; v.vib = P.vib !== false;
+  const c = S && !onHome && S.phase === 'question' && S.cur; v.left = c && c.running ? Math.max(0, Math.round(c.deadline - Date.now())) : null;
   return v;
 }
 function netSync(){
@@ -4138,7 +4163,7 @@ function phoneView(key){
   if (S.phase === 'wager' && S.w) return wagerPhone(key);
   if (S.phase !== 'question' || !S.cur) {
     const end = S.phase === 'end';
-    if (end) { const top = topStars(); return {k:'info', vid:vidBase() + 'end', label:'انتهت اللعبة', big:S.teams[0].score === S.teams[1].score ? 'تعادل!' : 'فاز فريق ' + S.teams[S.teams[0].score > S.teams[1].score ? 0 : 1].name, tone:'ok', text:(top.length ? `نجم السهرة: ${pname(top[0][0])} · ` : '') + `نجومك: ${(S.stars || {})[key] || 0} ⭐`}; }
+    if (end) { const top = topStars(), g = league().find(x => x.id === S.id); return {card:g ? Object.assign({lg:leagueLine(g.d)}, g) : null, k:'info', vid:vidBase() + 'end', label:'انتهت اللعبة', big:S.teams[0].score === S.teams[1].score ? 'تعادل!' : 'فاز فريق ' + S.teams[S.teams[0].score > S.teams[1].score ? 0 : 1].name, tone:'ok', text:(top.length ? `نجم السهرة: ${pname(top[0][0])} · ` : '') + `نجومك: ${(S.stars || {})[key] || 0} ⭐`}; }
     return {k:'wait', vid:vidBase() + S.phase, title:'انظروا إلى التابلت', text:''};
   }
   const c = S.cur, q = QBY[c.id], vid = vidBase() + '.' + c.id + '.' + c.stage;
@@ -6017,11 +6042,13 @@ function viewHome(){
       ${sw('wheel', 'بكرة الفقرات 🎰', 'كل فريق بدوره يسحب الذراع وتختار البكرة الفقرة الجاية')}
       ${sw('sound', 'الأصوات', '')}
       ${NET.avail || P.test ? sw('phoneQ', 'الأسئلة على جوالات الفريق', 'في الفقرات العادية: السؤال يظهر على جوالات الفريق اللي عليه الدور، ويجاوبون بتصويت الأغلبية') : ''}
+      ${sw('vib', 'اهتزاز الجوالات 📳', 'جوال اللاعب يهتز من يجي دوره، وبآخر 5 ثواني، ومن فريقه ياخذ نقاط أو يربح')}
       ${sw('fun', 'مفاجآت ⭐🔥', 'سؤال ذهبي بنقاط مضاعفة يظهر فجأة، ومكافأة للفريق اللي يجاوب 3 مرات صح ورا بعض')}
       ${sw('test', 'وضع التجربة', '4 لاعبين تجريبيين بدل الجوالات، وتشوف شاشة جوال كل لاعب من زر «📱»')}
       <div class="summary"><span>المجموع: <b>${total}</b> سؤالاً في <b>${vis.length}</b> جولات</span><span>نحو <b>${Math.max(5, Math.round(total * 1.3 / 5) * 5)}</b> دقيقة</span></div>
     </section>
     <button class="btn primary block" data-act="start">ابدأ التحدي</button>
+    ${leaguePanel()}
     <details class="panel">
       <summary>طريقة اللعب</summary>
       <ol class="howto">
@@ -6058,7 +6085,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611161939';
+const GAME_VER = '202611162021';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7074,8 +7101,117 @@ function starsHtml(){
   return `<section class="panel"><h2>نجوم السهرة</h2><ul class="stars" style="list-style:none;margin:0;padding:0">${top.map(([k, n], i) => `<li style="--tc:${TEAM_COLORS[pteam(k)]}"><span class="medal">${['🥇', '🥈', '🥉'][i]}</span><b>${esc(pname(k))}</b><span>${ltr(n)} ⭐</span></li>`).join('')}</ul>
     <p class="subtle">نجمة لكل جواب صحيح أو مساهمة في فقرات الجوال.</p></section>`;
 }
+/* ===================== بطل التحدي: سجل السهرات والدوري ===================== */
+// كل لعبة تخلص تنحفظ هنا: {id, d:التاريخ, t:[أسماء الفريقين], s:[النقاط], st:[[نجم, نجوم, فريقه]...]}
+const LEAGUE = 'tahadi.league.v1';
+let lgScope = 'month', lgAll = false, lgReset = false, cardId = null, cardUrl = null;
+const league = () => { const L = store.get(LEAGUE); return Array.isArray(L) ? L : []; };
+function leagueRecord(){
+  if (!S) return;
+  const L = league(); if (L.some(g => g.id === S.id)) return;
+  L.push({id:S.id, d:Date.now(), t:S.teams.map(t => t.name), s:S.teams.map(t => t.score), st:topStars().map(([k, n]) => [pname(k), n, pteam(k)])});
+  store.set(LEAGUE, L.slice(-300));
+}
+const sameMonth = (d, ref) => { const a = new Date(d), b = new Date(ref); return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth(); };
+const monthName = d => { try { return new Date(d).toLocaleDateString('ar-IQ', {month:'long'}); } catch(e) { return 'الشهر'; } };
+const dayText = d => { try { return new Date(d).toLocaleDateString('ar-IQ', {weekday:'long', day:'numeric', month:'long'}); } catch(e) { return ''; } };
+// الترتيب مثل الدوري: الفوز 3 نقاط، التعادل نقطة
+function leagueTable(games){
+  const T = {};
+  games.forEach(g => g.t.forEach((n, i) => {
+    const r = T[n] = T[n] || {n, p:0, w:0, d:0, l:0, pts:0, sc:0}, me = g.s[i], op = g.s[1 - i];
+    r.p++; r.sc += me;
+    if (me > op) { r.w++; r.pts += 3; } else if (me === op) { r.d++; r.pts++; } else r.l++;
+  }));
+  return Object.values(T).sort((a, b) => b.pts - a.pts || b.w - a.w || b.sc - a.sc);
+}
+function leagueStar(games){
+  const M = {};
+  games.forEach(g => (g.st || []).forEach(([n, c], i) => { const r = M[n] = M[n] || {n, top:0, st:0}; r.st += c; if (i === 0) r.top++; }));
+  return Object.values(M).sort((a, b) => b.top - a.top || b.st - a.st)[0] || null;
+}
+// سطر الصدارة اللي يطلع بآخر اللعبة وعلى صورة النتيجة
+function leagueLine(ref){
+  const tb = leagueTable(league().filter(g => sameMonth(g.d, ref)));
+  return tb.length ? `🏆 متصدر ${monthName(ref)}: ${tb[0].n} (${tb[0].pts} نقاط)` : '';
+}
+function leaguePanel(){
+  const all = league(); if (!all.length) return '';
+  const now = Date.now(), games = lgScope === 'month' ? all.filter(g => sameMonth(g.d, now)) : all;
+  const tb = leagueTable(games), star = leagueStar(games), recent = all.slice().reverse().slice(0, lgAll ? 30 : 4);
+  const title = lgScope === 'month' ? `بطل ${monthName(now)}` : 'بطل كل الأوقات';
+  return `<section class="panel league">
+    <h2>🏆 بطل التحدي</h2>
+    <div class="seg"><button type="button" data-act="lgScope" data-v="month" aria-pressed="${lgScope === 'month'}">هذا الشهر</button><button type="button" data-act="lgScope" data-v="all" aria-pressed="${lgScope === 'all'}">كل الأوقات</button></div>
+    ${tb.length ? `<div class="champ"><span class="cup">🏆</span><span><small>${title}</small><b>${esc(tb[0].n)}</b></span>${star ? `<span class="cstar"><small>نجم ${lgScope === 'month' ? 'الشهر' : 'الموسم'}</small><b>⭐ ${esc(star.n)}</b></span>` : ''}</div>
+    <div class="ltwrap"><table class="lgtable"><thead><tr><th></th><th>الفريق</th><th>لعب</th><th>فوز</th><th>تعادل</th><th>خسارة</th><th>نقاط</th></tr></thead><tbody>
+      ${tb.map((r, i) => `<tr class="${i ? '' : 'top'}"><td>${ltr(i + 1)}</td><th>${esc(r.n)}</th><td>${ltr(r.p)}</td><td>${ltr(r.w)}</td><td>${ltr(r.d)}</td><td>${ltr(r.l)}</td><td class="pt">${ltr(r.pts)}</td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="subtle">الفوز بـ3 نقاط والتعادل بنقطة. الترتيب حسب اسم الفريق، فخلّوا أسماء فرقكم ثابتة.</p>` : `<p class="subtle">ما لعبتوا بعد هذا الشهر.</p>`}
+    <div class="label">📋 نتائج التحدي</div>
+    <ul class="results">${recent.map(g => { const tie = g.s[0] === g.s[1], w = g.s[0] > g.s[1] ? 0 : 1;
+      return `<li><span class="rd">${esc(dayText(g.d))}</span><span class="rs">${[0, 1].map(i => `<b class="${!tie && i === w ? 'w' : ''}" style="--tc:${TEAM_COLORS[i]}">${esc(g.t[i])} ${ltr(g.s[i])}</b>`).join('<i>–</i>')}</span><button type="button" class="iconbtn" data-act="card" data-id="${g.id}" aria-label="صورة النتيجة">📸</button></li>`; }).join('')}</ul>
+    <div class="row2">${all.length > 4 ? `<button type="button" class="link" data-act="lgAll">${lgAll ? 'أقل' : `كل النتائج (${ltr(all.length)})`}</button>` : ''}<button type="button" class="link" data-act="lgReset">${lgReset ? 'اضغط مرة ثانية حتى يتصفّر الدوري' : 'تصفير الدوري'}</button></div>
+  </section>`;
+}
+
+/* ===================== صورة النتيجة ===================== */
+// تنرسم على لوحة 1080×1350 بألوان الثيم الحالي (نفس الدالة موجودة بصفحة الجوال)
+async function drawCard(g){
+  const cs = getComputedStyle(document.documentElement), V = n => cs.getPropertyValue(n).trim();
+  try { await Promise.race([Promise.all([document.fonts.load('90px Lalezar'), document.fonts.load('bold 40px "IBM Plex Sans Arabic"')]), new Promise(r => setTimeout(r, 1500))]); } catch(e){}
+  const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d'); x.direction = 'rtl'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  const D = s => `${s}px Lalezar, "IBM Plex Sans Arabic", Tahoma, sans-serif`, B = s => `bold ${s}px "IBM Plex Sans Arabic", Tahoma, sans-serif`;
+  const tc = [V('--team-a'), V('--team-b')], box = (X, Y, w, h, r) => { x.beginPath(); x.roundRect ? x.roundRect(X, Y, w, h, r) : x.rect(X, Y, w, h); };
+  x.fillStyle = V('--felt'); x.fillRect(0, 0, W, H);
+  const gr = x.createRadialGradient(W / 2, -120, 40, W / 2, -120, 950); gr.addColorStop(0, V('--felt-3')); gr.addColorStop(1, V('--felt')); x.fillStyle = gr; x.fillRect(0, 0, W, H);
+  x.fillStyle = V('--brass'); x.font = D(118); x.fillText('تحدي الخميس', W / 2, 135);
+  x.fillStyle = V('--muted'); x.font = B(38); x.fillText(dayText(g.d), W / 2, 228);
+  const tie = g.s[0] === g.s[1], w = g.s[0] > g.s[1] ? 0 : 1;
+  x.font = '150px "Segoe UI Emoji","Noto Color Emoji",sans-serif'; x.fillText(tie ? '🤝' : '🏆', W / 2, 380);
+  x.fillStyle = tie ? V('--brass') : tc[w]; x.font = D(92); x.fillText(tie ? 'تعادل!' : 'فاز فريق ' + g.t[w], W / 2, 530, W - 120);
+  [0, 1].forEach(i => {
+    const bw = 440, bh = 270, bx = i === 0 ? W / 2 + 15 : W / 2 - 15 - bw, by = 620, win = !tie && i === w;
+    box(bx, by, bw, bh, 40); x.fillStyle = V('--felt-2'); x.fill(); x.lineWidth = win ? 10 : 4; x.strokeStyle = win ? tc[i] : V('--rim'); x.stroke();
+    x.fillStyle = V('--ink'); x.font = B(48); x.fillText(g.t[i], bx + bw / 2, by + 72, bw - 40);
+    x.fillStyle = tc[i]; x.font = D(130); x.fillText(String(g.s[i]), bx + bw / 2, by + 182);
+  });
+  let y = 975;
+  if (g.st && g.st.length) {
+    x.fillStyle = V('--muted'); x.font = B(40); x.fillText('نجوم السهرة', W / 2, y); y += 78;
+    g.st.slice(0, 3).forEach(([n, c, t], i) => { x.fillStyle = tc[t] || V('--ink'); x.font = B(50); x.fillText(`${['🥇', '🥈', '🥉'][i]} ${n} · ${c} ⭐`, W / 2, y, W - 160); y += 74; });
+  }
+  if (g.lg) { x.fillStyle = V('--brass-deep'); x.font = B(40); x.fillText(g.lg, W / 2, H - 62, W - 100); }
+  return cv;
+}
+function cardSheet(){
+  return `<div class="sheet-bg" data-act="closeCard"><div class="sheet" role="dialog" aria-label="صورة النتيجة">
+    <h2>📸 صورة النتيجة</h2>
+    <div class="cardwrap">${cardUrl ? `<img class="cardimg" src="${cardUrl}" alt="صورة النتيجة">` : '<p class="subtle">ديتسوّى الصورة…</p>'}</div>
+    <div class="actions"><button class="btn primary" data-act="cardSave">💾 حفظ أو مشاركة</button><button class="btn" data-act="closeCard">إغلاق</button></div>
+    <p class="subtle">إذا ما انحفظت من التابلت سوّ لقطة شاشة. وكل لاعب يكدر يحفظها ويرسلها للواتساب من جواله بآخر اللعبة.</p>
+  </div></div>`;
+}
+function openCard(id){
+  const g = league().find(x => x.id === id); if (!g) return;
+  cardId = id; cardUrl = null; render();
+  drawCard(Object.assign({lg:leagueLine(g.d)}, g)).then(cv => { if (cardId !== id) return; cardUrl = cv.toDataURL('image/png'); render(); });
+}
+async function saveCard(){
+  if (!cardUrl) return;
+  const name = 'tahadi-' + new Date(cardId).toISOString().slice(0, 10) + '.png';
+  try {
+    const blob = await (await fetch(cardUrl)).blob(), file = new File([blob], name, {type:'image/png'});
+    if (navigator.canShare && navigator.canShare({files:[file]})) { await navigator.share({files:[file], title:'تحدي الخميس'}); return; }
+  } catch(e) { if (e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = cardUrl; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  toast('إذا ما انحفظت، سوّ لقطة شاشة 📸');
+}
+
 function viewEnd(){
   const [a, b] = S.teams; const tie = a.score === b.score; const w = a.score > b.score ? 0 : 1;
+  const lg = league().some(g => g.id === S.id) ? leagueLine(Date.now()) : '';
   return `<div class="screen">
     <div class="stage winner" style="--tc:${tie ? 'var(--brass)' : TEAM_COLORS[w]}">
       <div class="num">النتيجة النهائية</div>
@@ -7083,7 +7219,9 @@ function viewEnd(){
       <p>${tie ? 'تحتاجون جولة ثأر.' : `بفارق ${ltr(Math.abs(a.score - b.score))} نقطة`}</p>
     </div>
     ${bigScores()}
+    ${lg ? `<div class="champ"><span class="cup">🏆</span><span><small>دوري الخميس</small><b>${esc(lg.replace('🏆 ', ''))}</b></span></div>` : ''}
     ${starsHtml()}
+    <button class="btn team block" style="--tc:var(--brass)" data-act="card" data-id="${S.id}">📸 صورة النتيجة</button>
     <div class="actions"><button class="btn primary" data-act="again">جولة ثأر بنفس الفرق</button><button class="btn ghost" data-act="newSetup">إعدادات جديدة</button></div>
   </div>`;
 }
@@ -7105,6 +7243,7 @@ function guideSheet(){
   </div></div>`;
 }
 function viewSheet(){
+  if (cardId) return cardSheet();
   if (guideId && RD[guideId]) return guideSheet();
   if (!menuOpen || !S) return '';
   const inQ = S.phase === 'question' && !onHome;
@@ -7137,7 +7276,7 @@ function render(){
   bump = null; newClue = false;
   if (S && !onHome && S.phase === 'question' && S.cur && S.cur.t === 'reverse' && rev.id !== S.cur.id) loadBuiltin(S.cur.id);
   mountPad(); mountLever();
-  if (S && !onHome && S.phase === 'end' && !S.celebrated) { S.celebrated = true; save(); confetti(); }
+  if (S && !onHome && S.phase === 'end' && !S.celebrated) { S.celebrated = true; leagueRecord(); save(); confetti(); render(); return; }
   if (S && !onHome && S.phase === 'question' && S.cur && S.cur.t === 'react' && S.cur.stage === 'arm' && !reactH) reactArm();
   if (document.getElementById('livepad')) paintLive();
   phonesUI();
@@ -7366,6 +7505,12 @@ document.addEventListener('click', e => {
     case 'timer': toggleTimer(); break;
     case 'menu': openMenu(); break;
     case 'closeMenu': closeMenu(); break;
+    case 'lgScope': lgScope = el.dataset.v; render(); break;
+    case 'lgAll': lgAll = !lgAll; render(); break;
+    case 'lgReset': if (lgReset) { store.del(LEAGUE); lgReset = false; toast('تصفّر الدوري'); } else { lgReset = true; setTimeout(() => { lgReset = false; }, 4000); } render(); break;
+    case 'card': openCard(+el.dataset.id); break;
+    case 'closeCard': if (e.target === el || el.tagName === 'BUTTON') { cardId = null; cardUrl = null; render(); } break;
+    case 'cardSave': saveCard(); break;
     case 'theme': P.theme = el.dataset.v; savePrefs(); render(); break;
     case 'guide': guideId = el.dataset.id; render(); break;
     case 'closeGuide': if (e.target === el || el.tagName === 'BUTTON') { guideId = null; render(); } break;

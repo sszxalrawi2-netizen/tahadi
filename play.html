@@ -131,6 +131,7 @@ h2{font-size:1.5rem}
 #pad{display:block;width:100%;aspect-ratio:1;touch-action:none}
 .sw{flex:0 0 44px;height:44px;border-radius:50%;border:3px solid transparent}
 .sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--felt)}
+.cardimg{display:block;width:100%;height:auto;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 .trow{display:flex;gap:8px;align-items:stretch}
 .trow .field{font-size:1.05rem;text-align:start}
 .tlie{flex:none;border:2px solid var(--rim);background:var(--felt);border-radius:12px;padding:0 10px;font-weight:700;font-size:.9rem;color:var(--muted)}
@@ -339,7 +340,7 @@ function onData(m){
   else if (m.t === 'view') {
     view = m.v; if (!local || local.vid !== view.vid) local = {vid:view.vid};
     // المضيف قد ينقل اللاعب لفريق آخر
-    if (view.you && me && !editing && (view.you.team !== me.team || view.you.name !== me.name)) { me.team = view.you.team; me.name = view.you.name; store.set(me); } if (view.k === 'react' && view.go) reactT0 = 0; render(); buzzFx();
+    if (view.you && me && !editing && (view.you.team !== me.team || view.you.name !== me.name)) { me.team = view.you.team; me.name = view.you.name; store.set(me); } if (view.k === 'react' && view.go) reactT0 = 0; render(); buzzFx(); vibFx();
   }
   else if (m.t === 'kick') { me = null; editing = true; store.set(null); render(); }
 }
@@ -357,7 +358,7 @@ function hello(){ if (me && !editing) send({t:'hi', key:me.key, name:me.name, te
 function connect(){
   if (EMBED) {
     online = true;
-    window.addEventListener('message', e => { const d = e.data; if (d && d.tahadiView) { view = d.tahadiView; if (!local || local.vid !== view.vid) local = {vid:view.vid}; if (view.you) { me.team = view.you.team; me.name = view.you.name; } render(); } });
+    window.addEventListener('message', e => { const d = e.data; if (d && d.tahadiView) { view = d.tahadiView; if (!local || local.vid !== view.vid) local = {vid:view.vid}; if (view.you) { me.team = view.you.team; me.name = view.you.name; } render(); vibFx(); } });
     try { parent.postMessage({tahadiReady:1, key:me.key}, '*'); } catch(_){}
     render(); return;
   }
@@ -369,6 +370,60 @@ function connect(){
   ws.onerror = () => {};
 }
 let lastFx = null;
+// اهتزاز الأحداث: دورك، آخر 5 ثواني، فريقك أخذ نقاط أو خسر، ونهاية اللعبة
+let vibPrev = null, vibLowH = null;
+const INPUT_K = v => v && !['wait', 'info', 'lobby', 'join'].includes(v.k);
+function vib(p){ try { if (view && view.vib === false) return; navigator.vibrate && navigator.vibrate(p); } catch(_){} }
+function vibFx(){
+  const v = view; if (!v || !me) return;
+  const prev = vibPrev; vibPrev = {vid:v.vid, k:v.k, sc:v.scores ? v.scores.slice() : null};
+  clearTimeout(vibLowH); vibLowH = null;
+  if (INPUT_K(v) && v.left > 5000) { const vid = v.vid; vibLowH = setTimeout(() => { if (view && view.vid === vid && INPUT_K(view)) vib([70, 90, 70, 90, 70]); }, v.left - 5000); }
+  if (!prev) return;
+  const t = me.team, d = v.scores && prev.sc ? v.scores[t] - prev.sc[t] : 0;
+  if (v.card && v.vid !== prev.vid) { const won = v.scores && v.scores[t] > v.scores[1 - t]; vib(won ? [120, 70, 120, 70, 400] : [400]); return; }
+  if (d > 0) vib([80, 60, 80]);
+  else if (d < 0) vib(250);
+  else if (v.vid !== prev.vid && INPUT_K(v) && !INPUT_K(prev)) vib(200);
+}
+// صورة النتيجة: نفس رسمة التابلت، وتنحفظ أو تنرسل من الجوال
+const dayText = d => { try { return new Date(d).toLocaleDateString('ar-IQ', {weekday:'long', day:'numeric', month:'long'}); } catch(e) { return ''; } };
+async function drawCard(g){
+  const cs = getComputedStyle(document.documentElement), V = n => cs.getPropertyValue(n).trim();
+  try { await Promise.race([Promise.all([document.fonts.load('90px Lalezar'), document.fonts.load('bold 40px "IBM Plex Sans Arabic"')]), new Promise(r => setTimeout(r, 1500))]); } catch(e){}
+  const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const x = cv.getContext('2d'); x.direction = 'rtl'; x.textAlign = 'center'; x.textBaseline = 'middle';
+  const D = s => `${s}px Lalezar, "IBM Plex Sans Arabic", Tahoma, sans-serif`, B = s => `bold ${s}px "IBM Plex Sans Arabic", Tahoma, sans-serif`;
+  const tc = [V('--team-a'), V('--team-b')], box = (X, Y, w, h, r) => { x.beginPath(); x.roundRect ? x.roundRect(X, Y, w, h, r) : x.rect(X, Y, w, h); };
+  x.fillStyle = V('--felt'); x.fillRect(0, 0, W, H);
+  const gr = x.createRadialGradient(W / 2, -120, 40, W / 2, -120, 950); gr.addColorStop(0, V('--felt-3')); gr.addColorStop(1, V('--felt')); x.fillStyle = gr; x.fillRect(0, 0, W, H);
+  x.fillStyle = V('--brass'); x.font = D(118); x.fillText('تحدي الخميس', W / 2, 135);
+  x.fillStyle = V('--muted'); x.font = B(38); x.fillText(dayText(g.d), W / 2, 228);
+  const tie = g.s[0] === g.s[1], w = g.s[0] > g.s[1] ? 0 : 1;
+  x.font = '150px "Segoe UI Emoji","Noto Color Emoji",sans-serif'; x.fillText(tie ? '🤝' : '🏆', W / 2, 380);
+  x.fillStyle = tie ? V('--brass') : tc[w]; x.font = D(92); x.fillText(tie ? 'تعادل!' : 'فاز فريق ' + g.t[w], W / 2, 530, W - 120);
+  [0, 1].forEach(i => {
+    const bw = 440, bh = 270, bx = i === 0 ? W / 2 + 15 : W / 2 - 15 - bw, by = 620, win = !tie && i === w;
+    box(bx, by, bw, bh, 40); x.fillStyle = V('--felt-2'); x.fill(); x.lineWidth = win ? 10 : 4; x.strokeStyle = win ? tc[i] : V('--rim'); x.stroke();
+    x.fillStyle = V('--ink'); x.font = B(48); x.fillText(g.t[i], bx + bw / 2, by + 72, bw - 40);
+    x.fillStyle = tc[i]; x.font = D(130); x.fillText(String(g.s[i]), bx + bw / 2, by + 182);
+  });
+  let y = 975;
+  if (g.st && g.st.length) {
+    x.fillStyle = V('--muted'); x.font = B(40); x.fillText('نجوم السهرة', W / 2, y); y += 78;
+    g.st.slice(0, 3).forEach(([n, c, t], i) => { x.fillStyle = tc[t] || V('--ink'); x.font = B(50); x.fillText(`${['🥇', '🥈', '🥉'][i]} ${n} · ${c} ⭐`, W / 2, y, W - 160); y += 74; });
+  }
+  if (g.lg) { x.fillStyle = V('--brass-deep'); x.font = B(40); x.fillText(g.lg, W / 2, H - 62, W - 100); }
+  return cv;
+}
+async function saveCard(url, id){
+  const name = 'tahadi-' + new Date(id).toISOString().slice(0, 10) + '.png';
+  try {
+    const blob = await (await fetch(url)).blob(), file = new File([blob], name, {type:'image/png'});
+    if (navigator.canShare && navigator.canShare({files:[file]})) { await navigator.share({files:[file], title:'تحدي الخميس'}); return; }
+  } catch(e) { if (e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
 function buzzFx(){ const k = view && view.k + (view.go ? 'go' : '') + view.vid; if (k !== lastFx) { lastFx = k; try { if (view.k === 'react' && view.go) navigator.vibrate && navigator.vibrate(60); } catch(e){} } }
 
 function header(){
@@ -414,7 +469,8 @@ function body(){
     case 'lobby': return `<div class="card center"><span class="label">أنت في فريق</span><h1 style="color:${TC[me.team]}">${esc(v.teams[me.team])}</h1><p class="muted" style="margin:0">انتظر حتى يبدأ المضيف اللعبة.</p></div>
       ${EMBED ? '' : '<button class="link" data-act="edit">تغيير الاسم أو الفريق</button>'}`;
     case 'wait': return waiting(esc(v.title || 'انظروا إلى التابلت'), esc(v.text || ''));
-    case 'info': return `<div class="card center">${v.label ? `<span class="label">${esc(v.label)}</span>` : ''}<div class="big ${v.tone || ''}">${esc(v.big)}</div>${v.text ? `<p class="muted" style="margin:0">${esc(v.text)}</p>` : ''}</div>`;
+    case 'info': return `<div class="card center">${v.label ? `<span class="label">${esc(v.label)}</span>` : ''}<div class="big ${v.tone || ''}">${esc(v.big)}</div>${v.text ? `<p class="muted" style="margin:0">${esc(v.text)}</p>` : ''}</div>`
+      + (v.card ? `<button class="btn primary" data-act="card">📸 صورة النتيجة</button>${v.card.lg ? `<p class="muted center" style="margin:0">${esc(v.card.lg)}</p>` : ''}${local.cardUrl ? `<img class="cardimg" src="${local.cardUrl}" alt="صورة النتيجة"><button class="btn" data-act="cardSave">💾 احفظها أو أرسلها للواتساب</button>` : ''}` : '');
     case 'buzz': return `<p class="prompt" style="text-align:center">${esc(v.prompt || 'اضغط عندما تعرف الجواب!')}</p>
       <button class="buzz" style="--tc:${TC[me.team]}" data-act="buzz" ${local.sent ? 'disabled' : ''}>${local.sent ? 'ضغطت!' : 'اضغط'}</button>`;
     case 'number': return `<div class="card"><p class="prompt">${esc(v.prompt)}</p>
@@ -738,6 +794,8 @@ app.addEventListener('click', e => {
   else if (a === 'tgB') { local.tok = (local.tok || []).slice(0, -1); render(); }
   else if (a === 'tgC') { local.tok = []; render(); }
   else if (a === 'tgSend') { if (tgEvalP(local.tok || [], view.nums) == null) return; send({t:'expr', vid:view.vid, v:local.tok}); try { navigator.vibrate && navigator.vibrate(30); } catch(_){} }
+  else if (a === 'card') { const l = local, g = view.card; drawCard(g).then(cv => { l.cardUrl = cv.toDataURL('image/png'); render(); }); }
+  else if (a === 'cardSave') { if (local.cardUrl) saveCard(local.cardUrl, view.card.id); }
   else if (a === 'bLock') { const v = local.bet != null ? local.bet : (view.mine || 0); send({t:'bet', vid:view.vid, v}); }
 });
 document.addEventListener('visibilitychange', () => {
