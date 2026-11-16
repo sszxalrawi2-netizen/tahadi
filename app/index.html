@@ -539,6 +539,38 @@ button.bcell:active{transform:scale(.96)}
 .opt.wrong{background:color-mix(in srgb,var(--bad) 22%,var(--felt));border-color:var(--bad);opacity:1}
 .opt.wrong .k{background:var(--bad);color:var(--on)}
 .opt.dim{opacity:.5}
+/* الخيارات الملوّنة: ▲ أحمر · ◆ أزرق · ● أصفر · ■ أخضر */
+.qicon{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:clamp(2.2rem,8vw,3rem);line-height:1;text-align:center;margin-bottom:-4px}
+.opts.qa .opt{border:none;color:#fff;font-size:1.14rem;min-height:66px;box-shadow:0 5px 0 color-mix(in srgb,var(--oc) 62%,#000)}
+.opts.qa .opt:nth-child(1){--oc:#e8436a;background:var(--oc)}
+.opts.qa .opt:nth-child(2){--oc:#2f7cf6;background:var(--oc)}
+.opts.qa .opt:nth-child(3){--oc:#f5b014;background:var(--oc);color:#3b2a1a}
+.opts.qa .opt:nth-child(4){--oc:#17a565;background:var(--oc)}
+.opts.qa .opt .k{background:rgba(255,255,255,.28);color:inherit;font-size:0;border-radius:50%}
+.opts.qa .opt .k::before{font-size:1.15rem;line-height:1}
+.opts.qa .opt:nth-child(1) .k::before{content:"▲"}
+.opts.qa .opt:nth-child(2) .k::before{content:"◆"}
+.opts.qa .opt:nth-child(3) .k::before{content:"●"}
+.opts.qa .opt:nth-child(4) .k::before{content:"■"}
+.opts.qa .opt:not(:disabled):hover{filter:brightness(1.07)}
+.opts.qa .opt:not(:disabled):active{transform:translateY(3px);box-shadow:0 2px 0 color-mix(in srgb,var(--oc) 62%,#000)}
+.opts.qa .opt.gone{opacity:.14;text-decoration:line-through}
+.opts.qa .opt.dim{opacity:.25;filter:saturate(.3)}
+.opts.qa .opt.right{opacity:1;filter:none;box-shadow:0 0 0 4px var(--felt),0 0 0 8px var(--good),0 12px 26px var(--shade);z-index:1}
+.opts.qa .opt.right .k{background:#fff;color:var(--good)}
+.opts.qa .opt.right .k::before{content:"✓";font-weight:900}
+.opts.qa .opt.wrong{opacity:1;filter:grayscale(.75) brightness(.85);box-shadow:0 0 0 4px var(--felt),0 0 0 7px var(--bad)}
+.opts.qa .opt.wrong .k{background:#fff;color:var(--bad)}
+.opts.qa .opt.wrong .k::before{content:"✗";font-weight:900}
+.opts.qa.enter .opt{animation:optin .45s cubic-bezier(.3,1.5,.5,1) both}
+.opts.qa.enter .opt:nth-child(1){animation-delay:.12s}.opts.qa.enter .opt:nth-child(2){animation-delay:.34s}.opts.qa.enter .opt:nth-child(3){animation-delay:.56s}.opts.qa.enter .opt:nth-child(4){animation-delay:.78s}
+@keyframes optin{from{opacity:0;transform:translateY(18px) scale(.85)}}
+.opts.qa.reveal .opt.wrong{animation:optshake .5s ease-in-out both}
+.opts.qa.reveal .opt.right{animation:optwin .8s cubic-bezier(.3,1.6,.5,1) both}
+.opts.qa.reveal:has(.wrong) .opt.right{animation-delay:.55s}
+.opts.qa.reveal .opt.dim{transition:opacity .5s,filter .5s}
+@keyframes optshake{0%,100%{transform:none}20%{transform:translateX(-10px) rotate(-1.5deg)}40%{transform:translateX(9px) rotate(1.5deg)}60%{transform:translateX(-6px)}80%{transform:translateX(4px)}}
+@keyframes optwin{0%{transform:scale(1)}45%{transform:scale(1.1)}100%{transform:scale(1.03)}}
 .tiles-wrap{position:relative}
 .cover{position:absolute;inset:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr)}
 .cover i{background:var(--felt-3);border:1px solid var(--felt-2);transition:opacity .45s}
@@ -1981,6 +2013,17 @@ const LIFES_FOR = {mcq:['fifty','hint','time','dbl','swap'], list:['time','dbl',
 const preStage = t => t === 'describe' || t === 'reverse' || t === 'bomb' || t === 'memory' || t === 'draw';   // فقرات تبدأ بشاشة تحضير قبل الوقت
 const STEAL_SECONDS = 20;
 const LETTERS = ['أ','ب','ج','د'];
+// خيارات ملوّنة: كل خيار بلون وشكل، والفريق يكول «الأحمر» بدل «أ» (نفس الألوان بالجوال)
+const CAT_ICONS = {general:'📚', whoami:'🕵️', iq:'🧠', logic:'🧩', seqs:'🔢', calc:'➗', anagram:'🔤', odd:'🎯', flags:'🏳️', flagcolors:'🎨', capitals:'🌍', football:'⚽', players:'⚽', career:'👟', links:'🔗', look:'👀', order:'📶', rapid:'✅'};
+let qaMem = {id:null, shown:false, st:''};
+// أول ما تطلع الخيارات تنزل وحدة وحدة، وأول ما ينكشف الجواب تصير حركة الصح والغلط (مرة وحدة، مو بكل رسم)
+function qaCls(id, stage){
+  if (qaMem.id !== id) qaMem = {id, shown:false, st:''};
+  let cls = 'qa';
+  if (!qaMem.shown) { qaMem.shown = true; if (stage === 'answer' || stage === 'steal' || stage === 'play') { cls += ' enter'; [0, 1, 2, 3].forEach(i => setTimeout(() => sfx('tap'), 120 + i * 220)); } }
+  else if (qaMem.st !== stage && ['done', 'wrong', 'bwrong', 'reveal'].includes(stage)) cls += ' reveal';
+  qaMem.st = stage; return cls;
+}
 
 /* ===================== أدوات ===================== */
 /* فقرة ألوان الأعلام: تُبنى الخيارات تلقائياً من ألوان العلم الصحيحة (ترتيبات أخرى أو لون مختلف) */
@@ -4191,7 +4234,7 @@ const PHONE = {
       const voters = teamOnline(active), counts = {};
       voters.forEach(k => { if (c.tv[k] != null) counts[c.tv[k]] = (counts[c.tv[k]] || 0) + 1; });
       return {k:'tvote', vid:vid + '.' + c.gone.length, prompt:(c.gold ? '⭐ سؤال ذهبي بنقاط مضاعفة! ' : '') + q.q + (q.flag || q.scene ? ' (انظروا للتابلت)' : ''), clues:q.clues ? q.clues.slice(0, c.clueN) : null, hint:c.hint && q.hint ? q.hint : '',
-        opts:c.order.filter(oi => !c.gone.includes(oi) && oi !== c.pick).map(oi => ({v:oi, l:q.o[oi], n:counts[oi] || 0})),
+        opts:c.order.filter(oi => !c.gone.includes(oi) && oi !== c.pick).map(oi => ({v:oi, l:q.o[oi], n:counts[oi] || 0, c:c.order.indexOf(oi)})),
         mine:c.tv[key] != null ? c.tv[key] : null, done:voters.filter(k => c.tv[k] != null).length, total:voters.length, steal:c.stage === 'steal',
         ll:c.stage === 'answer' ? LIFES.filter(l => LIFES_FOR.mcq.includes(l.id) && S.teams[active].ll[l.id] && !(l.id === 'hint' && (c.hint || (stages(q) && c.clueN >= stages(q))))).map(l => ({id:l.id, g:l.g, n:l.name})) : [],
         pts:c.stage === 'steal' ? Math.round(basePts() / 2) : basePts() * (c.dbl ? 2 : 1)};
@@ -6110,7 +6153,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611162123';
+const GAME_VER = '202611162133';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -6337,6 +6380,7 @@ function partMcq(c, q, def){
   const card = `<article class="qcard">
     <div class="meta"><span class="chip">${q.topic ? CAT_NAMES[q.cat] + ' · ' + q.topic : CAT_NAMES[q.cat]}</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(ptsNow)}</span></div>
     ${c.stage === 'steal' ? `<div class="stealban">سرقة! فريق ${esc(S.teams[other].name)} يجاوب الآن على ${ltr(Math.round(base / 2))} نقطة</div>` : ''}
+    ${CAT_ICONS[q.cat] ? `<div class="qicon" aria-hidden="true">${CAT_ICONS[q.cat]}</div>` : ''}
     <p class="qtext">${esc(q.q)}</p>
     ${tiles || (q.flag ? `<div class="flag">${flagSvg(q.flag)}</div>` : '')}
     ${q.cc && (c.stage === 'judge' || c.stage === 'done') ? `<div class="flag">${flagSvg(q.cc)}</div>` : ''}
@@ -6352,7 +6396,7 @@ function partMcq(c, q, def){
   }
   if (c.showOpts || c.stage === 'done') {
     const live = c.stage === 'answer' || c.stage === 'steal';
-    opts = `<div class="opts">${c.order.map((oi, k) => {
+    opts = `<div class="opts ${qaCls(c.id, c.stage)}">${c.order.map((oi, k) => {
       let cls = '', dis = !live;
       if (c.gone.includes(oi)) { cls = 'gone'; dis = true; }
       if (oi === c.pick && c.pick !== 0) { cls = 'wrong'; dis = true; }
@@ -6689,7 +6733,7 @@ function partAll(c, q, def){
   if (c.stage === 'ready') return readyCard(def, 'الكل يجاوب من جواله!', `يظهر السؤال هنا وعلى كل الجوالات. كل لاعب يختار جوابه خلال ${ALL_TIME} ثانية ولا يقدر يغيّره. نقاط كل فريق حسب نسبة لاعبيه اللي جاوبوا صح، و${ltr('+' + ALL_FAST)} لفريق أسرع جواب صحيح.`);
   const done = c.stage === 'done';
   const card = `<article class="qcard"><div class="meta"><span class="chip">${CAT_NAMES[q.cat]}</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(basePts())}</span></div><p class="qtext">${esc(q.q)}</p></article>`;
-  const opts = `<div class="opts">${c.order.map((oi, k) => `<div class="opt ${done ? (oi === 0 ? 'right' : 'dim') : ''}"><span class="k">${LETTERS[k]}</span><span>${esc(q.o[oi])}</span>${done ? `<small class="cnt">${ltr(c.pk.filter(p => c.picks[p] && c.picks[p].oi === oi).length)}</small>` : ''}</div>`).join('')}</div>`;
+  const opts = `<div class="opts ${qaCls('a' + c.id, done ? 'done' : 'answer')}">${c.order.map((oi, k) => `<div class="opt ${done ? (oi === 0 ? 'right' : 'dim') : ''}"><span class="k">${LETTERS[k]}</span><span>${esc(q.o[oi])}</span>${done ? `<small class="cnt">${ltr(c.pk.filter(p => c.picks[p] && c.picks[p].oi === oi).length)}</small>` : ''}</div>`).join('')}</div>`;
   if (!done) return card + opts + progress(c.pk.filter(k => c.picks[k]).length, c.pk.length, 'جاوب') + `<button class="btn ghost block" data-act="allEnd">إنهاء الآن وكشف الجواب</button>`;
   const t = k => (c.picks[k] || {}).ms || 1e9;
   const rows = c.pk.slice().sort((a, b) => t(a) - t(b)).map(k => { const p = c.picks[k], ok = p && p.oi === 0;
@@ -6945,7 +6989,7 @@ function partBoard(c, q, def){
   const head = `${b.gold && !reveal ? '<div class="goldban">⭐ السؤال الذهبي! النقاط مضاعفة</div>' : ''}<article class="qcard"><div class="meta"><span class="chip">${CAT_NAMES[c.bd.cats[b.ci]]}</span>${lvlDots(bq.lvl)}<span class="pts">${ltr(steal ? Math.round(boardPts(c) / 2) : boardPts(c))}</span></div><p class="qtext">${esc(bq.q)}</p>
     <div class="howround">${steal ? `سرقة! فريق ${tnm(1 - b.team)} يجاوب بنص النقاط` : `يجاوب فريق ${tnm(b.team)}`}</div></article>`;
   const cls = oi => !reveal && c.stage !== 'bwrong' ? '' : oi === 0 && reveal ? 'right' : (oi === c.bpick || oi === c.bspick) ? 'wrong' : '';
-  const opts = `<div class="opts">${c.border.map((oi, k) => { const off = (steal && oi === c.bpick) || reveal || c.stage === 'bwrong'; return `<button class="opt ${cls(oi)}" data-act="bAns" data-i="${oi}" ${off ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(bq.o[oi])}</span></button>`; }).join('')}</div>`;
+  const opts = `<div class="opts ${qaCls('b' + b.id,c.stage === 'bwrong' || reveal ? (reveal ? 'reveal' : 'bwrong') : 'answer')}">${c.border.map((oi, k) => { const off = (steal && oi === c.bpick) || reveal || c.stage === 'bwrong'; return `<button class="opt ${cls(oi)}" data-act="bAns" data-i="${oi}" ${off ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(bq.o[oi])}</span></button>`; }).join('')}</div>`;
   if (c.stage === 'bwrong') return head + opts + `<div class="verdict no"><span class="big">جواب خاطئ!</span></div><div class="actions"><button class="btn team" style="--tc:${TEAM_COLORS[1 - b.team]}" data-act="bSteal">سرقة لفريق ${esc(S.teams[1 - b.team].name)}</button><button class="btn ghost" data-act="bNoSteal">بدون سرقة</button></div>`;
   if (reveal) { const r = c.bd.res[bKey(b.ci, b.vi)]; return head + opts + `<div class="verdict ${r && r.t != null ? 'ok' : 'no'}"><span class="big">${r && r.t != null ? `${ltr('+' + r.p)} لفريق ${tnm(r.t)}${r.steal ? ' (سرقة)' : ''}` : 'ما أحد كسب هالسؤال'}</span>${bq.note ? `<span class="note">${esc(bq.note)}</span>` : ''}</div><button class="btn primary block" data-act="bNext">${boardLeft(c).length ? 'رجوع للوحة' : 'النتيجة'}</button>`; }
   return head + opts + (phonesOn() ? '<p class="subtle">يجاوبون من جوالاتهم، أو اضغط الجواب اللي يكولونه.</p>' : '');
@@ -7014,7 +7058,7 @@ function partTrust(c, q, def){
     <div class="opts">${TRUST_BETS.map((b, i) => `<button class="opt" style="--tc:${tc}" data-act="tsBet" data-i="${i}"><span class="k">×${b.x}</span><span>${b.n}<small class="who">صح ${ltr('+' + base * b.x)} · خطأ ${b.lose ? ltr('−' + base * b.lose) : 'ما تخسرون'}</small></span></button>`).join('')}</div>`;
   const b = TRUST_BETS[c.bet || 0], done = c.stage === 'done';
   const card = `<article class="qcard">${meta}<p class="qtext">${esc(q.q)}</p><div class="howround">${who} يجاوب لحاله · الرهان ×${b.x}${done ? '' : ' · ممنوع المساعدة!'}</div></article>`;
-  const opts = `<div class="opts">${c.order.map((oi, k) => `<button class="opt ${done ? (oi === 0 ? 'right' : oi === c.pick ? 'wrong' : '') : ''}" data-act="tsPick" data-i="${oi}" ${done ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>`;
+  const opts = `<div class="opts ${qaCls('t' + c.id, done ? 'done' : 'answer')}">${c.order.map((oi, k) => `<button class="opt ${done ? (oi === 0 ? 'right' : oi === c.pick ? 'wrong' : 'dim') : ''}" data-act="tsPick" data-i="${oi}" ${done ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>`;
   if (!done) return card + opts + (c.who ? '<p class="subtle">يجاوب من جواله، أو اضغط هنا اللي يكوله.</p>' : '<p class="subtle">اضغط الجواب اللي يكوله.</p>');
   const msg = c.result === 'correct' ? `صح! ${ltr('+' + c.gained)} لفريق ${tn(c.team)}` : c.lost ? `${c.result === 'timeout' ? 'انتهى الوقت' : 'خطأ'}، خسرتوا ${ltr(c.lost)} 😬` : (c.result === 'timeout' ? 'انتهى الوقت' : 'خطأ، بس الرهان كان مضمون');
   return card + opts + `<div class="verdict ${c.result === 'correct' ? 'ok' : 'no'}"><span class="big">${msg}</span></div>` + nextBtn();
@@ -7042,7 +7086,7 @@ function partGreed(c, q0, def){
   const head = `<article class="qcard"><div class="meta"><span class="chip">اطمع أو وقّف</span><span>السؤال ${ltr(Math.min(c.gi + 1, L))} من ${ltr(L)}</span><span class="pts">${ltr(GREED_STEPS[Math.min(c.gi, L - 1)] * m)}</span></div>
     <div class="potline">الرصيد: <b>${ltr(c.pot || 0)}</b></div>${ladder}
     ${q && (c.stage === 'answer' || failed) ? `<p class="qtext">${esc(q.q)}</p>` : ''}</article>`;
-  if (c.stage === 'answer') return head + `<div class="opts">${c.gord.map((oi, k) => `<button class="opt ${c.gone.includes(oi) ? 'gone' : ''}" data-act="gPick" data-i="${oi}" ${c.gone.includes(oi) ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>
+  if (c.stage === 'answer') return head + `<div class="opts ${qaCls('g' + c.id + '.' + (q && q.id), 'answer')}">${c.gord.map((oi, k) => `<button class="opt ${c.gone.includes(oi) ? 'gone' : ''}" data-act="gPick" data-i="${oi}" ${c.gone.includes(oi) ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>
     ${c.pot ? `<p class="subtle">إذا أخطأتم تخسرون ${ltr(c.pot)}!</p>` : ''}`;
   if (c.stage === 'choice') return head + `<div class="verdict ok"><span class="big">صح! رصيدكم ${ltr(c.pot)}</span><span class="note">السؤال الجاي على ${ltr(GREED_STEPS[c.gi] * m)}، بس الخطأ يضيّع كلشي.</span></div>
     <div class="actions"><button class="btn good" data-act="gGo">اطمع 🔥 كمّلوا</button><button class="btn team" data-act="gBank">وقّف وخذ ${ltr(c.pot)}</button></div>`;
