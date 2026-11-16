@@ -76,16 +76,26 @@
 <style>
 /* صفحة اللاعب على جواله: شاشة واحدة كبيرة الأزرار، تتغير حسب ما يرسله التابلت */
 :root{
-  --felt:#0d2622; --felt-2:#133530; --felt-3:#1b473f; --rim:rgba(240,226,190,.14);
-  --ink:#f5eddb; --muted:#a7b8ad; --brass:#e3b553; --brass-deep:#9c7724; --brass-ink:#2b1e05;
-  --team-a:#f08a4b; --team-b:#5fb3e8; --good:#4fc98b; --bad:#ec5a5f;
+  --felt:#120f26; --felt-2:#1d1940; --felt-3:#2b2560; --rim:rgba(200,190,255,.15);
+  --ink:#f7f3ff; --muted:#aaa3d0; --brass:#ffc94a; --brass-deep:#c98f12; --brass-ink:#2a1a00;
+  --team-a:#ff6b6b; --team-b:#3fd0e0; --good:#46e0a0; --bad:#ff5c7a;
   --display:"Lalezar","IBM Plex Sans Arabic",Tahoma,sans-serif;
   --body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;
   color-scheme:dark;
 }
+:root[data-theme="sunset"]{
+  --felt:#1e0e1c; --felt-2:#2c1528; --felt-3:#45203d; --rim:rgba(255,200,215,.15);
+  --ink:#fff2ec; --muted:#cfa9b8; --brass:#ffad66; --brass-deep:#c66a26; --brass-ink:#2b1203;
+  --team-a:#ff5f8f; --team-b:#6cc6ff; --good:#5ddba6; --bad:#ff4d5e;
+}
+:root[data-theme="ocean"]{
+  --felt:#06171f; --felt-2:#0b2632; --felt-3:#123a4a; --rim:rgba(180,230,255,.15);
+  --ink:#eefaff; --muted:#93b6c4; --brass:#ffd166; --brass-deep:#c9952a; --brass-ink:#2a1d00;
+  --team-a:#ff8a5c; --team-b:#8ea8ff; --good:#46d39a; --bad:#ff5f6d;
+}
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;background:var(--felt);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;direction:rtl;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+body{margin:0;background:radial-gradient(120% 50% at 50% -10%,var(--felt-3),transparent 65%) var(--felt);background-attachment:fixed;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;direction:rtl;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer;touch-action:manipulation}
 input{-webkit-user-select:text;user-select:text}
@@ -361,7 +371,7 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp
 const ltr = s => `<bdi dir="ltr">${s}</bdi>`;
 const TC = ['var(--team-a)', 'var(--team-b)'];
 const LET = ['أ','ب','ج','د','هـ','و','ز','ح'];
-const PCOL = ['#f5eddb', '#f08a4b', '#5fb3e8', '#4fc98b', '#ec5a5f'];   // نفس ألوان التابلت
+const PCOL = ['#f7f3ff', '#ff6b6b', '#3fd0e0', '#46e0a0', '#ffc94a'];   // نفس ألوان التابلت
 
 // وضع التجربة: الصفحة تعمل داخل إطار على التابلت، وتتكلم مع اللعبة مباشرة بدل الشبكة
 const EMBED = qs.get('embed') === '1';
@@ -639,6 +649,7 @@ function body(){
 }
 
 function render(){
+  if (view && view.th && document.documentElement.dataset.theme !== view.th) document.documentElement.dataset.theme = view.th;
   const f = document.activeElement && document.activeElement.id;
   const val = f && document.getElementById(f) ? document.getElementById(f).value : null;
   app.innerHTML = header() + body();

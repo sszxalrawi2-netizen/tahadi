@@ -7,17 +7,28 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Lalezar&display=swap">
 <style>
 /* Layout: one centered column like a card table in a majlis — deep green felt, brass trim, two team colours. Sticky scoreboard while playing. */
+/* الهوية: «ليلة الخميس» نيلي وذهبي، ومعها «غروب» و«بحر» من الإعدادات */
 :root{
-  --felt:#0d2622; --felt-2:#133530; --felt-3:#1b473f; --rim:rgba(240,226,190,.14);
-  --ink:#f5eddb; --muted:#a7b8ad; --brass:#e3b553; --brass-deep:#9c7724; --brass-ink:#2b1e05;
-  --team-a:#f08a4b; --team-b:#5fb3e8; --good:#4fc98b; --bad:#ec5a5f; --shade:rgba(3,12,10,.62);
+  --felt:#120f26; --felt-2:#1d1940; --felt-3:#2b2560; --rim:rgba(200,190,255,.15);
+  --ink:#f7f3ff; --muted:#aaa3d0; --brass:#ffc94a; --brass-deep:#c98f12; --brass-ink:#2a1a00;
+  --team-a:#ff6b6b; --team-b:#3fd0e0; --good:#46e0a0; --bad:#ff5c7a; --shade:rgba(6,4,20,.65);
   --display:"Lalezar","IBM Plex Sans Arabic",Tahoma,sans-serif;
   --body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;
   color-scheme:dark;
 }
+:root[data-theme="sunset"]{
+  --felt:#1e0e1c; --felt-2:#2c1528; --felt-3:#45203d; --rim:rgba(255,200,215,.15);
+  --ink:#fff2ec; --muted:#cfa9b8; --brass:#ffad66; --brass-deep:#c66a26; --brass-ink:#2b1203;
+  --team-a:#ff5f8f; --team-b:#6cc6ff; --good:#5ddba6; --bad:#ff4d5e; --shade:rgba(15,3,12,.65);
+}
+:root[data-theme="ocean"]{
+  --felt:#06171f; --felt-2:#0b2632; --felt-3:#123a4a; --rim:rgba(180,230,255,.15);
+  --ink:#eefaff; --muted:#93b6c4; --brass:#ffd166; --brass-deep:#c9952a; --brass-ink:#2a1d00;
+  --team-a:#ff8a5c; --team-b:#8ea8ff; --good:#46d39a; --bad:#ff5f6d; --shade:rgba(2,10,14,.65);
+}
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;background-color:var(--felt);background-image:radial-gradient(130% 70% at 50% -10%,var(--felt-3) 0%,var(--felt) 62%);background-attachment:fixed;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;direction:rtl;-webkit-tap-highlight-color:transparent}
+body{margin:0;background-color:var(--felt);background-image:radial-gradient(130% 60% at 50% -12%,var(--felt-3) 0%,transparent 60%),radial-gradient(70% 45% at 0% 105%,color-mix(in srgb,var(--team-a) 14%,transparent),transparent 70%),radial-gradient(70% 45% at 100% 105%,color-mix(in srgb,var(--team-b) 14%,transparent),transparent 70%);background-attachment:fixed;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;direction:rtl;-webkit-tap-highlight-color:transparent}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--felt)}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer;touch-action:manipulation}
@@ -31,7 +42,12 @@ bdi{unicode-bidi:isolate}
 /* Home */
 .hero{text-align:center;padding-block:22px 6px}
 .eyebrow{font-size:.82rem;letter-spacing:.04em;color:var(--muted);font-weight:500}
-.hero h1{font-family:var(--display);font-weight:400;font-size:clamp(3.2rem,15vw,4.8rem);line-height:1.05;margin:.12em 0 0;color:var(--brass);text-shadow:0 4px 0 var(--brass-ink);text-wrap:balance}
+.hero h1{font-family:var(--display);font-weight:400;font-size:clamp(3.2rem,15vw,4.8rem);line-height:1.05;margin:.12em 0 0;color:var(--brass);background:linear-gradient(100deg,var(--brass) 20%,var(--team-a) 80%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 0 var(--brass-ink));text-wrap:balance}
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.themes button{border:2px solid var(--rim);border-radius:14px;padding:10px 6px;background:var(--felt);display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:700;font-size:.9rem}
+.themes button[aria-pressed="true"]{border-color:var(--brass)}
+.themes .sw{display:flex;gap:3px}
+.themes .sw i{width:16px;height:16px;border-radius:50%;display:block}
 .hero p{margin:.5em auto 0;color:var(--muted);max-width:38ch;text-wrap:pretty}
 .panel{background:var(--felt-2);border:1px solid var(--rim);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
 .panel h2{font-family:var(--display);font-weight:400;font-size:1.45rem;margin:0;line-height:1.2}
@@ -441,10 +457,23 @@ button.bcell:active{transform:scale(.96)}
 .pentools .btn + .btn{margin-inline-start:0}
 .pen{width:36px;height:36px;border-radius:50%;border:3px solid var(--felt-3);background:var(--pc);padding:0;flex:none}
 .pen.on{border-color:var(--ink);transform:scale(1.12)}
-.wheelbox{position:relative;width:min(84vw,340px);max-width:100%;aspect-ratio:1;margin:6px auto 0}
-.wclip{width:100%;height:100%;border-radius:50%;overflow:hidden;box-shadow:0 10px 26px var(--shade)}
-.wheelbox svg{display:block;width:100%;height:100%}
-.wpointer{position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-top:28px solid var(--ink);z-index:2;filter:drop-shadow(0 2px 3px var(--shade))}
+/* بكرة الفقرات: أسطوانة عمودية وذراع على اليمين */
+.slot{display:flex;align-items:center;justify-content:center;direction:ltr;margin:4px auto 0;max-width:100%}
+.drumbox{position:relative;width:min(68vw,340px);height:300px;border-radius:20px;padding:10px;background:linear-gradient(160deg,color-mix(in srgb,var(--brass) 55%,var(--felt-3)),var(--felt-3) 40%,color-mix(in srgb,var(--brass) 30%,var(--felt-2)));box-shadow:0 16px 36px var(--shade),inset 0 1px 0 color-mix(in srgb,var(--ink) 30%,transparent);flex:none}
+.drum{position:relative;height:100%;border-radius:12px;overflow:hidden;background:linear-gradient(var(--felt) 0%,var(--felt-2) 30%,color-mix(in srgb,var(--felt-3) 70%,var(--ink)) 50%,var(--felt-2) 70%,var(--felt) 100%);box-shadow:inset 0 18px 24px rgba(0,0,0,.55),inset 0 -18px 24px rgba(0,0,0,.55)}
+.drow{position:absolute;left:0;right:0;top:50%;height:48px;margin-top:-24px;display:flex;align-items:center;justify-content:center;padding:0 16px;font-family:var(--display);font-size:clamp(1.25rem,5vw,1.6rem);line-height:1;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:rtl;will-change:transform}
+.drow.on{color:var(--brass);text-shadow:0 0 18px color-mix(in srgb,var(--brass) 60%,transparent)}
+.dwin{position:absolute;left:10px;right:10px;top:50%;height:54px;margin-top:-27px;border-top:2px solid color-mix(in srgb,var(--ink) 55%,transparent);border-bottom:2px solid color-mix(in srgb,var(--ink) 55%,transparent);background:color-mix(in srgb,var(--brass) 9%,transparent);z-index:2;pointer-events:none}
+.dwin::before,.dwin::after{content:"";position:absolute;top:50%;margin-top:-8px;border:8px solid transparent}
+.dwin::before{left:-10px;border-left:10px solid var(--tc)}
+.dwin::after{right:-10px;border-right:10px solid var(--tc)}
+.lever{position:relative;width:54px;height:250px;margin-left:-2px;flex:none;touch-action:none;cursor:grab}
+.lever.done{opacity:.45;cursor:default}
+.lmount{position:absolute;left:0;top:50%;width:26px;height:46px;margin-top:-23px;border-radius:0 10px 10px 0;background:linear-gradient(90deg,var(--felt-3),color-mix(in srgb,var(--ink) 25%,var(--felt-3)));box-shadow:0 4px 10px var(--shade)}
+.lmount::after{content:"";position:absolute;right:4px;top:50%;width:14px;height:14px;margin-top:-7px;border-radius:50%;background:var(--felt);border:3px solid color-mix(in srgb,var(--ink) 60%,transparent)}
+.lrod{position:absolute;left:30px;width:7px;border-radius:4px;background:linear-gradient(90deg,#d8d8e4,#8d8da0);box-shadow:0 2px 6px var(--shade)}
+.lknob{position:absolute;left:14px;width:40px;height:40px;margin-top:-20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffb3b3,#ff3b4e 45%,#a5001b);box-shadow:0 6px 14px rgba(0,0,0,.5),0 0 18px rgba(255,59,78,.45)}
+.lever.spring .lknob,.lever.spring .lrod{transition:top .35s cubic-bezier(.3,1.6,.5,1),height .35s cubic-bezier(.3,1.6,.5,1)}
 .buzzers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .buzzer{min-height:150px;border:none;border-radius:22px;background:var(--tc);color:var(--felt);font-family:var(--display);font-size:clamp(1.4rem,6vw,2rem);line-height:1.2;padding:12px;box-shadow:0 8px 0 color-mix(in srgb,var(--tc) 55%,var(--felt));touch-action:manipulation;min-width:0;overflow-wrap:anywhere}
 .buzzer:active{transform:translateY(5px);box-shadow:0 3px 0 color-mix(in srgb,var(--tc) 55%,var(--felt))}
@@ -4003,7 +4032,7 @@ function netIn(m){
 }
 function viewFor(key){
   let v; try { v = key && PL[key] ? phoneView(key) : {k:'join', vid:'join'}; } catch(e) { v = {k:'wait', vid:'err', title:'انظروا إلى التابلت'}; }
-  v.teams = teamNames(); v.scores = S && !onHome ? S.teams.map(t => t.score) : null; v.you = key ? PL[key] : null;
+  v.teams = teamNames(); v.scores = S && !onHome ? S.teams.map(t => t.score) : null; v.you = key ? PL[key] : null; v.th = P.theme || 'night';
   return v;
 }
 function netSync(){
@@ -5316,7 +5345,7 @@ function chainEnd(){
 }
 
 // الرسم المباشر على التابلت
-const PCOL = ['#f5eddb', '#f08a4b', '#5fb3e8', '#4fc98b', '#ec5a5f'];
+const PCOL = ['#f7f3ff', '#ff6b6b', '#3fd0e0', '#46e0a0', '#ffc94a'];
 function paintLive(only){
   const cv = document.getElementById('livepad'), c = S && S.cur; if (!cv || !c) return;
   const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1, W = r.width, H = r.height;
@@ -5697,6 +5726,8 @@ function nextQuestion(skip){
   save(); render();
 }
 
+const THEMES = [['night', 'ليلة الخميس', ['#2b2560', '#ffc94a', '#ff6b6b', '#3fd0e0']], ['sunset', 'غروب', ['#45203d', '#ffad66', '#ff5f8f', '#6cc6ff']], ['ocean', 'بحر', ['#123a4a', '#ffd166', '#ff8a5c', '#8ea8ff']]];
+const applyTheme = () => { const t = P.theme || 'night'; if (document.documentElement.dataset.theme !== t) document.documentElement.dataset.theme = t; };
 /* --- عجلة الفقرات --- */
 // الجولة الصعبة لا تدخل العجلة وتبقى في الختام
 const wheelOpts = r => S.rounds.slice(r).filter(id => id !== 'hard');
@@ -5705,44 +5736,77 @@ function prepRound(){
   if (wheelNeeded(S.r)) { S.wh = {opts:wheelOpts(S.r), team:S.r % 2, rot:0, spun:false, spinning:false, choice:null}; S.cur = null; S.phase = 'wheel'; return; }
   S.wh = null; buildRound();
 }
+/* البكرة: أسماء الفقرات على أسطوانة تدور عمودياً، والذراع على جنبها يشغّلها */
+const DRUM_ANG = 24, DRUM_R = 120, DRUM_ROWS = 4;   // درجة كل صف، نصف قطر الأسطوانة، عدد الصفوف فوق وتحت الوسط
+let drumPos = 0;
+function drumRows(W, pos){
+  const n = W.opts.length, base = Math.round(pos);
+  let h = '';
+  for (let k = -DRUM_ROWS; k <= DRUM_ROWS; k++) {
+    const idx = base + k, a = (idx - pos) * DRUM_ANG; if (Math.abs(a) >= 88) continue;
+    const r = a * Math.PI / 180, id = W.opts[((idx % n) + n) % n], on = W.spun && idx === Math.round(pos);
+    h += `<div class="drow${on ? ' on' : ''}" style="transform:translateY(${(Math.sin(r) * DRUM_R).toFixed(1)}px) scaleY(${Math.cos(r).toFixed(3)});opacity:${Math.pow(Math.cos(r), 1.6).toFixed(3)}">${esc(RD[id].name)}</div>`;
+  }
+  return h;
+}
+function drumPaint(pos){ const el = document.getElementById('drum'); if (el && S.wh) el.innerHTML = drumRows(S.wh, pos); }
 function wheelSpin(){
   const W = S.wh; if (!W || W.spinning || W.spun) return;
-  const n = W.opts.length, seg = 360 / n, k = Math.floor(Math.random() * n);
-  const jitter = (Math.random() - .5) * seg * .6;
+  const n = W.opts.length, k = Math.floor(Math.random() * n), from = W.rot || 0, cur = Math.round(from);
   W.choice = W.opts[k];
-  W.rot = 360 * 6 + (360 - (k + .5) * seg) + jitter;   // القطعة k تقف تحت المؤشر في الأعلى
+  W.rot = cur + n * Math.max(3, Math.ceil(24 / n)) + (((k - cur) % n) + n) % n;   // الصف k يوقف بالوسط
   W.spinning = true; save();
-  const el = document.getElementById('wheel');
-  if (el) { el.style.transition = 'transform 4.6s cubic-bezier(.12,.7,.12,1)'; el.style.transform = `rotate(${W.rot}deg)`; }
   const btn = document.querySelector('[data-act=whSpin]'); if (btn) btn.disabled = true;
-  for (let t = 0, gap = 55; t < 4300; gap *= 1.11, t += gap) setTimeout(() => sfx('tick'), t);
-  setTimeout(() => { if (S.wh !== W) return; W.spinning = false; W.spun = true; sfx('fanfare'); save(); render(); }, 4800);
+  const dur = 4600, t0 = performance.now(), ease = x => 1 - Math.pow(1 - x, 4);
+  let last = Math.floor(from);
+  // تنتهي حتى لو الشاشة وقفت الحركة (مثلاً التطبيق بالخلفية)
+  const finish = () => { if (S.wh !== W || !W.spinning) return; drumPos = W.rot; W.spinning = false; W.spun = true; sfx('fanfare'); save(); render(); };
+  const step = now => {
+    if (S.wh !== W || !W.spinning) return;
+    const x = Math.min(1, (now - t0) / dur);
+    drumPos = from + (W.rot - from) * ease(x);
+    if (Math.floor(drumPos) !== last) { last = Math.floor(drumPos); sfx('tick'); }
+    drumPaint(drumPos);
+    if (x < 1) requestAnimationFrame(step); else finish();
+  };
+  requestAnimationFrame(step); setTimeout(finish, dur + 400);
+}
+// الذراع: اسحبه لتحت، أو اضغطه
+function mountLever(){
+  const lv = document.getElementById('lever'); if (!lv || lv.dataset.on) return; lv.dataset.on = 1;
+  const knob = lv.querySelector('.lknob'), rod = lv.querySelector('.lrod'), H = lv.clientHeight, top = 22, bot = H - 22, mid = H / 2;
+  const put = y => { knob.style.top = y + 'px'; rod.style.top = Math.min(y, mid) + 'px'; rod.style.height = Math.abs(y - mid) + 'px'; };
+  const release = () => { lv.classList.add('spring'); put(top); setTimeout(() => lv.classList.remove('spring'), 450); };
+  const pull = () => { if (!S.wh || S.wh.spinning || S.wh.spun) { release(); return; } lv.classList.add('spring'); put(bot); sfx('tap'); setTimeout(() => { wheelSpin(); release(); }, 260); };
+  put(top);
+  let y0 = null, moved = false, fired = false;
+  lv.addEventListener('pointerdown', e => { if (!S.wh || S.wh.spinning || S.wh.spun) return; e.preventDefault(); try { lv.setPointerCapture(e.pointerId); } catch(_){} y0 = e.clientY; moved = false; fired = false; lv.classList.remove('spring'); });
+  lv.addEventListener('pointermove', e => {
+    if (y0 == null || fired) return;
+    const d = Math.max(0, e.clientY - y0); if (d > 6) moved = true;
+    put(Math.min(bot, top + d));
+    if (top + d >= bot - 10) { fired = true; y0 = null; pull(); }
+  });
+  const up = () => { if (y0 == null) return; y0 = null; if (!moved && !fired) pull(); else if (!fired) release(); };
+  lv.addEventListener('pointerup', up); lv.addEventListener('pointercancel', up);
+  lv._pull = pull;
 }
 function viewWheel(){
-  const W = S.wh, n = W.opts.length, seg = 360 / n, t = W.team;
-  const fills = ['var(--team-a)', 'var(--brass)', 'var(--team-b)', 'var(--good)'];
-  const fs = n <= 5 ? 9 : n <= 8 ? 7.5 : n <= 12 ? 6.2 : 5.2;
-  const pt = a => [100 + 92 * Math.cos(a * Math.PI / 180), 100 + 92 * Math.sin(a * Math.PI / 180)];
-  const parts = W.opts.map((id, i) => {
-    const a0 = -90 + i * seg, a1 = a0 + seg, mid = a0 + seg / 2, [x0, y0] = pt(a0), [x1, y1] = pt(a1);
-    const fill = fills[(n % fills.length === 1 && i === n - 1) ? 1 : i % fills.length];
-    const m = ((mid % 360) + 360) % 360, flip = m > 90 && m < 270;
-    const label = `<text x="${flip ? 44 : 156}" y="100" transform="rotate(${flip ? mid + 180 : mid} 100 100)" text-anchor="middle" dominant-baseline="middle" font-size="${fs}" font-family="IBM Plex Sans Arabic, Tahoma, sans-serif" font-weight="700" fill="var(--felt)">${esc(RD[id].name)}</text>`;
-    const path = n === 1 ? `<circle cx="100" cy="100" r="92" fill="${fill}"/>` : `<path d="M100 100 L${x0.toFixed(2)} ${y0.toFixed(2)} A92 92 0 ${seg > 180 ? 1 : 0} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z" fill="${fill}" stroke="var(--felt)" stroke-width="1.2"/>`;
-    return path + label;
-  }).join('');
+  const W = S.wh, t = W.team;
+  if (!W.spinning) drumPos = W.rot || 0;
   const choice = W.spun ? RD[W.choice] : null;
   return `<div class="screen" style="--tc:${TEAM_COLORS[t]}">
     ${scorebar(t, true)}
-    <div class="stage" style="padding-block:10px 0"><div class="num">الجولة ${S.r + 1} من ${S.rounds.length}</div><h2>عجلة الفقرات</h2><p>الدور على فريق <b style="color:var(--tc)">${esc(S.teams[t].name)}</b> ليدير العجلة</p></div>
-    <div class="wheelbox"><div class="wpointer"></div>
-      <div class="wclip"><svg id="wheel" viewBox="0 0 200 200" style="transform:rotate(${W.rot}deg)" role="img" aria-label="عجلة الفقرات"><circle cx="100" cy="100" r="96" fill="var(--felt-3)"/>${parts}<circle cx="100" cy="100" r="11" fill="var(--felt)" stroke="var(--brass)" stroke-width="3"/></svg></div>
+    <div class="stage" style="padding-block:10px 0"><div class="num">الجولة ${S.r + 1} من ${S.rounds.length}</div><h2>بكرة الفقرات 🎰</h2><p>الدور على فريق <b style="color:var(--tc)">${esc(S.teams[t].name)}</b>: اسحبوا الذراع!</p></div>
+    <div class="slot">
+      <div class="drumbox"><div class="dwin"></div><div class="drum" id="drum" role="img" aria-label="بكرة الفقرات">${drumRows(W, drumPos)}</div></div>
+      <div class="lever${W.spun ? ' done' : ''}" id="lever" aria-hidden="true"><span class="lmount"></span><span class="lrod"></span><span class="lknob"></span></div>
     </div>
     ${choice
       ? `<div class="verdict ok" style="text-align:center;align-items:center"><span class="label">الفقرة التالية</span><span class="big">${choice.name}</span><span class="note">${choice.desc}</span></div>
          <button class="btn primary block" data-act="whGo">ابدأ الجولة</button>`
-      : `<button class="btn team block" data-act="whSpin" ${W.spinning ? 'disabled' : ''}>لفّ العجلة</button>`}
-    <p class="subtle">الفقرات الباقية في العجلة: ${n}${S.rounds.includes('hard') ? '، والجولة الصعبة في الختام' : ''}</p>
+      : `<button class="btn team block" data-act="whSpin" ${W.spinning ? 'disabled' : ''}>🎰 اسحب الذراع</button>`}
+    <p class="subtle">الفقرات الباقية في البكرة: ${W.opts.length}${S.rounds.includes('hard') ? '، والجولة الصعبة في الختام' : ''}</p>
   </div>`;
 }
 /* --- رهان الختام --- */
@@ -5816,7 +5880,7 @@ function viewHome(){
     <section class="panel resume">
       <h2>لعبة لم تكتمل</h2>
       <div class="vs"><span style="color:var(--team-a)">${esc(S.teams[0].name)} ${ltr(S.teams[0].score)}</span><span class="muted">مقابل</span><span style="color:var(--team-b)">${esc(S.teams[1].name)} ${ltr(S.teams[1].score)}</span></div>
-      <div class="muted">الجولة ${S.r + 1} من ${S.rounds.length}: ${S.phase === 'wheel' ? 'عجلة الفقرات' : esc(RD[S.rounds[S.r]].name)}</div>
+      <div class="muted">الجولة ${S.r + 1} من ${S.rounds.length}: ${S.phase === 'wheel' ? 'بكرة الفقرات' : esc(RD[S.rounds[S.r]].name)}</div>
       <div class="actions"><button class="btn primary" data-act="resume">استكمال اللعبة</button><button class="btn ghost" data-act="discard">حذفها</button></div>
     </section>` : '';
   const seg = (key, vals, labels) => `<div class="seg">${vals.map((v, i) => `<button type="button" data-act="seg" data-key="${key}" data-val="${v}" aria-pressed="${P[key] == v}">${labels ? labels[i] : v}</button>`).join('')}</div>`;
@@ -5855,13 +5919,14 @@ function viewHome(){
     </section>
     <section class="panel">
       <h2>الإعدادات</h2>
+      <div class="field"><span class="label">ألوان اللعبة</span><div class="themes">${THEMES.map(([k, n, cs]) => `<button type="button" data-act="theme" data-v="${k}" aria-pressed="${(P.theme || 'night') === k}"><span class="sw">${cs.map(c => `<i style="background:${c}"></i>`).join('')}</span>${n}</button>`).join('')}</div></div>
       <div class="field"><span class="label">عدد الأسئلة لكل فريق في الجولة</span>${seg('perTeam', [1,2,3,4])}</div>
       <div class="field"><span class="label">وقت الإجابة (بالثواني)</span>${seg('time', [30,45,60,90])}</div>
       <div class="field"><span class="label">وسائل المساعدة</span>${seg('llMode', ['game','round'], ['مرة في اللعبة كلها','تتجدد كل جولة'])}</div>
       ${sw('direct', 'الخيارات مخفية في البداية', 'الجواب المباشر بدون خيارات يأخذ ضعف النقاط')}
       ${sw('steal', 'سرقة السؤال', 'إذا أخطأ الفريق يجاوب الآخر بنصف النقاط')}
       ${sw('wager', 'رهان الختام', 'سؤال أخير يراهن فيه كل فريق سراً على نقاطه')}
-      ${sw('wheel', 'عجلة الفقرات', 'كل فريق يدير العجلة بدوره ليختار الفقرة التالية')}
+      ${sw('wheel', 'بكرة الفقرات 🎰', 'كل فريق بدوره يسحب الذراع وتختار البكرة الفقرة الجاية')}
       ${sw('sound', 'الأصوات', '')}
       ${NET.avail || P.test ? sw('phoneQ', 'الأسئلة على جوالات الفريق', 'في الفقرات العادية: السؤال يظهر على جوالات الفريق اللي عليه الدور، ويجاوبون بتصويت الأغلبية') : ''}
       ${sw('fun', 'مفاجآت ⭐🔥', 'سؤال ذهبي بنقاط مضاعفة يظهر فجأة، ومكافأة للفريق اللي يجاوب 3 مرات صح ورا بعض')}
@@ -5905,7 +5970,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611161343';
+const GAME_VER = '202611161655';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -6971,7 +7036,7 @@ function viewSheet(){
 }
 
 function render(){
-  const app = $('#app');
+  const app = $('#app'); applyTheme();
   if (onHome || !S) app.innerHTML = viewHome();
   else if (S.phase === 'intro') app.innerHTML = viewIntro();
   else if (S.phase === 'question' && S.cur) app.innerHTML = viewQuestion();
@@ -6983,7 +7048,7 @@ function render(){
   $('#sheet').innerHTML = viewSheet();
   bump = null; newClue = false;
   if (S && !onHome && S.phase === 'question' && S.cur && S.cur.t === 'reverse' && rev.id !== S.cur.id) loadBuiltin(S.cur.id);
-  mountPad();
+  mountPad(); mountLever();
   if (S && !onHome && S.phase === 'end' && !S.celebrated) { S.celebrated = true; save(); confetti(); }
   if (S && !onHome && S.phase === 'question' && S.cur && S.cur.t === 'react' && S.cur.stage === 'arm' && !reactH) reactArm();
   if (document.getElementById('livepad')) paintLive();
@@ -7213,6 +7278,7 @@ document.addEventListener('click', e => {
     case 'timer': toggleTimer(); break;
     case 'menu': openMenu(); break;
     case 'closeMenu': closeMenu(); break;
+    case 'theme': P.theme = el.dataset.v; savePrefs(); render(); break;
     case 'guide': guideId = el.dataset.id; render(); break;
     case 'closeGuide': if (e.target === el || el.tagName === 'BUTTON') { guideId = null; render(); } break;
     case 'guidePick': { const id = el.dataset.id; P.rounds = P.rounds.includes(id) ? P.rounds.filter(x => x !== id) : P.rounds.concat([id]); savePrefs(); guideId = null; render(); break; }
@@ -7223,7 +7289,7 @@ document.addEventListener('click', e => {
       menuOpen = false; confirmEnd = false; menuResume = false; timerStop(); S.cur = null; S.phase = 'end'; sfx('fanfare'); save(); go(render); break;
     case 'home': menuOpen = false; menuResume = false; timerStop(); save(); onHome = true; go(render); break;
     case 'nextRound': S.r++; prepRound(); save(); go(render); break;
-    case 'whSpin': wheelSpin(); break;
+    case 'whSpin': { const lv = document.getElementById('lever'); if (lv && lv._pull) lv._pull(); else wheelSpin(); break; }
     case 'whGo': if (S.wh && S.wh.spun) { const id = S.wh.choice, k = S.rounds.indexOf(id, S.r); S.rounds.splice(k, 1); S.rounds.splice(S.r, 0, id); S.wh = null; buildRound(); save(); go(render); } break;
     case 'again': { const names = S.teams.map(t => t.name); go(() => newGame(Object.assign({}, S.settings), names)); break; }
     case 'newSetup': S = null; save(); onHome = true; go(render); break;
