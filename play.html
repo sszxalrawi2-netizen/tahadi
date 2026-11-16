@@ -10,7 +10,7 @@
 :root{
   --felt:#120f26; --felt-2:#1d1940; --felt-3:#2b2560; --rim:rgba(200,190,255,.15);
   --ink:#f7f3ff; --muted:#aaa3d0; --brass:#ffc94a; --brass-deep:#c98f12; --brass-ink:#2a1a00;
-  --team-a:#ff6b6b; --team-b:#3fd0e0; --good:#46e0a0; --bad:#ff5c7a;
+  --team-a:#ff6b6b; --team-b:#3fd0e0; --team-c:#b18cff; --good:#46e0a0; --bad:#ff5c7a;
   --display:"Lalezar","IBM Plex Sans Arabic",Tahoma,sans-serif;
   --body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;
   color-scheme:dark;
@@ -18,18 +18,18 @@
 :root[data-theme="sunset"]{
   --felt:#1e0e1c; --felt-2:#2c1528; --felt-3:#45203d; --rim:rgba(255,200,215,.15);
   --ink:#fff2ec; --muted:#cfa9b8; --brass:#ffad66; --brass-deep:#c66a26; --brass-ink:#2b1203;
-  --team-a:#ff5f8f; --team-b:#6cc6ff; --good:#5ddba6; --bad:#ff4d5e;
+  --team-a:#ff5f8f; --team-b:#6cc6ff; --team-c:#c5e86c; --good:#5ddba6; --bad:#ff4d5e;
 }
 :root[data-theme="ocean"]{
   --felt:#06171f; --felt-2:#0b2632; --felt-3:#123a4a; --rim:rgba(180,230,255,.15);
   --ink:#eefaff; --muted:#93b6c4; --brass:#ffd166; --brass-deep:#c9952a; --brass-ink:#2a1d00;
-  --team-a:#ff8a5c; --team-b:#8ea8ff; --good:#46d39a; --bad:#ff5f6d;
+  --team-a:#ff8a5c; --team-b:#8ea8ff; --team-c:#f5d76e; --good:#46d39a; --bad:#ff5f6d;
 }
 :root{--on:var(--felt)}
 :root[data-theme="fun"]{
   --felt:#fff6e8; --felt-2:#ffffff; --felt-3:#ffe7cc; --rim:#f0dcc0;
   --ink:#3b2a1a; --muted:#8a7660; --brass:#ff6b2c; --brass-deep:#d4480f; --brass-ink:#ffffff;
-  --team-a:#e8436a; --team-b:#0e9488; --good:#1f9d55; --bad:#e23b4e;
+  --team-a:#e8436a; --team-b:#0e9488; --team-c:#7c4dff; --good:#1f9d55; --bad:#e23b4e;
   --on:#ffffff; color-scheme:light;
 }
 :root[data-theme="fun"] body{background:radial-gradient(120% 50% at 50% -10%,#ffe2c4,transparent 65%) var(--felt)}
@@ -67,7 +67,7 @@ h2{font-size:1.5rem}
 .link{background:none;border:none;color:var(--muted);text-decoration:underline;padding:8px}
 .field{width:100%;border-radius:14px;border:2px solid var(--rim);background:var(--felt);padding:12px 14px;font-size:1.3rem;text-align:center}
 .field:focus{border-color:var(--brass);outline:none}
-.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px}
 .tpick{border:3px solid transparent;border-radius:16px;padding:14px 8px;background:color-mix(in srgb,var(--tc) 22%,var(--felt-2));font-family:var(--display);font-size:1.35rem;color:var(--tc);min-height:64px}
 .tpick[aria-pressed="true"]{border-color:var(--tc);background:var(--tc);color:var(--on)}
 .opts{display:flex;flex-direction:column;gap:10px}
@@ -319,7 +319,7 @@ const store = {
 };
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ltr = s => `<bdi dir="ltr">${s}</bdi>`;
-const TC = ['var(--team-a)', 'var(--team-b)'];
+const TC = ['var(--team-a)', 'var(--team-b)', 'var(--team-c)'];
 const LET = ['أ','ب','ج','د','هـ','و','ز','ح'];
 const QSH = ['▲','◆','●','■'];   // أشكال الخيارات الملوّنة
 const PCOL = ['#f7f3ff', '#ff6b6b', '#3fd0e0', '#46e0a0', '#ffc94a'];   // نفس ألوان التابلت
@@ -405,19 +405,21 @@ async function drawCard(g){
   const gr = x.createRadialGradient(W / 2, -120, 40, W / 2, -120, 950); gr.addColorStop(0, V('--felt-3')); gr.addColorStop(1, V('--felt')); x.fillStyle = gr; x.fillRect(0, 0, W, H);
   x.fillStyle = V('--brass'); x.font = D(118); x.fillText('تحدي الخميس', W / 2, 135);
   x.fillStyle = V('--muted'); x.font = B(38); x.fillText(dayText(g.d), W / 2, 228);
-  const tie = g.s[0] === g.s[1], w = g.s[0] > g.s[1] ? 0 : 1;
+  const sc = g.s, top = Math.max(...sc), w = sc.filter(s => s === top).length > 1 ? -1 : sc.indexOf(top), tie = w < 0, N = sc.length, tcs = [tc[0], tc[1], V('--team-c')];
   x.font = '150px "Segoe UI Emoji","Noto Color Emoji",sans-serif'; x.fillText(tie ? '🤝' : '🏆', W / 2, 380);
-  x.fillStyle = tie ? V('--brass') : tc[w]; x.font = D(92); x.fillText(tie ? 'تعادل!' : 'فاز فريق ' + g.t[w], W / 2, 530, W - 120);
-  [0, 1].forEach(i => {
-    const bw = 440, bh = 270, bx = i === 0 ? W / 2 + 15 : W / 2 - 15 - bw, by = 620, win = !tie && i === w;
-    box(bx, by, bw, bh, 40); x.fillStyle = V('--felt-2'); x.fill(); x.lineWidth = win ? 10 : 4; x.strokeStyle = win ? tc[i] : V('--rim'); x.stroke();
-    x.fillStyle = V('--ink'); x.font = B(48); x.fillText(g.t[i], bx + bw / 2, by + 72, bw - 40);
-    x.fillStyle = tc[i]; x.font = D(130); x.fillText(String(g.s[i]), bx + bw / 2, by + 182);
+  x.fillStyle = tie ? V('--brass') : tcs[w]; x.font = D(92); x.fillText(tie ? 'تعادل!' : 'فاز فريق ' + g.t[w], W / 2, 530, W - 120);
+  // صناديق النقاط من اليمين لليسار، فريقين أو ثلاثة
+  const gap = 24, bw = (W - 120 - gap * (N - 1)) / N, bh = 270, by = 620;
+  g.t.forEach((nm, i) => {
+    const bx = W - 60 - bw - i * (bw + gap), win = !tie && i === w;
+    box(bx, by, bw, bh, 40); x.fillStyle = V('--felt-2'); x.fill(); x.lineWidth = win ? 10 : 4; x.strokeStyle = win ? tcs[i] : V('--rim'); x.stroke();
+    x.fillStyle = V('--ink'); x.font = B(N > 2 ? 40 : 48); x.fillText(nm, bx + bw / 2, by + 72, bw - 30);
+    x.fillStyle = tcs[i]; x.font = D(N > 2 ? 100 : 130); x.fillText(String(g.s[i]), bx + bw / 2, by + 182, bw - 20);
   });
   let y = 975;
   if (g.st && g.st.length) {
     x.fillStyle = V('--muted'); x.font = B(40); x.fillText('نجوم السهرة', W / 2, y); y += 78;
-    g.st.slice(0, 3).forEach(([n, c, t], i) => { x.fillStyle = tc[t] || V('--ink'); x.font = B(50); x.fillText(`${['🥇', '🥈', '🥉'][i]} ${n} · ${c} ⭐`, W / 2, y, W - 160); y += 74; });
+    g.st.slice(0, 3).forEach(([n, c, t], i) => { x.fillStyle = tcs[t] || V('--ink'); x.font = B(50); x.fillText(`${['🥇', '🥈', '🥉'][i]} ${n} · ${c} ⭐`, W / 2, y, W - 160); y += 74; });
   }
   if (g.lg) { x.fillStyle = V('--brass-deep'); x.font = B(40); x.fillText(g.lg, W / 2, H - 62, W - 100); }
   return cv;

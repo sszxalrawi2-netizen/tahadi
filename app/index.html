@@ -80,7 +80,7 @@
 :root{
   --felt:#120f26; --felt-2:#1d1940; --felt-3:#2b2560; --rim:rgba(200,190,255,.15);
   --ink:#f7f3ff; --muted:#aaa3d0; --brass:#ffc94a; --brass-deep:#c98f12; --brass-ink:#2a1a00;
-  --team-a:#ff6b6b; --team-b:#3fd0e0; --good:#46e0a0; --bad:#ff5c7a; --shade:rgba(6,4,20,.65);
+  --team-a:#ff6b6b; --team-b:#3fd0e0; --team-c:#b18cff; --good:#46e0a0; --bad:#ff5c7a; --shade:rgba(6,4,20,.65);
   --display:"Lalezar","IBM Plex Sans Arabic",Tahoma,sans-serif;
   --body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif;
   color-scheme:dark;
@@ -88,19 +88,19 @@
 :root[data-theme="sunset"]{
   --felt:#1e0e1c; --felt-2:#2c1528; --felt-3:#45203d; --rim:rgba(255,200,215,.15);
   --ink:#fff2ec; --muted:#cfa9b8; --brass:#ffad66; --brass-deep:#c66a26; --brass-ink:#2b1203;
-  --team-a:#ff5f8f; --team-b:#6cc6ff; --good:#5ddba6; --bad:#ff4d5e; --shade:rgba(15,3,12,.65);
+  --team-a:#ff5f8f; --team-b:#6cc6ff; --team-c:#c5e86c; --good:#5ddba6; --bad:#ff4d5e; --shade:rgba(15,3,12,.65);
 }
 :root[data-theme="ocean"]{
   --felt:#06171f; --felt-2:#0b2632; --felt-3:#123a4a; --rim:rgba(180,230,255,.15);
   --ink:#eefaff; --muted:#93b6c4; --brass:#ffd166; --brass-deep:#c9952a; --brass-ink:#2a1d00;
-  --team-a:#ff8a5c; --team-b:#8ea8ff; --good:#46d39a; --bad:#ff5f6d; --shade:rgba(2,10,14,.65);
+  --team-a:#ff8a5c; --team-b:#8ea8ff; --team-c:#f5d76e; --good:#46d39a; --bad:#ff5f6d; --shade:rgba(2,10,14,.65);
 }
 :root{--on:var(--felt)}
 /* «فاتح ومرح»: كريمي فاتح، برتقالي، توت وفيروزي — الأساسي */
 :root[data-theme="fun"]{
   --felt:#fff6e8; --felt-2:#ffffff; --felt-3:#ffe7cc; --rim:#f0dcc0;
   --ink:#3b2a1a; --muted:#8a7660; --brass:#ff6b2c; --brass-deep:#d4480f; --brass-ink:#ffffff;
-  --team-a:#e8436a; --team-b:#0e9488; --good:#1f9d55; --bad:#e23b4e; --shade:rgba(120,80,30,.28);
+  --team-a:#e8436a; --team-b:#0e9488; --team-c:#7c4dff; --good:#1f9d55; --bad:#e23b4e; --shade:rgba(120,80,30,.28);
   --on:#ffffff; color-scheme:light;
 }
 :root[data-theme="fun"] body{background-image:radial-gradient(130% 55% at 50% -12%,#ffe2c4 0%,transparent 60%),radial-gradient(60% 40% at 0% 105%,color-mix(in srgb,var(--team-a) 12%,transparent),transparent 70%),radial-gradient(60% 40% at 100% 105%,color-mix(in srgb,var(--team-b) 12%,transparent),transparent 70%)}
@@ -141,7 +141,7 @@ bdi{unicode-bidi:isolate}
 .panel h2{font-family:var(--display);font-weight:400;font-size:1.45rem;margin:0;line-height:1.2}
 .label{font-size:.88rem;color:var(--muted);font-weight:500}
 .field{display:flex;flex-direction:column;gap:8px}
-.teams-in{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.teams-in{display:grid;grid-template-columns:repeat(var(--nt,2),minmax(0,1fr));gap:12px}
 @media (max-width:420px){.teams-in{grid-template-columns:1fr}}
 .tin{display:flex;flex-direction:column;gap:6px;min-width:0}
 .tin input{width:100%;background:var(--felt);border:1.5px solid var(--rim);border-inline-start:6px solid var(--tc);border-radius:12px;padding:11px 14px;font-weight:700;font-size:1.08rem}
@@ -218,7 +218,7 @@ details.panel[open] summary::after{content:"−"}
 @media (max-width:380px){.choose{grid-template-columns:1fr}}
 
 /* Scoreboard */
-.scorebar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-block:12px 8px;background:var(--felt)}
+.scorebar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:repeat(var(--nt,2),minmax(0,1fr));gap:10px;padding-block:12px 8px;background:var(--felt)}
 .scorebar.flat{position:static;background:none}
 .tcard{border-radius:16px;padding:10px 14px;background:var(--felt-2);border:2px solid var(--rim);display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;position:relative;transition:border-color .25s,background .25s}
 .tcard .nm{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;display:flex;align-items:center;gap:8px}
@@ -282,7 +282,7 @@ details.panel[open] summary::after{content:"−"}
 .purlin:focus{border-color:var(--brass);outline:none}
 .row2{display:flex;gap:8px;flex-wrap:wrap}.row2>*{flex:1 1 140px}
 @media (max-width:420px){.lobjoin{flex-direction:column;text-align:center}.lobjoin .tx b{text-align:center}}
-.pcols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pcols{display:grid;grid-template-columns:repeat(var(--nt,2),minmax(0,1fr));gap:10px}
 .pcol{display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;padding:10px;border-radius:14px;background:color-mix(in srgb,var(--tc) 10%,var(--felt));border:1px solid color-mix(in srgb,var(--tc) 35%,transparent);min-width:0}
 .pcol .pt{width:100%;font-family:var(--display);color:var(--tc);font-size:1.1rem;line-height:1.3}
 .pcol .pt small{font-family:var(--body);font-size:.75rem;color:var(--muted)}
@@ -671,7 +671,7 @@ button.bcell:active{transform:scale(.96)}
 .howround{background:var(--felt-2);border:1px dashed var(--brass-deep);border-radius:14px;padding:12px 14px;font-size:.92rem;line-height:1.7}
 .starter{font-size:1.05rem;text-align:center;margin:0}
 .starter b{color:var(--tc)}
-.big-scores{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.big-scores{display:grid;grid-template-columns:repeat(var(--nt,2),minmax(0,1fr));gap:12px}
 .bs{background:var(--felt-2);border:2px solid var(--rim);border-radius:18px;padding:16px 12px;text-align:center;display:flex;flex-direction:column;gap:2px;min-width:0}
 .bs.lead{border-color:var(--tc)}
 .bs .nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -686,6 +686,13 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 .sheet h2{font-family:var(--display);font-weight:400;font-size:1.5rem;margin:0}
 .adj{display:flex;flex-direction:column;gap:8px}
 .adj .who{display:flex;justify-content:space-between;font-weight:700}
+.tobtn{align-self:center;border:1.5px dashed color-mix(in srgb,var(--tc) 60%,transparent);background:color-mix(in srgb,var(--tc) 8%,transparent);color:var(--tc);border-radius:99px;padding:6px 16px;font-weight:700;font-size:.92rem}
+.tobtn small{font-weight:500;color:var(--muted)}
+.tout{position:fixed;inset:0;z-index:35;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;background:color-mix(in srgb,var(--tc) 14%,var(--felt))}
+.tout .label{font-size:1.1rem}
+.tout .tn{font-family:var(--display);font-weight:400;font-size:clamp(1.8rem,7vw,2.6rem);color:var(--tc)}
+.tout .tc{font-family:var(--display);font-size:clamp(6rem,30vw,11rem);line-height:1;color:var(--tc);font-variant-numeric:tabular-nums}
+.tout .btn{margin-top:10px;min-width:220px}
 .adjin{display:grid;grid-template-columns:auto 1fr auto;gap:8px}
 .adjin input{min-width:0;width:100%;text-align:center;font-size:1.2rem;font-weight:700;background:var(--felt);border:2px solid var(--rim);border-radius:12px;padding:8px}
 .adjin input:focus{border-color:var(--tc);outline:none}
@@ -3455,17 +3462,22 @@ const store = {
   del(k){ try { localStorage.removeItem(k); } catch(e){} },
 };
 const KEY = 'tahadi.game.v2', SEEN = 'tahadi.seen.v1', PREFS = 'tahadi.prefs.v1';
-const TEAM_COLORS = ['var(--team-a)', 'var(--team-b)'];
+const TEAM_COLORS = ['var(--team-a)', 'var(--team-b)', 'var(--team-c)'];
+// عدد الفرق (2 أو 3)، والفريق «الجاي» بالدور: هو اللي يسرق ويختار للخصم
+const NT = () => S ? S.teams.length : (P.nteams === 3 ? 3 : 2);
+const opp = t => (t + 1) % NT();
+const teamsIdx = () => Array.from({length:NT()}, (_, i) => i);
 const freshLL = () => ({fifty:true, hint:true, time:true, dbl:true, swap:true});
 const poolCount = r => Q.filter(q => r.cats.includes(q.cat) && r.levels.includes(q.lvl)).length;
 const lvlDots = l => `<span class="lvl" title="${LEVEL_NAMES[l]}">${[1,2,3].map(n => `<i class="${n <= l ? 'f' : ''}"></i>`).join('')}</span>`;
 function perTeamText(n){ return n === 2 ? 'سؤالان لكل فريق' : `${n} أسئلة لكل فريق`; }
 
-const DEFAULTS = {names:['الصقور','النسور'], perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, fs:'n', test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
+const DEFAULTS = {names:['الصقور','النسور','الفهود'], nteams:2, perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, fs:'n', test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
 const WAGER_FLOOR = 300;   // الفريق المتأخر يقدر يراهن حتى هذا الرقم حتى لو نقاطه أقل
 const WAGER_DEF = {cats:['general','football','iq','capitals'], levels:[3]};
 let P = Object.assign({}, DEFAULTS, store.get(PREFS) || {});
-if (!Array.isArray(P.names) || P.names.length !== 2) P.names = DEFAULTS.names.slice();
+if (!Array.isArray(P.names) || P.names.length < 2) P.names = DEFAULTS.names.slice();
+while (P.names.length < 3) P.names.push(DEFAULTS.names[P.names.length]);
 if (!Array.isArray(P.rounds) || !P.rounds.length) P.rounds = DEFAULTS.rounds.slice();
 if (!Array.isArray(P.known)) P.known = ['general','riddles','iq','football','hard'];
 ROUNDS.forEach(r => { if (!P.known.includes(r.id)) { P.known.push(r.id); if (!P.rounds.includes(r.id)) P.rounds.push(r.id); } });
@@ -3554,9 +3566,9 @@ function newGame(settings, names){
 function buildRound(){
   const def = RD[S.rounds[S.r]];
   S.plan = [];
-  const ids = drawQuestions(def, def.count ? def.count(S.settings.perTeam) : S.settings.perTeam * 2);
+  const ids = drawQuestions(def, def.count ? Math.round(def.count(S.settings.perTeam) * S.teams.length / 2) : S.settings.perTeam * S.teams.length);
   ids.sort((a, b) => QBY[a].lvl - QBY[b].lvl);   // من الأسهل للأصعب، وكل سؤالين متقاربين
-  S.plan = ids; S.res = []; S.i = 0; S.first = S.r % 2; S.cur = null; S.phase = 'intro';
+  S.plan = ids; S.res = []; S.i = 0; S.first = S.r % S.teams.length; S.cur = null; S.phase = 'intro';
   if (S.settings.llMode === 'round') S.teams.forEach(t => t.ll = freshLL());
 }
 function newCur(id, team){
@@ -3573,7 +3585,7 @@ function newCur(id, team){
 function startQuestion(){
   if (!S.plan.length) { toast('لا توجد أسئلة كافية لهذه الفقرة'); S.i = 0; S.phase = S.r >= S.rounds.length - 1 ? 'end' : 'roundEnd'; save(); render(); return; }
   const id = S.plan[S.i];
-  S.cur = newCur(id, (S.first + S.i) % 2);
+  S.cur = newCur(id, (S.first + S.i) % S.teams.length);
   // «اختار لخصمك»: السؤال الحقيقي يُختار بعد ما يحدد الفريق الثاني الفئة والصعوبة
   if (roundDef().pick && pickSetup(S.cur)) { S.phase = 'question'; save(); render(); return; }
   // «اطمع أو وقّف»: أسئلة السلم تُسحب واحداً واحداً من الأسهل للأصعب
@@ -3634,7 +3646,7 @@ function basePts(){
   if (c.t === 'trust') return LEVEL_POINTS[q.lvl] * m * (c.bet != null ? TRUST_BETS[c.bet].x : 1);
   return (stages(q) ? cluePts(c) : LEVEL_POINTS[q.lvl]) * m * (c.gold ? 2 : 1);
 }
-const activeTeam = () => !S.cur ? null : S.cur.t === 'board' && S.cur.bd ? (S.cur.stage === 'done' ? null : boardTeam(S.cur)) : S.cur.t === 'mafia' ? null : (S.cur.t === 'num' || NET_TYPES.includes(S.cur.t) || (S.cur.t === 'auction' && S.cur.stage === 'bid') || (S.cur.t === 'buzz' && S.cur.buzzer === null)) ? null : (S.cur.stage === 'steal' ? 1 - S.cur.team : S.cur.team);
+const activeTeam = () => !S.cur ? null : S.cur.t === 'board' && S.cur.bd ? (S.cur.stage === 'done' ? null : boardTeam(S.cur)) : S.cur.t === 'mafia' ? null : (S.cur.t === 'num' || NET_TYPES.includes(S.cur.t) || (S.cur.t === 'auction' && S.cur.stage === 'bid') || (S.cur.t === 'buzz' && S.cur.buzzer === null)) ? null : (S.cur.stage === 'steal' ? opp(S.cur.team) : S.cur.team);
 const remaining = () => [0,1,2,3].filter(i => !S.cur.gone.includes(i) && i !== S.cur.pick);
 const canSteal = () => S.settings.steal && remaining().length >= 2;
 function award(t, pts){ S.teams[t].score += pts; S.teams[t].correct++; bump = bump === null || bump === t ? t : 'both'; }
@@ -3650,7 +3662,7 @@ function pick(oi){
   } else if (c.stage === 'steal') {
     if (c.gone.includes(oi) || oi === c.pick) return;
     timerStop(); c.spick = oi;
-    if (oi === 0) { const p = Math.round(c.lock / 2); award(1 - c.team, p); c.sgained = p; c.sres = 'correct'; sfx('win'); streakHit(1 - c.team, c, true); }
+    if (oi === 0) { const p = Math.round(c.lock / 2); award(opp(c.team), p); c.sgained = p; c.sres = 'correct'; sfx('win'); streakHit(opp(c.team), c, true); }
     else { c.sres = 'wrong'; sfx('lose'); }
     c.stage = 'done';
   } else return;
@@ -3686,7 +3698,7 @@ function tapTile(i){
   if (c.stage === 'answer') { const k = c.found.indexOf(i); if (k >= 0) c.found.splice(k, 1); else { c.found.push(i); sfx('tap'); } }
   else if (c.stage === 'steal') {
     if (c.found.includes(i)) return;
-    timerStop(); c.sfound = i; const p = c.lock * 2; award(1 - c.team, p); c.sgained = p; c.sres = 'correct'; c.stage = 'done'; sfx('win');
+    timerStop(); c.sfound = i; const p = c.lock * 2; award(opp(c.team), p); c.sgained = p; c.sres = 'correct'; c.stage = 'done'; sfx('win');
   } else return;
   save(); render();
 }
@@ -3802,7 +3814,7 @@ function buzzJudge(ok){
   const c = S.cur; if (!c || c.stage !== 'judge') return;
   c.lock = basePts();
   if (ok) { award(c.team, c.lock); c.gained = c.lock; c.result = 'correct'; sfx('win'); if (c.buzzBy) star(c.buzzBy); }
-  else { const p = Math.round(c.lock / 2); award(1 - c.team, p); c.sgained = p; c.result = 'wrong'; sfx('lose'); }
+  else { const p = Math.round(c.lock / 2); award(opp(c.team), p); c.sgained = p; c.result = 'wrong'; sfx('lose'); }
   c.stage = 'done'; save(); render();
 }
 /* --- القنبلة --- */
@@ -3812,11 +3824,11 @@ function bombLight(){
 }
 function bombPass(){
   const c = S.cur; if (!c || c.t !== 'bomb' || c.stage !== 'answer') return;
-  c.team = 1 - c.team; c.passes = (c.passes || 0) + 1; sfx('tap'); save(); render();
+  c.team = opp(c.team); c.passes = (c.passes || 0) + 1; sfx('tap'); save(); render();
 }
 function bombExplode(){
   const c = S.cur; timerStop(); c.lock = basePts();
-  award(1 - c.team, c.lock); c.gained = c.lock; c.result = 'exploded'; c.stage = 'done'; sfx('buzz');
+  award(opp(c.team), c.lock); c.gained = c.lock; c.result = 'exploded'; c.stage = 'done'; sfx('buzz');
 }
 /* --- المزاد --- */
 function auctionRaise(t){
@@ -3838,7 +3850,7 @@ function auctionCount(d){
 function auctionEnd(ok){
   const c = S.cur; timerStop(); c.lock = basePts();
   if (ok) { const p = c.bid * c.lock; award(c.team, p); c.gained = p; c.result = 'correct'; sfx('win'); }
-  else { const p = Math.round(c.bid * c.lock / 2); award(1 - c.team, p); c.sgained = p; c.result = 'wrong'; sfx('lose'); }
+  else { const p = Math.round(c.bid * c.lock / 2); award(opp(c.team), p); c.sgained = p; c.result = 'wrong'; sfx('lose'); }
   c.stage = 'done';
 }
 /* --- بالمقلوب --- */
@@ -4122,8 +4134,10 @@ const teamOnline = t => onlineKeys().filter(k => PL[k].team === t);
 const phonesOn = () => (NET.on || P.test) && teamOnline(0).length > 0 && teamOnline(1).length > 0;
 const pname = k => PL[k] ? PL[k].name : '؟';
 const pteam = k => PL[k] ? PL[k].team : 0;
-const teamNames = () => S ? S.teams.map(t => t.name) : P.names.map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
-const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && (!def.net || NET.avail || P.test);
+const teamNames = () => S ? S.teams.map(t => t.name) : P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
+// فقرات تشتغل ويه 3 فرق (الباقي مبني على فريقين بالضبط: جرس، قنبلة، مزاد، وفقرات الجوال الجماعية)
+const TEAM3_OK = ['general','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
+const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && (!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
 let roundEdit = false;   // وضع إخفاء الفقرات في الشاشة الرئيسية
 
 // طريقتان للربط: «نفس الواي فاي» (خادم تطبيق التابلت) و«عبر الإنترنت» (خدمة وسيطة برمز غرفة)
@@ -4185,7 +4199,7 @@ function netIn(m){
   if (m.ev !== 'msg' || !m.data || typeof m.data !== 'object') return;
   const d = m.data;
   if (d.t === 'hi') {
-    const key = String(d.key || '').slice(0, 40), name = String(d.name || '').trim().slice(0, 16), team = d.team === 1 ? 1 : 0;
+    const key = String(d.key || '').slice(0, 40), name = String(d.name || '').trim().slice(0, 16), team = d.team === 1 || d.team === 2 ? Math.min(d.team, P.nteams === 3 ? 2 : 1) : 0;
     if (!key || !name) return;
     const isNew = !PL[key]; PL[key] = {name, team}; savePL();
     NET.conn[m.id] = key; NET.last[m.id] = null;
@@ -4215,7 +4229,7 @@ function phoneView(key){
   if (S.phase === 'wager' && S.w) return wagerPhone(key);
   if (S.phase !== 'question' || !S.cur) {
     const end = S.phase === 'end';
-    if (end) { const top = topStars(), g = league().find(x => x.id === S.id); return {card:g ? Object.assign({lg:leagueLine(g.d)}, g) : null, k:'info', vid:vidBase() + 'end', label:'انتهت اللعبة', big:S.teams[0].score === S.teams[1].score ? 'تعادل!' : 'فاز فريق ' + S.teams[S.teams[0].score > S.teams[1].score ? 0 : 1].name, tone:'ok', text:(top.length ? `نجم السهرة: ${pname(top[0][0])} · ` : '') + `نجومك: ${(S.stars || {})[key] || 0} ⭐`}; }
+    if (end) { const top = topStars(), g = league().find(x => x.id === S.id); return {card:g ? Object.assign({lg:leagueLine(g.d)}, g) : null, k:'info', vid:vidBase() + 'end', label:'انتهت اللعبة', big:winnerIdx() < 0 ? 'تعادل!' : 'فاز فريق ' + S.teams[winnerIdx()].name, tone:'ok', text:(top.length ? `نجم السهرة: ${pname(top[0][0])} · ` : '') + `نجومك: ${(S.stars || {})[key] || 0} ⭐`}; }
     return {k:'wait', vid:vidBase() + S.phase, title:'انظروا إلى التابلت', text:''};
   }
   const c = S.cur, q = QBY[c.id], vid = vidBase() + '.' + c.id + '.' + c.stage;
@@ -4531,7 +4545,7 @@ function phoneAct(key, d){
   if (S.phase === 'wager' && S.w) { wagerAct(key, d); return; }
   const c = S.phase === 'question' && S.cur; if (!c) return;
   const t = pteam(key), ins = c.pk.includes(key);
-  if (c.stage === 'choose' && d.t === 'vote' && t === 1 - c.team && c.pc && String(d.vid || '').endsWith(c.pc.cat ? '.l' : '.c')) { pickStep(String(d.v), key); return; }
+  if (c.stage === 'choose' && d.t === 'vote' && t === opp(c.team) && c.pc && String(d.vid || '').endsWith(c.pc.cat ? '.l' : '.c')) { pickStep(String(d.v), key); return; }
   if (c.t === 'letters' && d.t === 'form' && c.stage === 'write' && ins && Array.isArray(d.v)) {
     const v = LT_CATS.map((_, i) => String(d.v[i] || '').trim().slice(0, 30));
     c.lw[key] = v; sfx('tap');
@@ -4866,7 +4880,7 @@ function boardSetup(c){
 const bKey = (ci, vi) => ci + '_' + vi;
 const boardLeft = c => c.bd.cats.flatMap((_, ci) => BOARD_VALS.map((_, vi) => [ci, vi])).filter(([ci, vi]) => c.bd.cells[ci][vi] && !c.bd.res[bKey(ci, vi)]);
 const boardPts = c => BOARD_VALS[c.bc.vi] * (c.bc.gold ? 2 : 1) * roundDef().mult;
-const boardTeam = c => c.stage === 'bsteal' ? 1 - c.bc.team : c.bc ? c.bc.team : c.bt;
+const boardTeam = c => c.stage === 'bsteal' ? opp(c.bc.team) : c.bc ? c.bc.team : c.bt;
 const boardOpts = c => c.border.filter(oi => !(c.stage === 'bsteal' && oi === c.bpick));
 function boardPick(ci, vi){
   const c = S.cur; if (!c || c.t !== 'board' || c.stage !== 'pick' || !c.bd.cells[ci] || !c.bd.cells[ci][vi] || c.bd.res[bKey(ci, vi)]) return;
@@ -4891,7 +4905,7 @@ function boardSteal(go){
 }
 function boardNext(){
   const c = S.cur; if (!c || c.stage !== 'breveal') return;
-  c.bt = 1 - c.bc.team; c.bc = null; c.bspick = null;
+  c.bt = opp(c.bc.team); c.bc = null; c.bspick = null;
   if (!boardLeft(c).length) boardEnd(); else c.stage = 'pick';
   save(); render();
 }
@@ -5111,7 +5125,7 @@ function goldMaybe(c){
 }
 function streakHit(t, c, steal){
   if (!S.settings.fun) return;
-  S.streak = S.streak || [0, 0]; S.streak[t]++;
+  S.streak = S.streak || S.teams.map(() => 0); S.streak[t] = (S.streak[t] || 0) + 1;
   if (S.streak[t] >= 3) {
     const b = STREAK_BONUS * roundDef().mult; S.teams[t].score += b;
     c.fire = {t, n:S.streak[t], b}; if (steal) c.sgained += b; else c.gained += b;
@@ -5142,7 +5156,7 @@ function pickStep(v, by){
   sfx('reveal'); if (S.cur.stage === 'answer') timerStart(); save(); render();
 }
 function pickPhone(c, key, vid){
-  const ch = 1 - c.team, def = roundDef();
+  const ch = opp(c.team), def = roundDef();
   if (pteam(key) !== ch) return {k:'wait', vid, title:`فريق ${S.teams[ch].name} يختار لكم 😈`, text:c.pc.cat ? `اختاروا: ${CAT_NAMES[c.pc.cat]}… والحين يختارون الصعوبة` : 'يختارون الفئة والصعوبة، استعدوا!'};
   if (!c.pc.cat) return {k:'vote', vid:vid + '.c', prompt:`اختاروا فئة السؤال لفريق ${S.teams[c.team].name}`, opts:c.pc.opts.map(ct => ({v:ct, l:CAT_NAMES[ct]})), mine:null};
   return {k:'vote', vid:vid + '.l', prompt:`${CAT_NAMES[c.pc.cat]}: اختاروا الصعوبة. إذا أخطأوا تقدرون تسرقون نص النقاط!`, opts:pickLevels(c.pc.cat).map(l => ({v:String(l), l:`${LEVEL_NAMES[l]} · ${LEVEL_POINTS[l] * def.mult} نقطة`})), mine:null};
@@ -5615,11 +5629,11 @@ function teamDraw(){
   const ks = shuffle(onlineKeys()); if (ks.length < 2) return;
   const power = {}; league().forEach(g => (g.st || []).forEach(([n, c]) => { power[n] = (power[n] || 0) + c; }));
   ks.sort((a, b) => (power[PL[b].name] || 0) - (power[PL[a].name] || 0));
-  const flip = Math.random() < .5 ? 1 : 0;
-  ks.forEach((k, i) => { PL[k].team = ((i % 4 === 0 || i % 4 === 3) ? 0 : 1) ^ flip; });   // 0،1،1،0 حتى ما يتجمع الأقوى بفريق واحد
+  const n = NT(), sh = Math.floor(Math.random() * n);
+  // بالتناوب 0،1،2 ثم 2،1،0 حتى ما يتجمع الأقوى بفريق واحد
+  ks.forEach((k, i) => { const r = Math.floor(i / n), p = i % n; PL[k].team = ((r % 2 ? n - 1 - p : p) + sh) % n; });
   savePL(); drawFx = Date.now(); sfx('reveal');
-  const n = [0, 1].map(t => ks.filter(k => PL[k].team === t).length);
-  toast(`🎲 تقسّمت الفرق: ${n[0]} ضد ${n[1]}`);
+  toast(`🎲 تقسّمت الفرق: ${teamsIdx().map(t => ks.filter(k => PL[k].team === t).length).join(' ضد ')}`);
 }
 function lobbyBox(){
   if (!NET.avail) return '';
@@ -5634,7 +5648,7 @@ function lobbyBox(){
     ${online ? onlineJoin(url) : `<div class="lobjoin">${url ? `<div class="qr">${qrSvg(url)}</div>` : ''}<div class="tx">${url
       ? `<span>صوّروا الرمز بكاميرا الجوال، أو اكتبوا هذا العنوان في المتصفح:</span><b dir="ltr">${url}</b><small>كل الجوالات لازم تكون على نفس الواي فاي، أو على نقطة اتصال التابلت. أو اختاروا «عبر الإنترنت».</small>`
       : '<span>شغّل الواي فاي أو نقطة الاتصال في التابلت حتى يظهر رمز الدخول.</span>'}${NET.on ? '' : '<small class="warn">نجهّز الاتصال…</small>'}</div></div>`}
-    <div class="pcols${drawFx && Date.now() - drawFx < 2500 ? ' drawn' : ''}">${col(0)}${col(1)}</div>
+    <div style="--nt:${NT()}" class="pcols${drawFx && Date.now() - drawFx < 2500 ? ' drawn' : ''}">${teamsIdx().map(col).join('')}</div>
     ${(onHome || !S) && on.size >= 2 ? `<button type="button" class="btn team block" style="--tc:var(--brass)" data-act="plDraw">🎲 قرعة الفرق</button>` : ''}
     <p class="subtle">اضغط على اسم اللاعب لتنقله للفريق الآخر.${keys.some(k => !on.has(k)) ? ' <button type="button" class="link" data-act="plClean">مسح غير المتصلين</button>' : ''}</p>
   </div>`;
@@ -5797,7 +5811,7 @@ function initPQ(c){
   if (!S.settings.phoneQ || c.t !== 'mcq' || !phonesOn()) return;
   c.pq = true; c.showOpts = true; c.tv = {}; c.tvOrder = [];
 }
-const pqActive = c => c.stage === 'steal' ? 1 - c.team : c.team;
+const pqActive = c => c.stage === 'steal' ? opp(c.team) : c.team;
 // الأغلبية، وعند التعادل الخيار اللي وصله أول صوت
 function pqMajority(c){
   const cnt = {}; Object.values(c.tv).forEach(o => { cnt[o] = (cnt[o] || 0) + 1; });
@@ -5912,7 +5926,7 @@ const applyTheme = () => { const t = P.theme || 'fun', h = document.documentElem
 const wheelOpts = r => S.rounds.slice(r).filter(id => id !== 'hard');
 const wheelNeeded = r => !!S.settings.wheel && r < S.rounds.length && wheelOpts(r).length > 1;
 function prepRound(){
-  if (wheelNeeded(S.r)) { S.wh = {opts:wheelOpts(S.r), team:S.r % 2, rot:0, spun:false, spinning:false, choice:null}; S.cur = null; S.phase = 'wheel'; return; }
+  if (wheelNeeded(S.r)) { S.wh = {opts:wheelOpts(S.r), team:S.r % S.teams.length, rot:0, spun:false, spinning:false, choice:null}; S.cur = null; S.phase = 'wheel'; return; }
   S.wh = null; buildRound();
 }
 /* البكرة: أسماء الفقرات على أسطوانة تدور عمودياً، والذراع على جنبها يشغّلها */
@@ -6045,7 +6059,7 @@ function toggleTimer(){
 /* ===================== الواجهات ===================== */
 const tn = i => `<b style="color:${TEAM_COLORS[i]}">${esc(S.teams[i].name)}</b>`;
 function scorebar(active, flat){
-  return `<div class="scorebar${flat ? ' flat' : ''}">${S.teams.map((t, i) => `
+  return `<div class="scorebar${flat ? ' flat' : ''}" style="--nt:${S.teams.length}">${S.teams.map((t, i) => `
     <div class="tcard${active === i ? ' on' : ''}" style="--tc:${TEAM_COLORS[i]}">
       <span class="nm">${esc(t.name)}${S.streak && S.streak[i] >= 2 ? ` <span class="fire" title="إجابات صحيحة متتالية">🔥${ltr(S.streak[i])}</span>` : ''}</span>
       <span class="sc${bump === i || bump === 'both' ? ' bump' : ''}">${ltr(t.score)}</span>
@@ -6054,11 +6068,11 @@ function scorebar(active, flat){
 
 function viewHome(){
   const vis = P.rounds.filter(id => roundOk(RD[id]));
-  const total = vis.reduce((s, id) => s + (RD[id].count ? RD[id].count(P.perTeam) : P.perTeam * 2), 0);
+  const total = vis.reduce((s, id) => s + (RD[id].count ? Math.round(RD[id].count(P.perTeam) * NT() / 2) : P.perTeam * NT()), 0);
   const resume = S && S.phase !== 'end' ? `
     <section class="panel resume">
       <h2>لعبة لم تكتمل</h2>
-      <div class="vs"><span style="color:var(--team-a)">${esc(S.teams[0].name)} ${ltr(S.teams[0].score)}</span><span class="muted">مقابل</span><span style="color:var(--team-b)">${esc(S.teams[1].name)} ${ltr(S.teams[1].score)}</span></div>
+      <div class="vs">${S.teams.map((t, i) => `<span style="color:${TEAM_COLORS[i]}">${esc(t.name)} ${ltr(t.score)}</span>`).join('<span class="muted">مقابل</span>')}</div>
       <div class="muted">الجولة ${S.r + 1} من ${S.rounds.length}: ${S.phase === 'wheel' ? 'بكرة الفقرات' : esc(RD[S.rounds[S.r]].name)}</div>
       <div class="actions"><button class="btn primary" data-act="resume">استكمال اللعبة</button><button class="btn ghost" data-act="discard">حذفها</button></div>
     </section>` : '';
@@ -6084,9 +6098,10 @@ function viewHome(){
     </header>
     ${resume}
     <section class="panel">
-      <h2>الفريقان</h2>
-      <div class="teams-in">
-        ${[0,1].map(i => `<label class="tin" style="--tc:${TEAM_COLORS[i]}"><span class="label">الفريق ${i ? 'الثاني' : 'الأول'}</span><input id="team${i}" data-name="${i}" maxlength="18" value="${esc(P.names[i])}" autocomplete="off"></label>`).join('')}
+      <h2>${NT() === 3 ? 'الفرق' : 'الفريقان'}</h2>
+      ${seg('nteams', [2, 3], ['فريقين', '3 فرق'])}
+      <div class="teams-in" style="--nt:${NT()}">
+        ${teamsIdx().map(i => `<label class="tin" style="--tc:${TEAM_COLORS[i]}"><span class="label">الفريق ${['الأول', 'الثاني', 'الثالث'][i]}</span><input id="team${i}" data-name="${i}" maxlength="18" value="${esc(P.names[i])}" autocomplete="off"></label>`).join('')}
       </div>
     </section>
     ${lobbyPanel()}
@@ -6105,7 +6120,7 @@ function viewHome(){
       <div class="field"><span class="label">وسائل المساعدة</span>${seg('llMode', ['game','round'], ['مرة في اللعبة كلها','تتجدد كل جولة'])}</div>
       ${sw('direct', 'الخيارات مخفية في البداية', 'الجواب المباشر بدون خيارات يأخذ ضعف النقاط')}
       ${sw('steal', 'سرقة السؤال', 'إذا أخطأ الفريق يجاوب الآخر بنصف النقاط')}
-      ${sw('wager', 'رهان الختام', 'سؤال أخير يراهن فيه كل فريق سراً على نقاطه')}
+      ${NT() === 2 ? sw('wager', 'رهان الختام', 'سؤال أخير يراهن فيه كل فريق سراً على نقاطه') : ''}
       ${sw('wheel', 'بكرة الفقرات 🎰', 'كل فريق بدوره يسحب الذراع وتختار البكرة الفقرة الجاية')}
       ${sw('sound', 'الأصوات', '')}
       ${NET.avail || P.test ? sw('phoneQ', 'الأسئلة على جوالات الفريق', 'في الفقرات العادية: السؤال يظهر على جوالات الفريق اللي عليه الدور، ويجاوبون بتصويت الأغلبية') : ''}
@@ -6153,7 +6168,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611162133';
+const GAME_VER = '202611162149';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -6358,7 +6373,7 @@ function partLook(c, q, def){
 }
 function partMcq(c, q, def){
   if (q.scene && (c.stage === 'ready' || c.stage === 'view')) return partLook(c, q, def);
-  const other = 1 - c.team, base = basePts(), d = c.dbl ? 2 : 1;
+  const other = opp(c.team), base = basePts(), d = c.dbl ? 2 : 1;
   const hidden = !c.showOpts && c.stage === 'answer';
   const ptsNow = (c.direct || hidden) ? base * 2 * d : base * d;
   let tiles = '';
@@ -6429,7 +6444,7 @@ function partMcq(c, q, def){
       <button class="btn ghost block" data-act="pqDecide">اعتمد رأي الأغلبية الآن</button></div>`;
   } else if (c.pq && c.stage === 'done') {
     const show = (tv, t) => { const ks = Object.keys(tv || {}); if (!ks.length) return ''; return `<div class="pqres" style="--tc:${TEAM_COLORS[t]}"><b>تصويت ${esc(S.teams[t].name)}:</b> ${ks.map(k => `${esc(pname(k))} ← ${LETTERS[c.order.indexOf(tv[k])]}${tv[k] === 0 ? ' ✓' : ''}`).join('، ')}</div>`; };
-    pqBox = show(c.tvA || (c.sres ? null : c.tv), c.team) + (c.tvA ? show(c.tv, 1 - c.team) : '');
+    pqBox = show(c.tvA || (c.sres ? null : c.tv), c.team) + (c.tvA ? show(c.tv, opp(c.team)) : '');
   }
   const gold = c.gold ? `<div class="goldban">⭐ السؤال الذهبي: النقاط مضاعفة!</div>` : '';
   const fire = c.fire && c.stage === 'done' ? `<div class="fireban" style="--tc:${TEAM_COLORS[c.fire.t]}">🔥 فريق ${esc(S.teams[c.fire.t].name)}: ${ltr(c.fire.n)} إجابات صحيحة متتالية! مكافأة ${ltr('+' + c.fire.b)}</div>` : '';
@@ -6438,7 +6453,7 @@ function partMcq(c, q, def){
 }
 
 function partList(c, q, def){
-  const other = 1 - c.team, per = basePts() * (c.dbl ? 2 : 1), n = c.found.length, M = q.items.length;
+  const other = opp(c.team), per = basePts() * (c.dbl ? 2 : 1), n = c.found.length, M = q.items.length;
   const card = `<article class="qcard">
     <div class="meta"><span class="chip">عدّد</span><span>${ltr(per)} لكل إجابة</span><span class="pts">${ltr(c.stage === 'answer' ? n * per : c.gained)}</span></div>
     ${c.stage === 'steal' ? `<div class="stealban" style="--tc:${TEAM_COLORS[other]}">فريق ${esc(S.teams[other].name)}: إجابة واحدة فقط بـ${ltr(c.lock * 2)} نقطة</div>` : ''}
@@ -6578,7 +6593,7 @@ function partBuzz(c, q, def){
     return qcard + `<div class="verdict judge"><span class="label">الجواب الصحيح</span><span class="big">${esc(q.o[0])}</span><span class="note">هل قال فريق ${tn(c.team)} هذا الجواب؟</span></div>
     <div class="actions"><button class="btn good" data-act="bzJudge" data-v="1">صح، ${ltr('+' + pts)}</button><button class="btn danger" data-act="bzJudge" data-v="0">خطأ، ${ltr('+' + Math.round(pts / 2))} للخصم</button></div>`;
   }
-  const head = c.result === 'timeout' ? 'لم يضغط أي فريق' : c.result === 'correct' ? `أحسنتم! ${ltr('+' + c.gained)} لفريق ${tn(c.team)}` : `جواب خاطئ، ${ltr('+' + c.sgained)} لفريق ${tn(1 - c.team)}`;
+  const head = c.result === 'timeout' ? 'لم يضغط أي فريق' : c.result === 'correct' ? `أحسنتم! ${ltr('+' + c.gained)} لفريق ${tn(c.team)}` : `جواب خاطئ، ${ltr('+' + c.sgained)} لفريق ${tn(opp(c.team))}`;
   return qcard + `<div class="verdict ${c.result === 'correct' ? 'ok' : 'no'}"><span class="big">${head}</span><div class="ans">الإجابة الصحيحة: <b>${esc(q.o[0])}</b></div>${q.note ? `<div class="note">${esc(q.note)}</div>` : ''}</div>` + nextBtn();
 }
 
@@ -6600,7 +6615,7 @@ function partBomb(c, q, def){
     <button class="btn danger block" data-act="bWrong">خطأ أو تكرار، فجّرها</button>`;
   }
   return `<article class="qcard">${meta}<p class="qtext">الفئة: ${esc(q.bomb)}</p></article>
-    <div class="verdict no"><span class="big">انفجرت القنبلة مع فريق ${tn(c.team)}!</span><span>فريق ${tn(1 - c.team)} نجا ويأخذ ${ltr('+' + c.gained)}. عدد التمريرات: ${c.passes || 0}.</span></div>` + nextBtn();
+    <div class="verdict no"><span class="big">انفجرت القنبلة مع فريق ${tn(c.team)}!</span><span>فريق ${tn(opp(c.team))} نجا ويأخذ ${ltr('+' + c.gained)}. عدد التمريرات: ${c.passes || 0}.</span></div>` + nextBtn();
 }
 
 function partAuction(c, q, def){
@@ -6626,7 +6641,7 @@ function partAuction(c, q, def){
   }
   const ok = c.result === 'correct';
   return `<article class="qcard">${meta}<p class="qtext">${esc(q.q)}</p></article>
-    <div class="verdict ${ok ? 'ok' : 'no'}"><span class="big">${ok ? `نجحوا! ذكروا ${c.bid} ${ltr('+' + c.gained)} لفريق ${tn(c.team)}` : `فشلوا: ذكروا ${c.cnt} من ${c.bid} ${ltr('+' + c.sgained)} لفريق ${tn(1 - c.team)}`}</span>
+    <div class="verdict ${ok ? 'ok' : 'no'}"><span class="big">${ok ? `نجحوا! ذكروا ${c.bid} ${ltr('+' + c.gained)} لفريق ${tn(c.team)}` : `فشلوا: ذكروا ${c.cnt} من ${c.bid} ${ltr('+' + c.sgained)} لفريق ${tn(opp(c.team))}`}</span>
     <div class="note">أمثلة: ${q.ex.slice(0, 12).map(esc).join('، ')}…</div></div>` + nextBtn();
 }
 
@@ -6726,7 +6741,7 @@ function readyCard(def, title, how){
     <button class="btn primary block" data-act="netGo" ${n < need ? 'disabled' : ''}>ابدأ</button>`;
 }
 const progress = (done, total, label) => `<div class="pbar"><span>${label} ${ltr(done)} من ${ltr(total)}</span><i style="width:${total ? done / total * 100 : 0}%"></i></div>`;
-const ptsLine = c => `<div class="verdict ${c.gained ? 'ok' : 'no'}"><span class="big">${c.gained ? [0, 1].filter(t => c.pts[t]).map(t => `${ltr('+' + c.pts[t])} لفريق ${tn(t)}`).join(' و') : 'لا نقاط في هذه'}</span>${c.evened && c.gained ? '<span class="note">⚖️ الفريقين مو بنفس العدد، فتعدّلت النقاط حسب حجم كل فريق</span>' : ''}</div>`;
+const ptsLine = c => `<div class="verdict ${c.gained ? 'ok' : 'no'}"><span class="big">${c.gained ? teamsIdx().filter(t => c.pts[t]).map(t => `${ltr('+' + c.pts[t])} لفريق ${tn(t)}`).join(' و') : 'لا نقاط في هذه'}</span>${c.evened && c.gained ? '<span class="note">⚖️ الفريقين مو بنفس العدد، فتعدّلت النقاط حسب حجم كل فريق</span>' : ''}</div>`;
 const tallyBars = (tally, hi) => { const ks = Object.keys(tally || {}).sort((a, b) => tally[b] - tally[a]), max = Math.max(1, ...ks.map(k => tally[k]));
   return ks.length ? `<ul class="bars">${ks.map(k => `<li class="${hi(k) ? 'top' : ''}" style="--tc:${TEAM_COLORS[pteam(k)]};--w:${tally[k] / max * 100}%"><b>${esc(pname(k))}</b><span>${ltr(tally[k])}</span></li>`).join('')}</ul>` : '<p class="subtle">ما أحد صوّت.</p>'; };
 function partAll(c, q, def){
@@ -7104,7 +7119,7 @@ function partLetters(c, q, def){
   return head + table + ptsLine(c) + nextBtn();
 }
 function partPick(c, def){
-  const ch = 1 - c.team, chs = `<span style="color:${TEAM_COLORS[ch]}">${esc(S.teams[ch].name)}</span>`, ans = `<span style="color:${TEAM_COLORS[c.team]}">${esc(S.teams[c.team].name)}</span>`;
+  const ch = opp(c.team), chs = `<span style="color:${TEAM_COLORS[ch]}">${esc(S.teams[ch].name)}</span>`, ans = `<span style="color:${TEAM_COLORS[c.team]}">${esc(S.teams[c.team].name)}</span>`;
   const head = `<article class="qcard"><div class="meta"><span class="chip">اختار لخصمك</span>${c.pc.cat ? `<span>${CAT_NAMES[c.pc.cat]}</span>` : ''}</div><p class="qtext">فريق ${chs} يختار سؤال فريق ${ans}</p>
     <div class="howround">${c.pc.cat ? 'اختاروا الصعوبة. الصعب نقاطه أكثر لهم، بس إذا أخطأوا تقدرون تسرقون نصها!' : 'اختاروا فئة من هذه الثلاث. اختاروا اللي تظنونها أصعب عليهم 😈'}${phonesOn() ? ' وتقدرون تختارون من جوالاتكم.' : ''}</div></article>`;
   const list = c.pc.cat
@@ -7136,20 +7151,27 @@ function viewQuestion(){
     <div class="topline"><span class="rn">${def.name}</span><span class="qn">سؤال ${S.i + 1} من ${S.plan.length}</span><button class="iconbtn" data-act="menu">المضيف ⋯</button></div>
     <div class="dots">${dots}</div>
     ${live && c.t !== 'bomb' ? `<button id="timer" class="timer${sec <= 5 ? ' low' : ''}${c.running ? '' : ' paused'}" data-act="timer" aria-label="إيقاف أو تشغيل الوقت"><span class="num">${sec}</span><span class="bar"><span class="fill" style="width:${Math.min(100, c.timeLeft / c.max * 100)}%"></span></span><span class="st">${c.running ? 'اضغط للإيقاف' : 'متوقف — اضغط'}</span></button>` : ''}
+    ${live && c.t !== 'bomb' && act != null && S.teams[act] && S.teams[act].to !== false ? `<button class="tobtn" style="--tc:${TEAM_COLORS[act]}" data-act="tout" data-t="${act}">⏸️ وقت مستقطع لفريق ${esc(S.teams[act].name)} <small>(${TOUT_S} ثانية، مرة وحدة باللعبة)</small></button>` : ''}
     ${body}
     ${lifes}
   </div>`;
 }
 
+// الفائز (أعلى نقاط)، أو -1 إذا تعادل الأول ويه غيره. تشتغل ويه أي عدد فرق
+function winnerIdx(sc){
+  sc = sc || S.teams.map(t => t.score);
+  const top = Math.max(...sc); return sc.filter(s => s === top).length > 1 ? -1 : sc.indexOf(top);
+}
+// الفرق بين الأول واللي وراه
+const leadGap = sc => { const s = sc.slice().sort((a, b) => b - a); return s[0] - s[1]; };
 function leaderLine(){
-  const [a, b] = S.teams; const d = Math.abs(a.score - b.score);
-  if (!d) return 'تعادل حتى الآن!';
-  const w = a.score > b.score ? 0 : 1;
+  const w = winnerIdx(), d = leadGap(S.teams.map(t => t.score));
+  if (w < 0) return 'تعادل حتى الآن!';
   return `فريق ${tn(w)} يتقدم بفارق ${ltr(d)} نقطة`;
 }
 function bigScores(){
-  const lead = S.teams[0].score === S.teams[1].score ? -1 : (S.teams[0].score > S.teams[1].score ? 0 : 1);
-  return `<div class="big-scores">${S.teams.map((t, i) => `<div class="bs${lead === i ? ' lead' : ''}" style="--tc:${TEAM_COLORS[i]}"><span class="nm">${esc(t.name)}</span><span class="sc">${ltr(t.score)}</span><span class="sub">${t.correct} إجابات صحيحة</span></div>`).join('')}</div>`;
+  const lead = winnerIdx();
+  return `<div class="big-scores" style="--nt:${S.teams.length}">${S.teams.map((t, i) => `<div class="bs${lead === i ? ' lead' : ''}" style="--tc:${TEAM_COLORS[i]}"><span class="nm">${esc(t.name)}</span><span class="sc">${ltr(t.score)}</span><span class="sub">${t.correct} إجابات صحيحة</span></div>`).join('')}</div>`;
 }
 function viewRoundEnd(){
   const def = roundDef(), nx = RD[S.rounds[S.r + 1]];
@@ -7157,7 +7179,7 @@ function viewRoundEnd(){
     <div class="stage"><div class="num">انتهت الجولة ${S.r + 1} من ${S.rounds.length}</div><h2>${def.name}</h2><p>${leaderLine()}</p></div>
     ${bigScores()}
     ${wheelNeeded(S.r + 1)
-      ? `<section class="panel" style="--tc:${TEAM_COLORS[(S.r + 1) % 2]}"><span class="label">الجولة التالية</span><h2>يختارها فريق <span style="color:var(--tc)">${esc(S.teams[(S.r + 1) % 2].name)}</span> بالعجلة</h2></section>
+      ? `<section class="panel" style="--tc:${TEAM_COLORS[(S.r + 1) % S.teams.length]}"><span class="label">الجولة التالية</span><h2>يختارها فريق <span style="color:var(--tc)">${esc(S.teams[(S.r + 1) % S.teams.length].name)}</span> بالعجلة</h2></section>
     <button class="btn primary block" data-act="nextRound">إلى عجلة الفقرات</button>`
       : `<section class="panel"><span class="label">الجولة التالية</span><h2>${nx.name}${nx.mult > 1 ? ` <span style="color:var(--brass)">${ltr('×' + nx.mult)}</span>` : ''}</h2><span class="muted">${nx.desc}</span></section>
     <button class="btn primary block" data-act="nextRound">ابدأ الجولة التالية</button>`}
@@ -7188,9 +7210,9 @@ const dayText = d => { try { return new Date(d).toLocaleDateString('ar-IQ', {wee
 function leagueTable(games){
   const T = {};
   games.forEach(g => g.t.forEach((n, i) => {
-    const r = T[n] = T[n] || {n, p:0, w:0, d:0, l:0, pts:0, sc:0}, me = g.s[i], op = g.s[1 - i];
+    const r = T[n] = T[n] || {n, p:0, w:0, d:0, l:0, pts:0, sc:0}, me = g.s[i], top = Math.max(...g.s), tied = g.s.filter(s => s === top).length > 1;
     r.p++; r.sc += me;
-    if (me > op) { r.w++; r.pts += 3; } else if (me === op) { r.d++; r.pts++; } else r.l++;
+    if (me === top && !tied) { r.w++; r.pts += 3; } else if (me === top) { r.d++; r.pts++; } else r.l++;
   }));
   return Object.values(T).sort((a, b) => b.pts - a.pts || b.w - a.w || b.sc - a.sc);
 }
@@ -7218,8 +7240,8 @@ function leaguePanel(){
     </tbody></table></div>
     <p class="subtle">الفوز بـ3 نقاط والتعادل بنقطة. الترتيب حسب اسم الفريق، فخلّوا أسماء فرقكم ثابتة.</p>` : `<p class="subtle">ما لعبتوا بعد هذا الشهر.</p>`}
     <div class="label">📋 نتائج التحدي</div>
-    <ul class="results">${recent.map(g => { const tie = g.s[0] === g.s[1], w = g.s[0] > g.s[1] ? 0 : 1;
-      return `<li><span class="rd">${esc(dayText(g.d))}</span><span class="rs">${[0, 1].map(i => `<b class="${!tie && i === w ? 'w' : ''}" style="--tc:${TEAM_COLORS[i]}">${esc(g.t[i])} ${ltr(g.s[i])}</b>`).join('<i>–</i>')}</span><button type="button" class="iconbtn" data-act="card" data-id="${g.id}" aria-label="صورة النتيجة">📸</button></li>`; }).join('')}</ul>
+    <ul class="results">${recent.map(g => { const w = winnerIdx(g.s), tie = w < 0;
+      return `<li><span class="rd">${esc(dayText(g.d))}</span><span class="rs">${g.t.map((_, i) => `<b class="${!tie && i === w ? 'w' : ''}" style="--tc:${TEAM_COLORS[i]}">${esc(g.t[i])} ${ltr(g.s[i])}</b>`).join('<i>–</i>')}</span><button type="button" class="iconbtn" data-act="card" data-id="${g.id}" aria-label="صورة النتيجة">📸</button></li>`; }).join('')}</ul>
     <div class="row2">${all.length > 4 ? `<button type="button" class="link" data-act="lgAll">${lgAll ? 'أقل' : `كل النتائج (${ltr(all.length)})`}</button>` : ''}<button type="button" class="link" data-act="lgReset">${lgReset ? 'اضغط مرة ثانية حتى يتصفّر الدوري' : 'تصفير الدوري'}</button></div>
   </section>`;
 }
@@ -7237,19 +7259,21 @@ async function drawCard(g){
   const gr = x.createRadialGradient(W / 2, -120, 40, W / 2, -120, 950); gr.addColorStop(0, V('--felt-3')); gr.addColorStop(1, V('--felt')); x.fillStyle = gr; x.fillRect(0, 0, W, H);
   x.fillStyle = V('--brass'); x.font = D(118); x.fillText('تحدي الخميس', W / 2, 135);
   x.fillStyle = V('--muted'); x.font = B(38); x.fillText(dayText(g.d), W / 2, 228);
-  const tie = g.s[0] === g.s[1], w = g.s[0] > g.s[1] ? 0 : 1;
+  const w = winnerIdx(g.s), tie = w < 0, N = g.s.length, tcs = [tc[0], tc[1], V('--team-c')];
   x.font = '150px "Segoe UI Emoji","Noto Color Emoji",sans-serif'; x.fillText(tie ? '🤝' : '🏆', W / 2, 380);
-  x.fillStyle = tie ? V('--brass') : tc[w]; x.font = D(92); x.fillText(tie ? 'تعادل!' : 'فاز فريق ' + g.t[w], W / 2, 530, W - 120);
-  [0, 1].forEach(i => {
-    const bw = 440, bh = 270, bx = i === 0 ? W / 2 + 15 : W / 2 - 15 - bw, by = 620, win = !tie && i === w;
-    box(bx, by, bw, bh, 40); x.fillStyle = V('--felt-2'); x.fill(); x.lineWidth = win ? 10 : 4; x.strokeStyle = win ? tc[i] : V('--rim'); x.stroke();
-    x.fillStyle = V('--ink'); x.font = B(48); x.fillText(g.t[i], bx + bw / 2, by + 72, bw - 40);
-    x.fillStyle = tc[i]; x.font = D(130); x.fillText(String(g.s[i]), bx + bw / 2, by + 182);
+  x.fillStyle = tie ? V('--brass') : tcs[w]; x.font = D(92); x.fillText(tie ? 'تعادل!' : 'فاز فريق ' + g.t[w], W / 2, 530, W - 120);
+  // صناديق النقاط من اليمين لليسار، فريقين أو ثلاثة
+  const gap = 24, bw = (W - 120 - gap * (N - 1)) / N, bh = 270, by = 620;
+  g.t.forEach((nm, i) => {
+    const bx = W - 60 - bw - i * (bw + gap), win = !tie && i === w;
+    box(bx, by, bw, bh, 40); x.fillStyle = V('--felt-2'); x.fill(); x.lineWidth = win ? 10 : 4; x.strokeStyle = win ? tcs[i] : V('--rim'); x.stroke();
+    x.fillStyle = V('--ink'); x.font = B(N > 2 ? 40 : 48); x.fillText(nm, bx + bw / 2, by + 72, bw - 30);
+    x.fillStyle = tcs[i]; x.font = D(N > 2 ? 100 : 130); x.fillText(String(g.s[i]), bx + bw / 2, by + 182, bw - 20);
   });
   let y = 975;
   if (g.st && g.st.length) {
     x.fillStyle = V('--muted'); x.font = B(40); x.fillText('نجوم السهرة', W / 2, y); y += 78;
-    g.st.slice(0, 3).forEach(([n, c, t], i) => { x.fillStyle = tc[t] || V('--ink'); x.font = B(50); x.fillText(`${['🥇', '🥈', '🥉'][i]} ${n} · ${c} ⭐`, W / 2, y, W - 160); y += 74; });
+    g.st.slice(0, 3).forEach(([n, c, t], i) => { x.fillStyle = tcs[t] || V('--ink'); x.font = B(50); x.fillText(`${['🥇', '🥈', '🥉'][i]} ${n} · ${c} ⭐`, W / 2, y, W - 160); y += 74; });
   }
   if (g.lg) { x.fillStyle = V('--brass-deep'); x.font = B(40); x.fillText(g.lg, W / 2, H - 62, W - 100); }
   return cv;
@@ -7279,13 +7303,13 @@ async function saveCard(){
 }
 
 function viewEnd(){
-  const [a, b] = S.teams; const tie = a.score === b.score; const w = a.score > b.score ? 0 : 1;
+  const w = winnerIdx(), tie = w < 0, gap = leadGap(S.teams.map(t => t.score));
   const lg = league().some(g => g.id === S.id) ? leagueLine(Date.now()) : '';
   return `<div class="screen">
     <div class="stage winner" style="--tc:${tie ? 'var(--brass)' : TEAM_COLORS[w]}">
       <div class="num">النتيجة النهائية</div>
       <h2>${tie ? 'تعادل!' : 'فاز فريق ' + esc(S.teams[w].name)}</h2>
-      <p>${tie ? 'تحتاجون جولة ثأر.' : `بفارق ${ltr(Math.abs(a.score - b.score))} نقطة`}</p>
+      <p>${tie ? 'تحتاجون جولة ثأر.' : `بفارق ${ltr(gap)} نقطة`}</p>
     </div>
     ${bigScores()}
     ${lg ? `<div class="champ"><span class="cup">🏆</span><span><small>دوري الخميس</small><b>${esc(lg.replace('🏆 ', ''))}</b></span></div>` : ''}
@@ -7311,7 +7335,41 @@ function guideSheet(){
     <div class="actions"><button class="btn ${on ? 'ghost' : 'primary'}" data-act="guidePick" data-id="${r.id}">${on ? 'شيلها من اللعبة' : 'ضيفها للعبة ✓'}</button><button class="btn" data-act="closeGuide">إغلاق</button></div>
   </div></div>`;
 }
+/* وقت مستقطع: كل فريق مرة وحدة باللعبة يوقف الوقت 30 ثانية حتى يتشاورون، وبعدها يرجع الوقت يمشي وحده */
+const TOUT_S = 30;
+let toutH = null;
+function toutStart(t){
+  const c = S && S.cur; if (!c || S.tout || !S.teams[t] || S.teams[t].to === false) return;
+  timerStop(); S.teams[t].to = false; S.tout = {t, end:Date.now() + TOUT_S * 1000};
+  sfx('reveal'); save(); render();
+}
+function toutEnd(){
+  clearInterval(toutH); toutH = null;
+  if (!S || !S.tout) return;
+  S.tout = null; sfx('tap');
+  if (!onHome && S.cur && S.phase === 'question' && timerLive(S.cur)) timerStart();
+  save(); render();
+}
+function toutTick(){
+  if (!S || !S.tout) { clearInterval(toutH); toutH = null; return; }
+  const left = Math.max(0, Math.ceil((S.tout.end - Date.now()) / 1000)), el = document.getElementById('toutn');
+  if (el) el.textContent = left;
+  if (left <= 5 && left > 0 && el && el.dataset.s !== String(left)) { el.dataset.s = left; sfx('tick'); }
+  if (left <= 0) toutEnd();
+}
+function toutSheet(){
+  const t = S.tout.t, left = Math.max(0, Math.ceil((S.tout.end - Date.now()) / 1000));
+  if (!toutH) toutH = setInterval(toutTick, 250);
+  return `<div class="tout" style="--tc:${TEAM_COLORS[t]}" role="dialog" aria-label="وقت مستقطع">
+    <span class="label">⏸️ وقت مستقطع</span>
+    <b class="tn">فريق ${esc(S.teams[t].name)} يتشاور</b>
+    <span class="tc" id="toutn">${left}</span>
+    <span class="muted">الوقت متوقف، ويرجع يمشي وحده من يخلص العد</span>
+    <button class="btn team" data-act="toutEnd">رجعنا! كمّل الآن</button>
+  </div>`;
+}
 function viewSheet(){
+  if (S && S.tout && !onHome) return toutSheet();
   if (cardId) return cardSheet();
   if (guideId && RD[guideId]) return guideSheet();
   if (!menuOpen || !S) return '';
@@ -7415,12 +7473,13 @@ document.addEventListener('click', e => {
       P.rounds = ROUNDS.map(x => x.id).filter(x => r.includes(x)); savePrefs(); render(); break;
     }
     case 'start': {
-      const names = P.names.map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
-      if (names[0] === names[1]) { toast('اختر اسمين مختلفين للفريقين'); break; }
-      P.names = names; savePrefs();
+      const names = P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
+      if (new Set(names).size !== names.length) { toast('كل فريق لازم يكون اسمه مختلف'); break; }
+      names.forEach((n, i) => { P.names[i] = n; }); savePrefs();
+      Object.values(PL).forEach(p => { if (p.team >= names.length) p.team = p.team % names.length; }); savePL();
       const rs = P.rounds.filter(id => roundOk(RD[id]));
       if (!rs.length) { toast('اختر فقرة واحدة على الأقل'); break; }
-      go(() => newGame({perTeam:P.perTeam, time:P.time, steal:P.steal, direct:P.direct, wager:P.wager, wheel:P.wheel, llMode:P.llMode, phoneQ:!!P.phoneQ && (NET.avail || P.test), fun:P.fun !== false, rounds:rs}, names));
+      go(() => newGame({perTeam:P.perTeam, time:P.time, steal:P.steal, direct:P.direct, wager:P.wager && NT() === 2, wheel:P.wheel, llMode:P.llMode, phoneQ:!!P.phoneQ && (NET.avail || P.test), fun:P.fun !== false, rounds:rs}, names));
       sfx('life'); break;
     }
     case 'wGo': if (S.w && S.w.stage === 'intro') {
@@ -7495,10 +7554,12 @@ document.addEventListener('click', e => {
     case 'spyEnd': if (c && c.t === 'spy') { spyEnd(); save(); render(); } break;
     case 'spyShow': if (c && c.t === 'spy' && c.stage === 'guess') { c.wordShown = true; sfx('reveal'); save(); render(); } break;
     case 'spyGuess': if (c && c.t === 'spy' && c.stage === 'guess') { spyGuess(el.dataset.v === '1'); save(); render(); } break;
+    case 'tout': toutStart(+el.dataset.t); break;
+    case 'toutEnd': toutEnd(); break;
     case 'plDraw': teamDraw(); netChanged(); setTimeout(() => { if (onHome || !S) netChanged(); }, 2600); break;
     case 'badQ': if (S && S.cur) { const id = S.cur.id; P.bad = (P.bad || []).concat(id); savePrefs(); menuOpen = false; menuResume = false; toast('🚩 انشال السؤال، وما راح يطلع مرة ثانية'); go(() => nextQuestion(true)); } break;
     case 'badReset': P.bad = []; savePrefs(); toast('رجعت كل الأسئلة المحذوفة'); render(); break;
-    case 'plTeam': { const k = el.dataset.k; if (PL[k]) { PL[k].team = 1 - PL[k].team; savePL(); netChanged(); } break; }
+    case 'plTeam': { const k = el.dataset.k; if (PL[k]) { PL[k].team = (PL[k].team + 1) % NT(); savePL(); netChanged(); } break; }
     case 'netMode': {
       const m = el.dataset.m, fresh = el.dataset.fresh === '1';
       if (m === 'online' && NET.mode === 'online' && !fresh) break;
