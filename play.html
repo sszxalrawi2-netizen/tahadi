@@ -84,6 +84,11 @@ h2{font-size:1.5rem}
 .arrows button{border:none;border-radius:16px;min-height:72px;background:var(--brass);color:var(--brass-ink);font-size:1.6rem;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1}
 .arrows small{font-size:.8rem;font-weight:700}
 .arrows button:active{transform:scale(.95)}
+.snbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.snbtns button{border:1px solid var(--brass);border-radius:14px;min-height:56px;background:transparent;color:var(--ink);font:inherit;font-weight:700}
+.snbtns button:active{transform:scale(.96)}
+.snlogp{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.snlogp li{display:flex;justify-content:space-between;padding:6px 10px;border-radius:10px;background:color-mix(in srgb,var(--ink) 6%,transparent)}
 .mzpad{max-width:380px;touch-action:manipulation;user-select:none;-webkit-user-select:none}
 .mzpad button{min-height:110px;font-size:2.6rem}
 .wgrid{display:flex;flex-direction:column;gap:6px;align-items:center}
@@ -523,6 +528,30 @@ function body(){
       return `<div class="card center"><div class="big" id="icnum" style="font-size:4rem;color:var(--brass);min-height:1.2em">${esc(icShow())}</div>${v.mode === 'laps' && got ? `<small class="muted">ضغطت ${got} من ${mk.length}</small>` : ''}</div>
         <button class="buzz" style="--tc:var(--bad)" data-act="icTap">${label}</button>`;
     }
+    case 'snset': return v.mine != null
+        ? `<div class="card center"><span class="label">رقمكم السري 🤫 لا تخلّون الخصم يشوفه</span><div class="big" style="color:var(--brass)">${esc(v.mine)}</div><p class="muted" style="margin:0">${v.by ? 'اختاره ' + esc(v.by) + ' · ' : ''}تقدرون تغيّرونه لحد ما يبدأ السؤال</p></div>
+          <div class="card"><input class="field" id="snv" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="رقم جديد من 1 لـ${v.max}" dir="ltr"><button class="btn" data-act="snSet">غيّر الرقم</button></div>`
+        : `<div class="card"><span class="label">اختاروا رقم سري من 1 لـ${v.max}</span><p class="muted" style="margin:0">اتفقوا بالهمس، وواحد منكم يكتبه. الخصم راح يحاول يكشفه.</p>
+          <input class="field" id="snv" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="1 – ${v.max}" dir="ltr" style="font-size:2rem;text-align:center">
+          <button class="btn primary" data-act="snSet">ثبّت الرقم</button></div>`;
+    case 'snask': {
+      if (v.found) return `<div class="card center"><div class="big ok">كشفتوه! 🎉</div><p class="muted" style="margin:0">بـ${v.asked} سؤال. انتظروا الفريق الثاني.</p></div>`;
+      return `<div class="card center" style="gap:2px;padding:10px"><span class="label">رقم الخصم بين</span><div class="big" style="color:var(--brass);font-size:2rem" dir="ltr">${v.range[0]} – ${v.range[1]}</div><small class="muted">سألتوا ${v.asked} · إذا كشفتوه بالسؤال الجاي تاخذون ${v.pts} · رقمكم ${esc(v.own)}</small></div>
+        <div class="card"><input class="field" id="snq" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="اكتب رقم" dir="ltr" style="font-size:1.6rem;text-align:center">
+          <div class="snbtns"><button data-act="snAsk" data-q="gt">أكبر من؟</button><button data-act="snAsk" data-q="div">يقبل القسمة على؟</button><button data-act="snAsk" data-q="has">بيه الرقم؟ (0-9)</button><button data-act="snAsk" data-q="even">زوجي؟</button></div>
+          <button class="btn primary" data-act="snAsk" data-q="eq">🎯 هو هذا الرقم؟</button></div>
+        ${v.log.length ? `<ul class="snlogp">${v.log.map(e => `<li><span>${esc(e.q)}</span><b class="${e.a ? 'ok' : 'no'}">${e.a ? 'نعم' : 'لا'}</b></li>`).join('')}</ul>` : ''}`;
+    }
+    case 'relay': {
+      if (v.solved) return `<div class="card center"><div class="big ok">كمّلتوا السلسلة! 🏁</div></div>`;
+      if (v.mine) return `<div class="card center" style="padding:10px"><span class="label">دورك! خطوة ${v.step} من ${v.total}</span></div>
+        <div class="card"><p class="prompt" style="margin:0">${esc(v.text)}</p>
+          ${v.step > 1 ? `<p class="muted" style="margin:0">${v.from ? `«الرقم» = الجواب اللي يكولك إياه <b>${esc(v.from)}</b>` : `«الرقم» = جوابك السابق: <b>${esc(v.prevV)}</b>`}</p>` : ''}
+          <input class="field" id="gs" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="جوابك" dir="ltr" style="font-size:1.8rem;text-align:center" ${v.lock ? 'disabled' : ''}>
+          <button class="btn primary" data-act="sendGuess" ${v.lock ? 'disabled' : ''}>${v.lock ? `🔒 غلط! انتظر ${v.lock} ثواني` : 'أرسل الجواب'}</button></div>`;
+      return `${v.said != null ? `<div class="card center"><span class="label">صح ✓ هسه كول بصوت عالي لـ${esc(v.turn)}</span><div class="big" style="color:var(--brass);font-size:3.2rem">${esc(v.said)}</div></div>` : ''}
+        <div class="card center"><span class="label">خطوة ${v.step} من ${v.total}</span><p style="margin:0">الدور على <b>${esc(v.turn)}</b>، ساعدوه!</p></div>`;
+    }
     case 'maze': return `<div class="card center" style="padding:12px"><span class="label">${v.solved ? 'طلعتوا! 🏁' : 'أنت تتحكم بهذا الاتجاه. طالع التابلت وتفاهم ويه فريقك'}</span></div>
       ${v.solved ? '' : `<div class="arrows mzpad">${v.dirs.map(d => `<button data-act="mz" data-v="${d}" style="grid-area:${d}">${MZG[d]}<small>${MZN[d]}</small></button>`).join('')}</div>`}
       ${(v.mates || []).length ? `<p class="muted center" style="margin:0">${v.mates.map(m => `${esc(m.n)}: ${esc(m.d)}`).join(' · ')}</p>` : ''}`;
@@ -652,6 +681,16 @@ app.addEventListener('click', e => {
   else if (a === 'sendGuess') { const inp = document.getElementById('gs'); const v = (inp.value || '').trim().slice(0, 40); if (!v) return; send({t:'guess', vid:view.vid, v}); inp.value = ''; inp.focus(); }
   else if (a === 'tcStart') { local.t0 = performance.now(); render(); }
   else if (a === 'tcStop') { if (!local.t0) return; local.ms = Math.round(performance.now() - local.t0); send({t:'tclock', vid:view.vid, ms:local.ms}); try { navigator.vibrate && navigator.vibrate(60); } catch(_){} render(); }
+  else if (a === 'snSet') { const inp = document.getElementById('snv'); const n = +(inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, ''); if (!(n >= 1 && n <= view.max)) { alert(`اكتب رقم من 1 لـ${view.max}`); inp.focus(); return; } send({t:'snset', vid:view.vid, v:n}); inp.value = ''; inp.blur(); }
+  else if (a === 'snAsk') {
+    const q = el.dataset.q, inp = document.getElementById('snq'), raw = (inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, ''), n = +raw;
+    if (q !== 'even') {
+      const ok = raw !== '' && (q === 'has' ? n <= 9 : q === 'div' ? n >= 2 && n <= 100 : n >= 1 && n <= view.max);
+      if (!ok) { alert(q === 'has' ? 'اكتب رقم واحد من 0 لـ9' : q === 'div' ? 'اكتب رقم من 2 لـ100' : `اكتب رقم من 1 لـ${view.max}`); inp.focus(); return; }
+    }
+    send({t:'snask', vid:view.vid, q, v:q === 'even' ? 0 : n}); inp.value = '';
+    try { navigator.vibrate && navigator.vibrate(25); } catch(_){}
+  }
   else if (a === 'icStart') { local.t0 = performance.now(); local.ms = []; render(); }
   else if (a === 'icTap') {
     if (!local.t0 || local.done) return;
