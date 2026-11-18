@@ -106,15 +106,16 @@
 :root[data-theme="fun"] :is(.wrow .m2,.wrow .m1,.wrow .m0){color:#fff}
 :root[data-theme="fun"] .sw.on{border-color:var(--ink)}
 /* نفس الخلفية الحيّة والكروت الزجاجية اللي على التابلت */
-:root{--glass:rgba(255,255,255,.07);--glass-b:rgba(255,255,255,.16);--gblur:blur(30px) saturate(160%);--bo:.42}
-:root[data-theme="fun"]{--glass:rgba(255,255,255,.46);--glass-b:rgba(255,255,255,.8);--bo:.62}
-#bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--felt)}
+:root{--glass:rgba(255,255,255,.09);--glass-b:rgba(255,255,255,.16);--bo:.42}
+:root[data-theme="fun"]{--glass:rgba(255,255,255,.6);--glass-b:rgba(255,255,255,.85);--bo:.62}
+#bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--felt);transform:translateZ(0);will-change:transform}
+html body{background-image:none!important;background-attachment:scroll!important}
 #bgfx::before{content:"";position:absolute;inset:0;opacity:var(--bo);background:
   radial-gradient(70vmax 70vmax at 95% 0%,var(--brass),transparent 68%),
   radial-gradient(70vmax 70vmax at 80% 100%,var(--team-a),transparent 68%),
   radial-gradient(70vmax 70vmax at 0% 55%,var(--team-b),transparent 68%),
   radial-gradient(50vmax 50vmax at 5% 0%,var(--team-c),transparent 70%)}
-.card{background:var(--glass)!important;border-color:var(--glass-b)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
+.card{background:var(--glass)!important;border-color:var(--glass-b)!important}
 :root[data-theme="fun"] .card{box-shadow:0 10px 30px rgba(130,60,20,.16)}
 /* «دورك!»: الشاشة كلها تتلون بلون الفريق وتهتز */
 .turnfx{position:fixed;inset:0;z-index:50;background:var(--tc);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;opacity:0;pointer-events:none;transition:opacity .2s}

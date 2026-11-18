@@ -625,6 +625,13 @@ button.bcell:active{transform:scale(.96)}
 .lever.spring .lknob,.lever.spring .lrod{transition:top .35s cubic-bezier(.3,1.6,.5,1),height .35s cubic-bezier(.3,1.6,.5,1)}
 .buzzers{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .buzzer{min-height:150px;border:none;border-radius:22px;background:var(--tc);color:var(--on);font-family:var(--display);font-size:clamp(1.4rem,6vw,2rem);line-height:1.2;padding:12px;box-shadow:0 8px 0 color-mix(in srgb,var(--tc) 55%,var(--felt));touch-action:manipulation;min-width:0;overflow-wrap:anywhere}
+.bzwait{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:22px 12px;border-radius:22px;border:2px dashed color-mix(in srgb,var(--brass) 60%,transparent);background:color-mix(in srgb,var(--brass) 10%,transparent)}
+.bzwait .bell{font-size:3rem;line-height:1;animation:ring 1.2s ease-in-out infinite;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.bzwait b{font-family:var(--display);font-weight:400;font-size:1.6rem;color:var(--brass-deep)}
+.bzwait small{color:var(--muted)}
+@keyframes ring{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(-16deg)}20%,40%{transform:rotate(16deg)}}
+.bzfall summary{cursor:pointer;color:var(--muted);font-size:.85rem;text-align:center;padding:6px}
+.bzwho .big{font-size:clamp(2.2rem,9vw,3.2rem)}
 .buzzer:active{transform:translateY(5px);box-shadow:0 3px 0 color-mix(in srgb,var(--tc) 55%,var(--felt))}
 .bomb{margin:4px auto;width:min(62vw,220px);aspect-ratio:1;max-width:100%;border-radius:50%;display:grid;place-items:center;text-align:center;color:var(--on);font-family:var(--display);font-size:1.5rem;line-height:1.25;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--tc) 55%,var(--ink)),var(--tc) 55%,color-mix(in srgb,var(--tc) 55%,var(--felt)));box-shadow:0 0 0 8px color-mix(in srgb,var(--tc) 22%,transparent);animation:bombpulse .9s ease-in-out infinite;transition:background .3s}
 @keyframes bombpulse{50%{transform:scale(1.06)}}
@@ -691,9 +698,11 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 .tobtn small{font-weight:500;color:var(--muted)}
 
 /* ===== الشكل الحديث: خلفية حيّة، كروت زجاجية، أزرار تنضغط، مؤقت دائري، شريط نقاط ===== */
-:root{--glass:rgba(255,255,255,.07);--glass-b:rgba(255,255,255,.16);--gblur:blur(30px) saturate(160%);--bo:.42}
-:root[data-theme="fun"]{--glass:rgba(255,255,255,.46);--glass-b:rgba(255,255,255,.8);--bo:.62}
-#bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--felt)}
+:root{--glass:rgba(255,255,255,.09);--glass-b:rgba(255,255,255,.16);--bo:.42}
+:root[data-theme="fun"]{--glass:rgba(255,255,255,.6);--glass-b:rgba(255,255,255,.85);--bo:.62}
+#bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--felt);transform:translateZ(0);will-change:transform}
+/* الخلفية الحيّة صارت بطبقة وحدها، فنشيل خلفية الصفحة المثبتة اللي تعيد رسم الشاشة كل ما تتمرر */
+html body{background-image:none!important;background-attachment:scroll!important}
 /* الخلفية ثابتة (بدون حركة) حتى الزجاج ما ينعاد تضبيبه كل لحظة، وهذا اللي يخلي اللعب سموذ */
 #bgfx::before{content:"";position:absolute;inset:0;opacity:var(--bo);background:
   radial-gradient(60vmax 60vmax at 92% 2%,var(--brass),transparent 68%),
@@ -703,8 +712,8 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 #bgfx b{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% -10%,rgba(255,255,255,.2) 0 4deg,transparent 4deg 12deg);-webkit-mask:radial-gradient(90vmax 80vmax at 50% -10%,#000 20%,transparent 75%);mask:radial-gradient(90vmax 80vmax at 50% -10%,#000 20%,transparent 75%)}
 :root:not([data-theme="fun"]) #bgfx b{opacity:.25}
 :is(.panel,.qcard,.lookbox,.bs,.verdict,.rule){background:var(--glass)!important;border-color:var(--glass-b)!important}
-:is(.panel,.qcard,.lookbox){-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
-.sheet{background:color-mix(in srgb,var(--felt-2) 72%,transparent)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
+/* بدون تضبيب حقيقي: الخلفية أصلاً ناعمة، والتضبيب كان يثقّل التابلت ويقطّع */
+.sheet{background:color-mix(in srgb,var(--felt-2) 94%,transparent)!important}
 :root[data-theme="fun"] :is(.panel,.qcard,.lookbox,.bs,.verdict,.rule,.sheet){box-shadow:0 10px 30px rgba(130,60,20,.16)}
 .opt{background:color-mix(in srgb,var(--felt) 45%,transparent)}
 :is(.rtog,.seg button,.themes button,.tin input,.life,.iconbtn){background:color-mix(in srgb,var(--felt) 45%,transparent)}
@@ -1909,7 +1918,7 @@ const ROUNDS = [
   {id:'draw', group:'تحديات تفاعلية', name:'ارسمها', desc:'لاعب يرسم الكلمة بإصبعه على الهاتف، وفريقه يخمّن', cats:['draw'], levels:[1,2,3], mult:1, type:'draw'},
   {id:'memory', group:'تحديات تفاعلية', name:'تحدي الذاكرة', desc:'احفظوا 12 كلمة في 20 ثانية، ثم اذكروها بعد أن تختفي', cats:['memory'], levels:[1,2,3], mult:1, type:'memory'},
   {id:'look', group:'تحديات تفاعلية', name:'ركّز جيداً', desc:'صورة أو مقطع يظهر ثواني ثم يختفي، وبعدها يأتي السؤال', cats:['look'], levels:[1,2,3], mult:1, type:'mcq'},
-  {id:'buzz', group:'تحديات تفاعلية', name:'سباق الجرس', desc:'الهاتف على الطاولة، وأسرع فريق يضغط زره يجاوب', cats:['general','capitals','football'], levels:[1,2], mult:1, type:'buzz'},
+  {id:'buzz', group:'تحديات تفاعلية', name:'سباق الجرس', desc:'كل لاعب يضغط الجرس من جواله، وأسرع واحد يجاوب لحاله', cats:['general','capitals','football'], levels:[1,2], mult:1, type:'buzz'},
   {id:'bomb', group:'تحديات تفاعلية', name:'القنبلة', desc:'مرّروا القنبلة بإجابة صحيحة قبل أن تنفجر بأيديكم', cats:['bomb'], levels:[1,2,3], mult:1, type:'bomb'},
   {id:'auction', group:'تحديات تفاعلية', name:'المزاد', desc:'زايدوا على عدد الإجابات، ومن يربح المزاد يثبت كلامه', cats:['auction'], levels:[1,2,3], mult:1, type:'auction'},
   {id:'reverse', group:'تحديات تفاعلية', name:'بالمقلوب', desc:'اسمعوا الكلمة مقلوبة وخمّنوا الكلمة الصحيحة', cats:['reverse'], levels:[1,2,3], mult:1, type:'reverse'},
@@ -1976,7 +1985,7 @@ const ROUND_GUIDE = {
   draw:{p:'لازم 2 بكل فريق على الأقل', pt:2, t:'5–8 د', tags:'😂 ضحك · 🎨 رسم', how:'واحد يرسم الكلمة بإصبعه على التابلت، وجماعته يخمّنون.', warn:'إذا الفريق شخص واحد ما تنلعب.'},
   memory:{p:G_ANY, pt:1, t:'5 د', tags:'🧠 ذاكرة', how:'12 كلمة تطلع 20 ثانية وتختفي، وبعدها اذكروا اللي تتذكرونه.'},
   look:{p:G_ANY, pt:1, t:'5 د', tags:'👀 تركيز', how:'صورة أو مقطع يطلع ثواني ويختفي، وبعدها سؤال عنه.'},
-  buzz:{p:G_ANY, pt:1, t:'5 د', tags:'⚡ سرعة', how:'الجوال على الطاولة، وأسرع فريق يضغط زره ياخذ حق الجواب.'},
+  buzz:{p:G_ANY, pt:1, t:'5 د', tags:'⚡ سرعة', how:'كل لاعب يضغط الجرس من جواله، وأول واحد يضغط هو اللي يجاوب لحاله بدون مساعدة فريقه. إذا ماكو جوالات، الفريقين يضغطون أزرارهم على التابلت.'},
   bomb:{p:G_ANY, pt:1, t:'5 د', tags:'⚡ سرعة · 😂 حماس', how:'القنبلة تنتقل بين الفريقين بكل جواب صح، ووقت انفجارها مخفي. اللي تنفجر بيده يخسر.'},
   auction:{p:G_ANY, pt:1, t:'8 د', tags:'🎯 مزايدة', how:'الفريقين يزايدون: «نكدر نذكر 8 لاعبين»، واللي يربح المزاد لازم يثبت كلامه.'},
   reverse:{p:G_ANY, pt:1, t:'5 د', tags:'😂 ضحك · 👂 سمع', how:'كلمة مسجلة بالمقلوب، اسمعوها وخمّنوا الكلمة الأصلية.'},
@@ -5113,7 +5122,11 @@ const PHONE = {
   buzz(c, q, key, vid){
     if (c.stage === 'ready') return {k:'wait', vid, title:'استعدوا!', text:'جهّزوا أصابعكم، السؤال قادم'};
     if (c.stage === 'answer') return {k:'buzz', vid, prompt:'السؤال على التابلت. اضغط إذا عرفت الجواب!'};
-    if (c.stage === 'buzzed' || c.stage === 'judge') return {k:'info', vid, label:'ضغط أولاً', big:c.buzzBy ? pname(c.buzzBy) : 'فريق ' + S.teams[c.team].name, tone:pteam(key) === c.team ? 'ok' : 'no', text:'فريق ' + S.teams[c.team].name};
+    if (c.stage === 'buzzed' || c.stage === 'judge') {
+      if (c.buzzBy && c.buzzBy === key) return {k:'info', vid, label:'أنت ضغطت أول واحد!', big:'جاوب أنت', tone:'ok', text:'قول جوابك بصوت عالي، لحالك بدون مساعدة'};
+      if (c.buzzBy && pteam(key) === c.team) return {k:'info', vid, label:'ضغط أولاً', big:pname(c.buzzBy), tone:'ok', text:'هو بس يجاوب. لا تساعدونه!'};
+      return {k:'info', vid, label:'ضغط أولاً', big:c.buzzBy ? pname(c.buzzBy) : 'فريق ' + S.teams[c.team].name, tone:pteam(key) === c.team ? 'ok' : 'no', text:'فريق ' + S.teams[c.team].name};
+    }
     return null;
   },
   num(c, q, key, vid){
@@ -7021,7 +7034,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611181014';
+const GAME_VER = '202611181023';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7431,20 +7444,30 @@ function partBuzz(c, q, def){
   const pts = basePts();
   const meta = `<div class="meta"><span class="chip">سباق الجرس</span><span class="chip">${CAT_NAMES[q.cat]}</span>${lvlDots(q.lvl)}<span class="pts">${ltr(pts)}</span></div>`;
   const qcard = `<article class="qcard">${meta}<p class="qtext">${esc(q.q)}</p>${q.flag ? `<div class="flag">${flagSvg(q.flag)}</div>` : ''}</article>`;
+  // الجرس من الجوالات: أسرع لاعب يضغط، وهو بس اللي يجاوب. أزرار التابلت تبقى احتياط إذا ماكو جوالات
+  const phones = (NET.on || P.test) && onlineKeys().length > 0;
+  const who = c.buzzBy ? esc(pname(c.buzzBy)) : '';
   if (c.stage === 'ready') {
-    return `<article class="qcard">${meta}<div class="howround">ضعوا الهاتف على الطاولة بين الفريقين، وكل فريق يجهّز يده على زره. الجواب الخاطئ يعطي الخصم ${ltr(Math.round(pts / 2))}.</div></article>
+    return `<article class="qcard">${meta}<div class="howround">${phones
+      ? `كل لاعب يمسك جواله. أول واحد يضغط الجرس هو اللي يجاوب <b>لحاله</b>، وفريقه ممنوع يساعده. الجواب الغلط يعطي الخصم ${ltr(Math.round(pts / 2))}.`
+      : `ضعوا الهاتف على الطاولة بين الفريقين، وكل فريق يجهّز يده على زره. الجواب الخاطئ يعطي الخصم ${ltr(Math.round(pts / 2))}.`}</div></article>
     <button class="btn primary block" data-act="bzShow">اعرض السؤال</button>`;
   }
   if (c.stage === 'answer') {
-    return qcard + `<div class="buzzers">${[0,1].map(i => `<button class="buzzer" style="--tc:${TEAM_COLORS[i]}" data-act="bz" data-t="${i}">${esc(S.teams[i].name)}</button>`).join('')}</div>`
-      + (NET.on && onlineKeys().length ? '<p class="subtle">أو اضغطوا الجرس من جوالاتكم.</p>' : '');
+    const btns = `<div class="buzzers">${[0,1].map(i => `<button class="buzzer" style="--tc:${TEAM_COLORS[i]}" data-act="bz" data-t="${i}">${esc(S.teams[i].name)}</button>`).join('')}</div>`;
+    return qcard + (phones
+      ? `<div class="bzwait"><span class="bell">🔔</span><b>اضغطوا الجرس من جوالاتكم!</b><small>أول واحد يضغط يجاوب لحاله</small></div>
+        <details class="bzfall"><summary>ماكو جوالات؟ أزرار الفرق</summary>${btns}</details>`
+      : btns);
   }
   if (c.stage === 'buzzed') {
-    return qcard + `<div class="verdict judge" style="--tc:${TEAM_COLORS[c.team]}"><span class="big" style="color:var(--tc)">${c.buzzBy ? `${esc(pname(c.buzzBy))} من فريق ${esc(S.teams[c.team].name)}` : `فريق ${esc(S.teams[c.team].name)}`} ضغط أولاً!</span><span class="note">قولوا جوابكم الآن.</span></div>
-    <button class="btn team block" style="--tc:${TEAM_COLORS[c.team]}" data-act="bzReveal">قالوا جوابهم، اكشف الجواب</button>`;
+    return qcard + (c.buzzBy
+      ? `<div class="verdict judge bzwho" style="--tc:${TEAM_COLORS[c.team]}"><span class="label">ضغط أولاً</span><span class="big" style="color:var(--tc)">${who}</span><span class="note">من فريق ${esc(S.teams[c.team].name)}. <b>${who} بس يجاوب</b>، وفريقه ممنوع يساعده!</span></div>`
+      : `<div class="verdict judge" style="--tc:${TEAM_COLORS[c.team]}"><span class="big" style="color:var(--tc)">فريق ${esc(S.teams[c.team].name)} ضغط أولاً!</span><span class="note">قولوا جوابكم الآن.</span></div>`)
+      + `<button class="btn team block" style="--tc:${TEAM_COLORS[c.team]}" data-act="bzReveal">${c.buzzBy ? `${who} جاوب، اكشف الجواب` : 'قالوا جوابهم، اكشف الجواب'}</button>`;
   }
   if (c.stage === 'judge') {
-    return qcard + `<div class="verdict judge"><span class="label">الجواب الصحيح</span><span class="big">${esc(q.o[0])}</span><span class="note">هل قال فريق ${tn(c.team)} هذا الجواب؟</span></div>
+    return qcard + `<div class="verdict judge"><span class="label">الجواب الصحيح</span><span class="big">${esc(q.o[0])}</span><span class="note">هل قال ${c.buzzBy ? `<b>${who}</b>` : `فريق ${tn(c.team)}`} هذا الجواب؟</span></div>
     <div class="actions"><button class="btn good" data-act="bzJudge" data-v="1">صح، ${ltr('+' + pts)}</button><button class="btn danger" data-act="bzJudge" data-v="0">خطأ، ${ltr('+' + Math.round(pts / 2))} للخصم</button></div>`;
   }
   const head = c.result === 'timeout' ? 'لم يضغط أي فريق' : c.result === 'correct' ? `أحسنتم! ${ltr('+' + c.gained)} لفريق ${tn(c.team)}` : `جواب خاطئ، ${ltr('+' + c.sgained)} لفريق ${tn(opp(c.team))}`;
