@@ -113,7 +113,7 @@
 :root[data-theme="fun"] .drum{box-shadow:inset 0 18px 22px rgba(120,70,20,.25),inset 0 -18px 22px rgba(120,70,20,.25)}
 :root[data-theme="fun"] .drow.on{color:var(--brass-deep);text-shadow:none}
 :root[data-theme="fun"] .dwin{border-color:color-mix(in srgb,var(--brass) 70%,transparent);background:color-mix(in srgb,var(--brass) 12%,transparent)}
-:root[data-theme="fun"] .btn.ghost,:root[data-theme="fun"] .opt,:root[data-theme="fun"] .rtog{background:var(--felt-2)}
+:root[data-theme="fun"] .btn.ghost,:root[data-theme="fun"] .opt,:root[data-theme="fun"] .rtog{background:color-mix(in srgb,var(--felt-2) 60%,transparent)}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background-color:var(--felt);background-image:radial-gradient(130% 60% at 50% -12%,var(--felt-3) 0%,transparent 60%),radial-gradient(70% 45% at 0% 105%,color-mix(in srgb,var(--team-a) 14%,transparent),transparent 70%),radial-gradient(70% 45% at 100% 105%,color-mix(in srgb,var(--team-b) 14%,transparent),transparent 70%);background-attachment:fixed;color:var(--ink);font-family:var(--body);font-size:1rem;line-height:1.6;direction:rtl;-webkit-tap-highlight-color:transparent}
@@ -689,6 +689,66 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 .adj .who{display:flex;justify-content:space-between;font-weight:700}
 .tobtn{align-self:center;border:1.5px dashed color-mix(in srgb,var(--tc) 60%,transparent);background:color-mix(in srgb,var(--tc) 8%,transparent);color:var(--tc);border-radius:99px;padding:6px 16px;font-weight:700;font-size:.92rem}
 .tobtn small{font-weight:500;color:var(--muted)}
+
+/* ===== الشكل الحديث: خلفية حيّة، كروت زجاجية، أزرار تنضغط، مؤقت دائري، شريط نقاط ===== */
+:root{--glass:rgba(255,255,255,.07);--glass-b:rgba(255,255,255,.16);--gblur:blur(30px) saturate(160%);--bo:.42}
+:root[data-theme="fun"]{--glass:rgba(255,255,255,.46);--glass-b:rgba(255,255,255,.8);--bo:.62}
+#bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--felt)}
+#bgfx i{position:absolute;width:62vmax;height:62vmax;border-radius:50%;filter:blur(64px);opacity:var(--bo);animation:bgf 14s ease-in-out infinite alternate;will-change:transform}
+#bgfx i:nth-child(1){background:var(--brass);top:-24vmax;right:-20vmax}
+#bgfx i:nth-child(2){background:var(--team-a);bottom:-28vmax;right:-8vmax;animation-duration:17s;animation-delay:-5s}
+#bgfx i:nth-child(3){background:var(--team-b);top:18vh;left:-30vmax;animation-duration:20s;animation-delay:-10s}
+#bgfx i:nth-child(4){background:var(--team-c);top:-20vmax;left:-14vmax;width:46vmax;height:46vmax;animation-duration:15s;animation-delay:-3s}
+#bgfx b{position:absolute;left:50%;top:-70vmax;width:180vmax;height:180vmax;margin-left:-90vmax;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.22) 0 5deg,transparent 5deg 15deg);-webkit-mask:radial-gradient(closest-side,#000 25%,transparent 72%);mask:radial-gradient(closest-side,#000 25%,transparent 72%);animation:spin 90s linear infinite}
+:root:not([data-theme="fun"]) #bgfx b{opacity:.25}
+@keyframes bgf{0%{transform:translate(0,0) scale(1)}50%{transform:translate(9vmax,7vmax) scale(1.18)}100%{transform:translate(-7vmax,11vmax) scale(.9)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#bgfx i,#bgfx b{animation:none}}
+:is(.panel,.qcard,.lookbox,.bs,.verdict,.rule){background:var(--glass)!important;border-color:var(--glass-b)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
+.sheet{background:color-mix(in srgb,var(--felt-2) 72%,transparent)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
+:root[data-theme="fun"] :is(.panel,.qcard,.lookbox,.bs,.verdict,.rule,.sheet){box-shadow:0 10px 30px rgba(130,60,20,.16)}
+.opt{background:color-mix(in srgb,var(--felt) 45%,transparent)}
+:is(.rtog,.seg button,.themes button,.tin input,.life,.iconbtn){background:color-mix(in srgb,var(--felt) 45%,transparent)}
+/* أزرار تنضغط لجوّه */
+.btn{transition:transform .08s,box-shadow .08s}
+.btn.team{box-shadow:0 4px 0 color-mix(in srgb,var(--tc) 60%,#000);margin-bottom:4px}
+.btn.good{box-shadow:0 4px 0 color-mix(in srgb,var(--good) 60%,#000);margin-bottom:4px}
+.btn.bad{box-shadow:0 4px 0 color-mix(in srgb,var(--bad) 60%,#000);margin-bottom:4px}
+.btn:is(.team,.good,.bad):not(:disabled):active{transform:translateY(4px);box-shadow:0 0 0 transparent}
+.btn:is(.ghost,.danger):not(:disabled):active{transform:translateY(2px)}
+.opts.qa .opt{transition:transform .08s,box-shadow .08s}
+.opts.qa .opt:not(:disabled):active{transform:translateY(5px);box-shadow:0 0 0 transparent}
+/* انتقال ناعم بين الشاشات */
+.scr-in{animation:scrIn .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes scrIn{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.scr-in{animation:none}}
+/* مؤقت دائري */
+.timer{justify-content:center;gap:14px}
+.timer .ring{position:relative;width:78px;height:78px;flex:none}
+.timer .ring svg{width:100%;height:100%;transform:rotate(-90deg);display:block}
+.timer .ring circle{fill:none;stroke-width:7}
+.timer .tr0{stroke:color-mix(in srgb,var(--ink) 12%,transparent)}
+.timer .tr1{stroke:var(--tc);stroke-linecap:round;stroke-dasharray:100;transition:stroke-dashoffset .25s linear,stroke .3s}
+.timer .ring .num{position:absolute;inset:0;display:grid;place-items:center;font-size:2rem;min-width:0}
+.timer.low .tr1{stroke:var(--bad)}
+.timer.low .ring{animation:tpulse 1s ease-in-out infinite}
+@keyframes tpulse{50%{transform:scale(1.08)}}
+/* شاشة سؤال نظيفة */
+.screen.focus .dots{display:none}
+.screen.focus .tobtn{opacity:.75}
+.qcard .qtext{font-size:clamp(1.35rem,5.4vw,1.9rem);text-align:center;line-height:1.6}
+/* أيقونات موحدة */
+.qicon{width:58px;height:58px;margin:0 auto -2px;border-radius:18px;display:grid;place-items:center;background:color-mix(in srgb,var(--brass) 18%,transparent);color:var(--brass-deep);font-size:0}
+:root:not([data-theme="fun"]) .qicon{color:var(--brass)}
+.qicon svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* شريط نقاط مثل التلفزيون */
+.scorebar{top:calc(env(safe-area-inset-top,0px) + 6px);background:rgba(28,18,36,.84)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur);border-radius:18px;padding:6px;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.22);color:#fff}
+.scorebar .tcard{background:transparent;border:0!important;box-shadow:none!important;border-radius:13px;padding:8px 12px;color:#fff}
+.scorebar .tcard .sc{color:color-mix(in srgb,var(--tc) 50%,#fff)}
+.scorebar .tcard.on{background:var(--tc)}
+.scorebar .tcard.on .sc{color:#fff}
+.scorebar .tcard.on .nm::before{background:#fff}
+.scorebar .tcard.on::after{background:#fff;color:var(--tc);top:-9px}
 .tout{position:fixed;inset:0;z-index:35;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center;background:color-mix(in srgb,var(--tc) 14%,var(--felt))}
 .tout .label{font-size:1.1rem}
 .tout .tn{font-family:var(--display);font-weight:400;font-size:clamp(1.8rem,7vw,2.6rem);color:var(--tc)}
@@ -703,6 +763,7 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
+<div id="bgfx" aria-hidden="true"><b></b><i></i><i></i><i></i><i></i></div>
 <div class="wrap"><div id="app"></div></div>
 <div id="sheet"></div>
 <div id="toast" class="toast" hidden></div>
@@ -2028,7 +2089,32 @@ const preStage = t => t === 'describe' || t === 'reverse' || t === 'bomb' || t =
 const STEAL_SECONDS = 20;
 const LETTERS = ['أ','ب','ج','د'];
 // خيارات ملوّنة: كل خيار بلون وشكل، والفريق يكول «الأحمر» بدل «أ» (نفس الألوان بالجوال)
-const CAT_ICONS = {brands:'🏷️', babhara:'🚪', shapes:'🔺', general:'📚', whoami:'🕵️', iq:'🧠', logic:'🧩', seqs:'🔢', calc:'➗', anagram:'🔤', odd:'🎯', flags:'🏳️', flagcolors:'🎨', capitals:'🌍', football:'⚽', players:'⚽', career:'👟', links:'🔗', look:'👀', order:'📶', rapid:'✅'};
+// أيقونات خطّية بنفس الستايل لكل فقرة، بدل الإيموجي
+const CAT_PATHS = {
+  brands:'<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',
+  babhara:'<path d="M5 21V10a7 7 0 0 1 14 0v11"/><path d="M3 21h18M12 3.5V21"/><path d="M10 14h.01M14 14h.01"/>',
+  shapes:'<path d="M12 3 2.5 20h19z"/><path d="M12 3v17M7.2 11.5h9.6"/>',
+  general:'<path d="M4 19V5a2 2 0 0 1 2-2h14v14H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14"/><path d="M9 7h7"/>',
+  whoami:'<circle cx="10" cy="8" r="4"/><path d="M3 21a7 7 0 0 1 10.5-6"/><path d="M16.5 15.5a2.2 2.2 0 1 1 3 2c-.6.3-.8.7-.8 1.3M18.7 21.5h.01"/>',
+  iq:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>',
+  logic:'<path d="M4 7h4a2 2 0 1 1 4 0h4v4a2 2 0 1 1 0 4v4H4z"/>',
+  seqs:'<path d="M3.5 8 6 6.5V18"/><path d="M9.5 8.5a2.2 2.2 0 1 1 3.6 1.7L9.5 18h4.5"/><path d="M16.5 6.5h4l-2.4 4a2.6 2.6 0 1 1-2.3 4.6"/>',
+  calc:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>',
+  anagram:'<rect x="3" y="7" width="8" height="10" rx="2"/><rect x="13" y="7" width="8" height="10" rx="2"/><path d="M6 4.5c3-2 9-2 12 0M18 19.5c-3 2-9 2-12 0"/>',
+  odd:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+  flags:'<path d="M5 21V4M5 4h12l-2.5 4.5L17 13H5"/>',
+  flagcolors:'<path d="M12 3a9 9 0 0 0 0 18c1.5 0 2-1 2-2s-1-1.5-1-2.5S14 15 15 15h2a4 4 0 0 0 4-4c0-4.5-4-8-9-8z"/><path d="M7.5 11h.01M10 7h.01M15 7.5h.01"/>',
+  capitals:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  football:'<circle cx="12" cy="12" r="9"/><path d="m12 7.5 4 3-1.5 4.5h-5L8 10.5z"/><path d="M12 3v4.5M16 10.5l4.5-1.5M14.5 15l2.5 4M9.5 15 7 19M8 10.5 3.5 9"/>',
+  players:'<path d="M8 3 3 6l2 4 2-1v12h10V9l2 1 2-4-5-3a4 4 0 0 1-8 0z"/>',
+  career:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/>',
+  links:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  look:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  order:'<path d="M5 20v-4M10 20v-8M15 20V8M20 20V4"/>',
+  rapid:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  q:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.5M12 16.5h.01"/>'
+};
+const catIcon = cat => `<div class="qicon" aria-hidden="true"><svg viewBox="0 0 24 24">${CAT_PATHS[cat] || CAT_PATHS.q}</svg></div>`;
 let qaMem = {id:null, shown:false, st:''};
 // أول ما تطلع الخيارات تنزل وحدة وحدة، وأول ما ينكشف الجواب تصير حركة الصح والغلط (مرة وحدة، مو بكل رسم)
 function qaCls(id, stage){
@@ -6256,7 +6342,7 @@ function updTimer(){
   const el = $('#timer'); const c = S && S.cur; if (!el || !c) return;
   const sec = Math.ceil(c.timeLeft / 1000);
   el.querySelector('.num').textContent = sec;
-  el.querySelector('.fill').style.width = Math.max(0, Math.min(100, c.timeLeft / c.max * 100)) + '%';
+  el.querySelector('.tr1').style.strokeDashoffset = 100 - Math.max(0, Math.min(100, c.timeLeft / c.max * 100));
   el.querySelector('.st').textContent = c.running ? 'اضغط للإيقاف' : 'متوقف — اضغط';
   el.classList.toggle('low', sec <= 5);
   el.classList.toggle('paused', !c.running);
@@ -6274,7 +6360,7 @@ function scorebar(active, flat){
   return `<div class="scorebar${flat ? ' flat' : ''}" style="--nt:${S.teams.length}">${S.teams.map((t, i) => `
     <div class="tcard${active === i ? ' on' : ''}" style="--tc:${TEAM_COLORS[i]}">
       <span class="nm">${esc(t.name)}${S.streak && S.streak[i] >= 2 ? ` <span class="fire" title="إجابات صحيحة متتالية">🔥${ltr(S.streak[i])}</span>` : ''}</span>
-      <span class="sc${bump === i || bump === 'both' ? ' bump' : ''}">${ltr(t.score)}</span>
+      <span class="sc${bump === i || bump === 'both' ? ' bump' : ''}" data-ti="${i}">${ltr(t.score)}</span>
     </div>`).join('')}</div>`;
 }
 
@@ -6380,7 +6466,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611171037';
+const GAME_VER = '202611180904';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -6607,7 +6693,7 @@ function partMcq(c, q, def){
   const card = `<article class="qcard">
     <div class="meta"><span class="chip">${q.topic ? CAT_NAMES[q.cat] + ' · ' + q.topic : CAT_NAMES[q.cat]}</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(ptsNow)}</span></div>
     ${c.stage === 'steal' ? `<div class="stealban">سرقة! فريق ${esc(S.teams[other].name)} يجاوب الآن على ${ltr(Math.round(base / 2))} نقطة</div>` : ''}
-    ${CAT_ICONS[q.cat] ? `<div class="qicon" aria-hidden="true">${CAT_ICONS[q.cat]}</div>` : ''}
+    ${catIcon(q.cat)}
     <p class="qtext">${esc(q.q)}</p>
     ${q.fig ? `<div class="fig">${q.fig}</div>` : ''}
     ${tiles || (q.flag ? `<div class="flag">${flagSvg(q.flag)}</div>` : '')}
@@ -7359,11 +7445,12 @@ function viewQuestion(){
       return `<button class="life${used ? ' used' : ''}${isActive ? ' active' : ''}" data-act="life" data-id="${l.id}" ${dis ? 'disabled' : ''}><span class="g">${ltr(l.g)}</span><span>${l.name}</span></button>`;
     }).join('')}</div>`;
   }
-  return `<div class="screen" style="--tc:${tc}">
+  const focus = live && ['answer', 'steal'].includes(c.stage);
+  return `<div class="screen${focus ? ' focus' : ''}" style="--tc:${tc}">
     ${scorebar(act)}
     <div class="topline"><span class="rn">${def.name}</span><span class="qn">سؤال ${S.i + 1} من ${S.plan.length}</span><button class="iconbtn" data-act="menu">المضيف ⋯</button></div>
     <div class="dots">${dots}</div>
-    ${live && c.t !== 'bomb' ? `<button id="timer" class="timer${sec <= 5 ? ' low' : ''}${c.running ? '' : ' paused'}" data-act="timer" aria-label="إيقاف أو تشغيل الوقت"><span class="num">${sec}</span><span class="bar"><span class="fill" style="width:${Math.min(100, c.timeLeft / c.max * 100)}%"></span></span><span class="st">${c.running ? 'اضغط للإيقاف' : 'متوقف — اضغط'}</span></button>` : ''}
+    ${live && c.t !== 'bomb' ? `<button id="timer" class="timer${sec <= 5 ? ' low' : ''}${c.running ? '' : ' paused'}" data-act="timer" aria-label="إيقاف أو تشغيل الوقت"><span class="ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="tr0" cx="32" cy="32" r="27"/><circle class="tr1" cx="32" cy="32" r="27" pathLength="100" style="stroke-dashoffset:${100 - Math.max(0, Math.min(100, c.timeLeft / c.max * 100))}"/></svg><span class="num">${sec}</span></span><span class="st">${c.running ? 'اضغط للإيقاف' : 'متوقف — اضغط'}</span></button>` : ''}
     ${live && c.t !== 'bomb' && act != null && S.teams[act] && S.teams[act].to !== false ? `<button class="tobtn" style="--tc:${TEAM_COLORS[act]}" data-act="tout" data-t="${act}">⏸️ وقت مستقطع لفريق ${esc(S.teams[act].name)} <small>(${TOUT_S} ثانية، مرة وحدة باللعبة)</small></button>` : ''}
     ${body}
     ${lifes}
@@ -7384,7 +7471,7 @@ function leaderLine(){
 }
 function bigScores(){
   const lead = winnerIdx();
-  return `<div class="big-scores" style="--nt:${S.teams.length}">${S.teams.map((t, i) => `<div class="bs${lead === i ? ' lead' : ''}" style="--tc:${TEAM_COLORS[i]}"><span class="nm">${esc(t.name)}</span><span class="sc">${ltr(t.score)}</span><span class="sub">${t.correct} إجابات صحيحة</span></div>`).join('')}</div>`;
+  return `<div class="big-scores" style="--nt:${S.teams.length}">${S.teams.map((t, i) => `<div class="bs${lead === i ? ' lead' : ''}" style="--tc:${TEAM_COLORS[i]}"><span class="nm">${esc(t.name)}</span><span class="sc" data-ti="${i}">${ltr(t.score)}</span><span class="sub">${t.correct} إجابات صحيحة</span></div>`).join('')}</div>`;
 }
 function viewRoundEnd(){
   const def = roundDef(), nx = RD[S.rounds[S.r + 1]];
@@ -7614,6 +7701,9 @@ function render(){
   else if (S.phase === 'end') app.innerHTML = viewEnd();
   else app.innerHTML = viewHome();
   $('#sheet').innerHTML = viewSheet();
+  const sk = onHome || !S ? 'home' : [S.phase, S.r, S.i, S.cur && S.cur.id].join('|');
+  if (sk !== scrKey) { scrKey = sk; if (app.firstElementChild) app.firstElementChild.classList.add('scr-in'); }
+  countUp();
   bump = null; newClue = false;
   if (S && !onHome && S.phase === 'question' && S.cur && S.cur.t === 'reverse' && rev.id !== S.cur.id) loadBuiltin(S.cur.id);
   mountPad(); mountLever();
@@ -7624,6 +7714,22 @@ function render(){
   netSync();
 }
 function go(fn){ fn(); window.scrollTo(0, 0); }
+// النقاط تعدّ لفوك أو لجوّه بدل ما تتبدل فجأة
+var scrKey = null, shownSc = {};
+function countUp(){
+  if (onHome || !S || !S.teams) { shownSc = {}; return; }
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  S.teams.forEach((t, i) => {
+    const to = t.score, from = shownSc[i] == null ? to : shownSc[i]; shownSc[i] = to;
+    if (from === to || calm) return;
+    const els = [...document.querySelectorAll(`[data-ti="${i}"]`)], t0 = performance.now(), dur = 800;
+    (function step(n){
+      const p = Math.min(1, (n - t0) / dur), e = 1 - Math.pow(1 - p, 3), v = Math.round(from + (to - from) * e);
+      els.forEach(el => { if (el.isConnected) el.innerHTML = ltr(v); });
+      if (p < 1 && els.some(el => el.isConnected)) requestAnimationFrame(step);
+    })(t0);
+  });
+}
 
 let toastH = null;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastH); toastH = setTimeout(() => { t.hidden = true; }, 2600); }

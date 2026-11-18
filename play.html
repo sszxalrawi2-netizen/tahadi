@@ -37,6 +37,25 @@
 :root[data-theme="fun"] .wrow span{color:var(--ink)}
 :root[data-theme="fun"] :is(.wrow .m2,.wrow .m1,.wrow .m0){color:#fff}
 :root[data-theme="fun"] .sw.on{border-color:var(--ink)}
+/* نفس الخلفية الحيّة والكروت الزجاجية اللي على التابلت */
+:root{--glass:rgba(255,255,255,.07);--glass-b:rgba(255,255,255,.16);--gblur:blur(30px) saturate(160%);--bo:.42}
+:root[data-theme="fun"]{--glass:rgba(255,255,255,.46);--glass-b:rgba(255,255,255,.8);--bo:.62}
+#bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--felt)}
+#bgfx i{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(56px);opacity:var(--bo);animation:bgf 14s ease-in-out infinite alternate;will-change:transform}
+#bgfx i:nth-child(1){background:var(--brass);top:-28vmax;right:-24vmax}
+#bgfx i:nth-child(2){background:var(--team-a);bottom:-30vmax;right:-12vmax;animation-duration:17s;animation-delay:-5s}
+#bgfx i:nth-child(3){background:var(--team-b);top:22vh;left:-36vmax;animation-duration:20s;animation-delay:-10s}
+#bgfx i:nth-child(4){background:var(--team-c);top:-22vmax;left:-18vmax;width:50vmax;height:50vmax;animation-duration:15s;animation-delay:-3s}
+@keyframes bgf{0%{transform:translate(0,0) scale(1)}50%{transform:translate(9vmax,7vmax) scale(1.18)}100%{transform:translate(-7vmax,11vmax) scale(.9)}}
+@media (prefers-reduced-motion:reduce){#bgfx i{animation:none}}
+.card{background:var(--glass)!important;border-color:var(--glass-b)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
+:root[data-theme="fun"] .card{box-shadow:0 10px 30px rgba(130,60,20,.16)}
+/* «دورك!»: الشاشة كلها تتلون بلون الفريق وتهتز */
+.turnfx{position:fixed;inset:0;z-index:50;background:var(--tc);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;opacity:0;pointer-events:none;transition:opacity .2s}
+.turnfx b{font-family:var(--display);font-weight:400;font-size:min(26vw,7rem);line-height:1.1}
+.turnfx small{font-size:1.2rem;font-weight:700;opacity:.9}
+.turnfx.on{opacity:1;animation:tshk .55s}
+@keyframes tshk{0%,100%{transform:none}15%{transform:translateX(-14px) rotate(-1deg)}35%{transform:translateX(12px) rotate(1deg)}55%{transform:translateX(-8px)}75%{transform:translateX(6px)}}
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:radial-gradient(120% 50% at 50% -10%,var(--felt-3),transparent 65%) var(--felt);background-attachment:fixed;color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;direction:rtl;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
@@ -152,7 +171,9 @@ h2{font-size:1.5rem}
 .step{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .step button{border:none;border-radius:12px;background:var(--felt-3);padding:12px 0;font-weight:700}
 </style>
+<div id="bgfx" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 <div class="wrap" id="app"></div>
+<div class="turnfx" id="turnfx" aria-live="assertive"><b>دورك!</b><small id="turnfxt"></small></div>
 <script>
 /* ===== اللعب عبر الإنترنت =====
    التابلت والجوالات يتصلون بخدمة MQTT مجانية عامة برمز غرفة من 6 أرقام.
@@ -390,7 +411,15 @@ function vibFx(){
   if (v.card && v.vid !== prev.vid) { const won = v.scores && v.scores[t] > v.scores[1 - t]; vib(won ? [120, 70, 120, 70, 400] : [400]); return; }
   if (d > 0) vib([80, 60, 80]);
   else if (d < 0) vib(250);
-  else if (v.vid !== prev.vid && INPUT_K(v) && !INPUT_K(prev)) vib(200);
+  else if (v.vid !== prev.vid && INPUT_K(v) && !INPUT_K(prev)) { vib(200); turnFlash(); }
+}
+let turnH = null;
+function turnFlash(){
+  const el = document.getElementById('turnfx'); if (!el || !me) return;
+  el.style.setProperty('--tc', TC[me.team]);
+  document.getElementById('turnfxt').textContent = view && view.teams && view.teams[me.team] ? 'فريق ' + view.teams[me.team] : '';
+  el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  clearTimeout(turnH); turnH = setTimeout(() => el.classList.remove('on'), 1500);
 }
 // صورة النتيجة: نفس رسمة التابلت، وتنحفظ أو تنرسل من الجوال
 const dayText = d => { try { return new Date(d).toLocaleDateString('ar-IQ', {weekday:'long', day:'numeric', month:'long'}); } catch(e) { return ''; } };
