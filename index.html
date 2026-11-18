@@ -99,7 +99,7 @@ bdi{unicode-bidi:isolate}
 .rhidden summary{cursor:pointer;color:var(--muted);font-weight:700}
 .rhidden .row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 0}
 .rhidden .btn{padding:8px 14px}
-.rtog{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;border:1.5px solid var(--rim);background:var(--felt);text-align:start;width:100%}
+.rhidden .rbtns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.rtog{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;border:1.5px solid var(--rim);background:var(--felt);text-align:start;width:100%}
 .rtog .box{width:22px;height:22px;border-radius:7px;border:2px solid var(--muted);flex:none;display:grid;place-items:center}
 .rtog[aria-pressed="true"]{border-color:var(--brass-deep)}
 .rtog[aria-pressed="true"] .box{background:var(--brass);border-color:var(--brass)}
@@ -4787,8 +4787,9 @@ const pteam = k => PL[k] ? PL[k].team : 0;
 const teamNames = () => S ? S.teams.map(t => t.name) : P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
 // فقرات تشتغل ويه 3 فرق (الباقي مبني على فريقين بالضبط: جرس، قنبلة، مزاد، وفقرات الجوال الجماعية)
 const TEAM3_OK = ['general','brands','babhara','shapes','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
-const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && (!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
+const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && !(P.deleted || []).includes(def.id) &&(!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
 let roundEdit = false;   // وضع إخفاء الفقرات في الشاشة الرئيسية
+let delAsk = null;       // الفقرة اللي ننتظر تأكيد حذفها النهائي
 
 // طريقتان للربط: «نفس الواي فاي» (خادم تطبيق التابلت) و«عبر الإنترنت» (خدمة وسيطة برمز غرفة)
 const canOnline = () => typeof WebSocket !== 'undefined' && !!(window.crypto && crypto.getRandomValues);
@@ -6737,9 +6738,9 @@ function viewHome(){
       <span class="n">${['react', 'escape', 'target', 'maze', 'iclock', 'snum', 'relay', 'mafia'].includes(r.type) ? 'جوال' : poolCount(r) + ' سؤالاً'}</span>
     </button><button type="button" class="rinfo" data-act="guide" data-id="${r.id}" aria-label="شرح ${esc(r.name)}">؟</button>${roundEdit ? `<button type="button" class="rhide" data-act="hideRound" data-id="${r.id}" aria-label="إخفاء ${esc(r.name)}">🗑</button>` : ''}</div>`;
   }).join('');
-  const hidden = ROUNDS.filter(r => (P.hidden || []).includes(r.id));
+  const hidden = ROUNDS.filter(r => (P.hidden || []).includes(r.id) && !(P.deleted || []).includes(r.id));
   const hiddenBox = `<div class="rhidebar"><button type="button" class="link" data-act="roundEdit">${roundEdit ? 'خلصت ✓' : '🗑 إخفاء فقرات ما تعجبكم'}</button></div>
-    ${hidden.length ? `<details class="rhidden"><summary>الفقرات المخفية (${ltr(hidden.length)})</summary>${hidden.map(r => `<div class="row"><span>${r.name}</span><button type="button" class="btn ghost" data-act="showRound" data-id="${r.id}">رجّعها</button></div>`).join('')}</details>` : ''}`;
+    ${hidden.length ? `<details class="rhidden"${delAsk ? ' open' : ''}><summary>الفقرات المخفية (${ltr(hidden.length)})</summary>${hidden.map(r => `<div class="row"><span>${r.name}</span><span class="rbtns"><button type="button" class="btn ghost" data-act="showRound" data-id="${r.id}">رجّعها</button><button type="button" class="btn danger" data-act="delRound" data-id="${r.id}">${delAsk === r.id ? 'متأكد؟ اضغط مرة ثانية' : 'احذفها نهائياً'}</button></span></div>`).join('')}<p class="subtle">الحذف النهائي ما يرجع، والفقرة تختفي من كل مكان.</p></details>` : ''}`;
   return `<div class="screen">
     <header class="hero">
       <div class="eyebrow">فريقان · ${ROUNDS.length} فقرات · وسائل مساعدة</div>
@@ -6757,7 +6758,7 @@ function viewHome(){
     ${lobbyPanel()}
     <section class="panel">
       <h2>الفقرات</h2>
-      ${roundEdit ? '<p class="subtle">اضغط 🗑 جنب الفقرة حتى تختفي من القائمة ومن اللعب. تقدر ترجعها بأي وقت من «الفقرات المخفية».</p>' : ''}
+      ${roundEdit ? '<p class="subtle">اضغط 🗑 جنب الفقرة حتى تختفي من القائمة ومن اللعب. تقدر ترجعها بأي وقت من «الفقرات المخفية»، أو تحذفها من هناك نهائياً.</p>' : ''}
       <div class="rlist">${rounds}</div>
       ${hiddenBox}
     </section>
@@ -6818,7 +6819,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611181007';
+const GAME_VER = '202611181011';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -8138,6 +8139,13 @@ document.addEventListener('click', e => {
       savePrefs(); toast(`أُخفيت «${RD[id].name}»`); render(); break;
     }
     case 'showRound': { const id = el.dataset.id; P.hidden = (P.hidden || []).filter(x => x !== id); if (!P.rounds.includes(id)) P.rounds = ROUNDS.map(x => x.id).filter(x => x === id || P.rounds.includes(x)); savePrefs(); render(); break; }
+    case 'delRound': {
+      // الحذف النهائي يحتاج ضغطتين: الأولى تسأل، والثانية تحذف
+      const id = el.dataset.id;
+      if (delAsk !== id) { delAsk = id; render(); break; }
+      delAsk = null; P.deleted = (P.deleted || []).concat(id); P.hidden = (P.hidden || []).filter(x => x !== id); P.rounds = P.rounds.filter(x => x !== id);
+      savePrefs(); toast(`انحذفت «${RD[id].name}» نهائياً`); render(); break;
+    }
     case 'round': {
       const id = el.dataset.id; const r = P.rounds.includes(id) ? P.rounds.filter(x => x !== id) : P.rounds.concat(id);
       if (!r.length) { toast('اختر فقرة واحدة على الأقل'); break; }
