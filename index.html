@@ -625,17 +625,16 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 :root{--glass:rgba(255,255,255,.07);--glass-b:rgba(255,255,255,.16);--gblur:blur(30px) saturate(160%);--bo:.42}
 :root[data-theme="fun"]{--glass:rgba(255,255,255,.46);--glass-b:rgba(255,255,255,.8);--bo:.62}
 #bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--felt)}
-#bgfx i{position:absolute;width:62vmax;height:62vmax;border-radius:50%;filter:blur(64px);opacity:var(--bo);animation:bgf 14s ease-in-out infinite alternate;will-change:transform}
-#bgfx i:nth-child(1){background:var(--brass);top:-24vmax;right:-20vmax}
-#bgfx i:nth-child(2){background:var(--team-a);bottom:-28vmax;right:-8vmax;animation-duration:17s;animation-delay:-5s}
-#bgfx i:nth-child(3){background:var(--team-b);top:18vh;left:-30vmax;animation-duration:20s;animation-delay:-10s}
-#bgfx i:nth-child(4){background:var(--team-c);top:-20vmax;left:-14vmax;width:46vmax;height:46vmax;animation-duration:15s;animation-delay:-3s}
-#bgfx b{position:absolute;left:50%;top:-70vmax;width:180vmax;height:180vmax;margin-left:-90vmax;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.22) 0 5deg,transparent 5deg 15deg);-webkit-mask:radial-gradient(closest-side,#000 25%,transparent 72%);mask:radial-gradient(closest-side,#000 25%,transparent 72%);animation:spin 90s linear infinite}
+/* الخلفية ثابتة (بدون حركة) حتى الزجاج ما ينعاد تضبيبه كل لحظة، وهذا اللي يخلي اللعب سموذ */
+#bgfx::before{content:"";position:absolute;inset:0;opacity:var(--bo);background:
+  radial-gradient(60vmax 60vmax at 92% 2%,var(--brass),transparent 68%),
+  radial-gradient(60vmax 60vmax at 80% 100%,var(--team-a),transparent 68%),
+  radial-gradient(60vmax 60vmax at 0% 55%,var(--team-b),transparent 68%),
+  radial-gradient(42vmax 42vmax at 10% 0%,var(--team-c),transparent 70%)}
+#bgfx b{position:absolute;inset:0;background:repeating-conic-gradient(from 0deg at 50% -10%,rgba(255,255,255,.2) 0 4deg,transparent 4deg 12deg);-webkit-mask:radial-gradient(90vmax 80vmax at 50% -10%,#000 20%,transparent 75%);mask:radial-gradient(90vmax 80vmax at 50% -10%,#000 20%,transparent 75%)}
 :root:not([data-theme="fun"]) #bgfx b{opacity:.25}
-@keyframes bgf{0%{transform:translate(0,0) scale(1)}50%{transform:translate(9vmax,7vmax) scale(1.18)}100%{transform:translate(-7vmax,11vmax) scale(.9)}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){#bgfx i,#bgfx b{animation:none}}
-:is(.panel,.qcard,.lookbox,.bs,.verdict,.rule){background:var(--glass)!important;border-color:var(--glass-b)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
+:is(.panel,.qcard,.lookbox,.bs,.verdict,.rule){background:var(--glass)!important;border-color:var(--glass-b)!important}
+:is(.panel,.qcard,.lookbox){-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
 .sheet{background:color-mix(in srgb,var(--felt-2) 72%,transparent)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
 :root[data-theme="fun"] :is(.panel,.qcard,.lookbox,.bs,.verdict,.rule,.sheet){box-shadow:0 10px 30px rgba(130,60,20,.16)}
 .opt{background:color-mix(in srgb,var(--felt) 45%,transparent)}
@@ -650,7 +649,7 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 .opts.qa .opt{transition:transform .08s,box-shadow .08s}
 .opts.qa .opt:not(:disabled):active{transform:translateY(5px);box-shadow:0 0 0 transparent}
 /* انتقال ناعم بين الشاشات */
-.scr-in{animation:scrIn .45s cubic-bezier(.2,.8,.2,1)}
+.scr-in{animation:scrIn .35s cubic-bezier(.2,.8,.2,1)}
 @keyframes scrIn{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.scr-in{animation:none}}
 /* مؤقت دائري */
@@ -673,7 +672,7 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 :root:not([data-theme="fun"]) .qicon{color:var(--brass)}
 .qicon svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 /* شريط نقاط مثل التلفزيون */
-.scorebar{top:calc(env(safe-area-inset-top,0px) + 6px);background:rgba(28,18,36,.84)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur);border-radius:18px;padding:6px;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.22);color:#fff}
+.scorebar{top:calc(env(safe-area-inset-top,0px) + 6px);background:rgba(28,18,36,.9)!important;border-radius:18px;padding:6px;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.22);color:#fff}
 .scorebar .tcard{background:transparent;border:0!important;box-shadow:none!important;border-radius:13px;padding:8px 12px;color:#fff}
 .scorebar .tcard .sc{color:color-mix(in srgb,var(--tc) 50%,#fff)}
 .scorebar .tcard.on{background:var(--tc)}
@@ -694,7 +693,7 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
-<div id="bgfx" aria-hidden="true"><b></b><i></i><i></i><i></i><i></i></div>
+<div id="bgfx" aria-hidden="true"><b></b></div>
 <div class="wrap"><div id="app"></div></div>
 <div id="sheet"></div>
 <div id="toast" class="toast" hidden></div>
@@ -6397,7 +6396,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611180904';
+const GAME_VER = '202611180936';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';

@@ -41,13 +41,11 @@
 :root{--glass:rgba(255,255,255,.07);--glass-b:rgba(255,255,255,.16);--gblur:blur(30px) saturate(160%);--bo:.42}
 :root[data-theme="fun"]{--glass:rgba(255,255,255,.46);--glass-b:rgba(255,255,255,.8);--bo:.62}
 #bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:var(--felt)}
-#bgfx i{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(56px);opacity:var(--bo);animation:bgf 14s ease-in-out infinite alternate;will-change:transform}
-#bgfx i:nth-child(1){background:var(--brass);top:-28vmax;right:-24vmax}
-#bgfx i:nth-child(2){background:var(--team-a);bottom:-30vmax;right:-12vmax;animation-duration:17s;animation-delay:-5s}
-#bgfx i:nth-child(3){background:var(--team-b);top:22vh;left:-36vmax;animation-duration:20s;animation-delay:-10s}
-#bgfx i:nth-child(4){background:var(--team-c);top:-22vmax;left:-18vmax;width:50vmax;height:50vmax;animation-duration:15s;animation-delay:-3s}
-@keyframes bgf{0%{transform:translate(0,0) scale(1)}50%{transform:translate(9vmax,7vmax) scale(1.18)}100%{transform:translate(-7vmax,11vmax) scale(.9)}}
-@media (prefers-reduced-motion:reduce){#bgfx i{animation:none}}
+#bgfx::before{content:"";position:absolute;inset:0;opacity:var(--bo);background:
+  radial-gradient(70vmax 70vmax at 95% 0%,var(--brass),transparent 68%),
+  radial-gradient(70vmax 70vmax at 80% 100%,var(--team-a),transparent 68%),
+  radial-gradient(70vmax 70vmax at 0% 55%,var(--team-b),transparent 68%),
+  radial-gradient(50vmax 50vmax at 5% 0%,var(--team-c),transparent 70%)}
 .card{background:var(--glass)!important;border-color:var(--glass-b)!important;-webkit-backdrop-filter:var(--gblur);backdrop-filter:var(--gblur)}
 :root[data-theme="fun"] .card{box-shadow:0 10px 30px rgba(130,60,20,.16)}
 /* «دورك!»: الشاشة كلها تتلون بلون الفريق وتهتز */
@@ -171,7 +169,7 @@ h2{font-size:1.5rem}
 .step{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .step button{border:none;border-radius:12px;background:var(--felt-3);padding:12px 0;font-weight:700}
 </style>
-<div id="bgfx" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<div id="bgfx" aria-hidden="true"></div>
 <div class="wrap" id="app"></div>
 <div class="turnfx" id="turnfx" aria-live="assertive"><b>دورك!</b><small id="turnfxt"></small></div>
 <script>
