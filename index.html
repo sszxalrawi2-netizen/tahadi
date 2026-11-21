@@ -471,7 +471,7 @@ button.bcell:active{transform:scale(.96)}
 .opt.wrong .k{background:var(--bad);color:var(--on)}
 .opt.dim{opacity:.5}
 /* الخيارات الملوّنة: ▲ أحمر · ◆ أزرق · ● أصفر · ■ أخضر */
-.fig{width:min(100%,300px);margin:2px auto;color:var(--ink)}.fig svg{display:block;width:100%;height:auto;max-height:36vh;margin:0 auto}
+.fig{width:min(100%,var(--figw,300px));margin:2px auto;color:var(--ink)}.fig svg{display:block;width:100%;height:auto;max-height:36vh;margin:0 auto}
 .qicon{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:clamp(2.2rem,8vw,3rem);line-height:1;text-align:center;margin-bottom:-4px}
 .opts.qa .opt{border:none;color:#fff;font-size:1.14rem;min-height:66px;box-shadow:0 5px 0 color-mix(in srgb,var(--oc) 62%,#000)}
 .opts.qa .opt:nth-child(1){--oc:#e8436a;background:var(--oc)}
@@ -1844,6 +1844,7 @@ const ROUNDS = [
   {id:'calc', group:'تحديات الذكاء', name:'الحاسبة البشرية', desc:'حساب ذهني سريع بدون ورقة ولا جوال', cats:['calc'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'anagram', group:'تحديات الذكاء', name:'الحروف المبعثرة', desc:'رتّب الحروف لتكتشف الدولة أو اللاعب أو المدينة', cats:['anagram'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'odd', group:'تحديات الذكاء', name:'الدخيل', desc:'أربعة أشياء، واحد منها لا ينتمي للبقية، فما هو؟', cats:['odd'], levels:[1,2,3], mult:1, type:'mcq'},
+  {id:'match', group:'تحديات الذكاء', name:'أعواد الكبريت', desc:'معادلة غلط مرسومة بالأعواد، حرّكوا عود واحد بس حتى تصح', cats:['match'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'shapes', group:'تحديات الذكاء', name:'كم مثلث؟', desc:'أشكال متداخلة، عدّوا المثلثات أو المربعات بدون ما يفوتكم واحد', cats:['shapes'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'describe', group:'تحديات تفاعلية', name:'وصّف', desc:'لاعب يشرح الكلمات لفريقه بدون أن يقولها، في 60 ثانية', cats:['describe'], levels:[1,2,3], mult:1, type:'describe'},
   {id:'draw', group:'تحديات تفاعلية', name:'ارسمها', desc:'لاعب يرسم الكلمة بإصبعه على الهاتف، وفريقه يخمّن', cats:['draw'], levels:[1,2,3], mult:1, type:'draw'},
@@ -1910,6 +1911,7 @@ const ROUND_GUIDE = {
   seqs:{p:G_ANY, pt:1, t:'5 د', tags:'🧠 ذكاء', how:'سلسلة أرقام، اكتشفوا القاعدة واختاروا الرقم الجاي.'},
   calc:{p:G_ANY, pt:1, t:'5 د', tags:'🧮 حساب', how:'حساب ذهني سريع بدون ورقة ولا جوال.'},
   anagram:{p:G_ANY, pt:1, t:'5 د', tags:'🔤 حروف', how:'حروف مبعثرة، رتبوها حتى تطلع دولة أو لاعب أو مدينة.'},
+  match:{p:G_ANY, pt:1, t:'5 د', tags:'🔥 ذكاء بصري', how:'تطلع على التابلت معادلة غلط مرسومة بأعواد الكبريت. حرّكوا عود واحد بس (من رقم لرقم، أو من الإشارة) حتى تصير صحيحة، واختاروا المعادلة الصحيحة من الخيارات.'},
   shapes:{p:G_ANY, pt:1, t:'5 د', tags:'🔺 ذكاء بصري', how:'يطلع شكل على التابلت، والفريق يعدّ كم مثلث أو مربع بيه. انتبهوا للأشكال الكبيرة والمقلوبة!'},
   odd:{p:G_ANY, pt:1, t:'5 د', tags:'🧠 ذكاء', how:'أربع أشياء، واحد منها ما يشبه الباقي. منو هو؟'},
   describe:{p:'لازم 2 بكل فريق على الأقل', pt:2, t:'5–8 د', tags:'😂 ضحك · 🗣️ كلام', how:'واحد من الفريق يشوف الكلمات ويشرحها لجماعته بدون ما يكولها، وعنده 60 ثانية.', warn:'إذا الفريق شخص واحد ما تنلعب، لأن ماكو أحد يخمّن.'},
@@ -1969,7 +1971,7 @@ function guideFit(r){
   if (TEAM_TYPES.includes(r.type) && (!a || !b)) return {tone:'no', text:'⚠️ تحتاج لاعب متصل من كل فريق'};
   return {tone:'ok', text:`✅ تنفع لعددكم (${a} مقابل ${b})${a !== b && g.warn && /نفس العدد|الأكبر/.test(g.warn) ? ' · ⚖️ الفريقين مو متساويين' : ''}`};
 }
-const CAT_NAMES = {brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
+const CAT_NAMES = {match:'أعواد الكبريت', brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
 const LEVEL_POINTS = {1:100, 2:200, 3:300};
 const LEVEL_NAMES = {1:'سهل', 2:'متوسط', 3:'صعب'};
 const CLUE_POINTS = [300, 200, 150, 100];
@@ -2032,6 +2034,7 @@ const LETTERS = ['أ','ب','ج','د'];
 const CAT_PATHS = {
   brands:'<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',
   babhara:'<path d="M5 21V10a7 7 0 0 1 14 0v11"/><path d="M3 21h18M12 3.5V21"/><path d="M10 14h.01M14 14h.01"/>',
+  match:'<path d="M7 21 17 5"/><circle cx="17.5" cy="4.5" r="1.8"/><path d="M4 14h6M14 18h6"/>',
   shapes:'<path d="M12 3 2.5 20h19z"/><path d="M12 3v17M7.2 11.5h9.6"/>',
   general:'<path d="M4 19V5a2 2 0 0 1 2-2h14v14H6a2 2 0 0 0-2 2 2 2 0 0 0 2 2h14"/><path d="M9 7h7"/>',
   whoami:'<circle cx="10" cy="8" r="4"/><path d="M3 21a7 7 0 0 1 10.5-6"/><path d="M16.5 15.5a2.2 2.2 0 1 1 3 2c-.6.3-.8.7-.8 1.3M18.7 21.5h.01"/>',
@@ -3174,6 +3177,64 @@ BANK.letters = Array.from('ابتجحدرزسشصعفقكلمنهي').map((l, i)
   shp(3, 'كم مثلث بالشكل؟', sqDiagSvg(true), 16, [-8, -4, 4, -2], 'ثلاث أحجام من المثلثات.', '8 صغيرة + 4 متوسطة (من المركز لضلع كامل) + 4 كبيرة (نص المربع) = 16.');
   BANK.shapes = shapeRows;
 
+  /* ---- أعواد الكبريت: معادلة غلط، حرّكوا عود واحد بس حتى تصح ----
+     كل رقم مرسوم بسبع أعواد (مثل الساعة الرقمية). نولّد كل المعادلات الغلط ونخلي بس اللي إلها حل واحد بالضبط */
+  {
+    const SEG = {0:'abcdef', 1:'bc', 2:'abdeg', 3:'abcdg', 4:'bcfg', 5:'acdfg', 6:'acdefg', 7:'abc', 8:'abcdefg', 9:'abcdfg'};
+    const S2D = {}; for (const d in SEG) S2D[[...SEG[d]].sort().join('')] = d;
+    const tok = s => [...s].map(ch => /\d/.test(ch) ? {t:'d', s:new Set(SEG[ch])} : ch === '+' ? {t:'o', s:new Set(['h', 'v'])} : ch === '-' ? {t:'o', s:new Set(['h'])} : {t:'e', s:new Set()});
+    const str = ts => ts.map(x => x.t === 'd' ? (S2D[[...x.s].sort().join('')] ?? '?') : x.t === 'o' ? (x.s.has('v') ? '+' : '-') : '=').join('');
+    const valid = s => !s.includes('?') && /^\d+[+\-]\d+=\d+$/.test(s) && !/(^|[+\-=])0\d/.test(s);
+    const truth = s => { const m = s.match(/^(\d+)([+\-])(\d+)=(\d+)$/); return !!m && (m[2] === '+' ? +m[1] + +m[3] : +m[1] - +m[3]) === +m[4]; };
+    const slots = x => x.t === 'd' ? [...'abcdefg'] : x.t === 'o' ? ['v'] : [];
+    const sticks = s => tok(s).reduce((n, x) => n + x.s.size, 0) + (s.match(/=/g) || []).length * 2;
+    // كل النتائج الممكنة بنقل عود واحد، ويه مكان العود (من وين لوين)
+    const moves = s => { const ts = tok(s), out = [];
+      ts.forEach((A, i) => [...A.s].forEach(sa => { if (A.t === 'o' && sa === 'h') return;
+        ts.forEach((B, j) => slots(B).forEach(sb => { if (i === j && sa === sb) return;
+          const c = tok(s); c[i].s.delete(sa); if (c[j].s.has(sb)) return; c[j].s.add(sb); const r = str(c); if (valid(r)) out.push({r, i, j}); })); }));
+      return out; };
+    const nice = s => LRI(s.replace(/([+\-=])/g, ' $1 ').replace(/-/g, '−'));
+    // الرسمة: لوح غامق، وكل عود خشبي برأس أحمر
+    const SP = {a:[12,10,42,10], b:[46,14,46,46], c:[46,54,46,86], d:[12,90,42,90], e:[8,54,8,86], f:[8,14,8,46], g:[12,50,42,50]};
+    const stick = (x1, y1, x2, y2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f2c177" stroke-width="7" stroke-linecap="round"/><circle cx="${x1}" cy="${y1}" r="5.5" fill="#e2412f"/>`;
+    const draw = s => { let x = 16, b = '';
+      for (const ch of s) {
+        if (/\d/.test(ch)) { for (const g of SEG[ch]) { const [x1, y1, x2, y2] = SP[g]; b += stick(x + x1, y1 + 10, x + x2, y2 + 10); } x += 62; }
+        else { if (ch === '=') { b += stick(x + 6, 52, x + 36, 52) + stick(x + 6, 68, x + 36, 68); } else { b += stick(x + 6, 60, x + 36, 60); if (ch === '+') b += stick(x + 21, 45, x + 21, 75); } x += 46; }
+      }
+      const W = x + 10;
+      return `<svg viewBox="0 0 ${W} 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${s}"><rect x="0" y="0" width="${W}" height="120" rx="14" fill="#2d2440"/>${b}</svg>`; };
+    const trueEqs = [];
+    for (let a = 0; a <= 9; a++) for (let b = 0; b <= 9; b++) { trueEqs.push(`${a}+${b}=${a + b}`); if (a >= b) trueEqs.push(`${a}-${b}=${a - b}`); }
+    const diff = (x, y) => tok(x).reduce((n, A, k) => { const B = tok(y)[k]; let d = 0; A.s.forEach(g => { if (!B.s.has(g)) d++; }); B.s.forEach(g => { if (!A.s.has(g)) d++; }); return n + d; }, 0);
+    const byLvl = {1:[], 2:[], 3:[]};
+    for (let a = 0; a <= 9; a++) for (let b = 0; b <= 9; b++) for (const op of '+-') for (let c = 0; c <= 18; c++) {
+      const s = `${a}${op}${b}=${c}`; if (truth(s)) continue;
+      const sol = moves(s).filter(m => truth(m.r)); if (sol.length !== 1 || new Set(sol.map(m => m.r)).size !== 1) continue;
+      const m = sol[0], ts = tok(s);
+      const lvl = ts[m.i].t === 'o' || ts[m.j].t === 'o' ? 1 : m.i === m.j ? 3 : 2;
+      byLvl[lvl].push({s, sol:m.r});
+    }
+    const rows = [];
+    [1, 2, 3].forEach(l => {
+      const rnd = seeded('match' + l), pool = byLvl[l].slice();
+      for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+      pool.slice(0, 30).forEach(({s, sol}) => {
+        // خيارات خاطئة مقنعة: معادلات صحيحة بنفس الطول ونفس عدد الأعواد، أقرب شي للمعادلة الأصلية
+        const wrong = trueEqs.filter(t => t !== sol && t.length === s.length && sticks(t) === sticks(s)).sort((x, y) => diff(s, x) - diff(s, y)).slice(0, 3);
+        if (wrong.length < 3) return;
+        const changed = []; const A = tok(s), B = tok(sol);
+        A.forEach((x, k) => { const a1 = str([x]), b1 = str([B[k]]); if (a1 !== b1) changed.push(`${a1 === '-' ? '−' : a1} صارت ${b1 === '-' ? '−' : b1}`); });
+        const id = 'mt' + l + String(rows.filter(r => r.lvl === l).length + 1).padStart(2, '0');
+        rows.push({id, lvl:l, q:'حرّكوا عود واحد بس حتى تصير المعادلة صحيحة. شنو تصير؟', fig:draw(s), o:[nice(sol), ...wrong.map(nice)],
+          hint:l === 1 ? 'جرّبوا تغيّرون الإشارة.' : l === 3 ? 'العود يتحرك داخل نفس الرقم.' : 'العود ينتقل من رقم لرقم ثاني.',
+          note:`المعادلة ${nice(s)} صارت ${nice(sol)}: ${changed.join('، و')}.`});
+      });
+    });
+    BANK.match = rows;
+  }
+
   /* ---- مسائل ذكاء بالأرقام (مولّدة، والجواب محسوب) ---- */
   const IQM = [
     [1, r => { const a = r(2, 9), b = r(a + 1, 15); return {q:`إذا 🍎 + 🍎 = ${2 * a}، و🍎 + 🍌 = ${a + b}، فكم 🍌؟`, a:b, s:[a, -1, 1, a - b + 2 * a], h:'احسب 🍎 أول.', n:`🍎 = ${a}، يعني 🍌 = ${a + b} − ${a} = ${b}.`}; }],
@@ -4227,8 +4288,60 @@ BANK.letters = Array.from('ابتجحدرزسشصعفقكلمنهي').map((l, i)
   Array.from('ثخذضطظغ').forEach((l, i) => BANK.letters.push({id:'ltM' + (i + 1), lvl:2, letters:l, q:'حروف: ' + l}));
   [1, 2].forEach(l => { for (let i = 0; i < 12; i++) BANK.snum.push({id:`snM${l}${i + 1}`, lvl:l, snum:l === 1 ? 100 : 1000, q:'الرقم السري'}); });
   for (let i = 0; i < 24; i++) { const icid = 'icM' + String(i + 1).padStart(2, '0'); BANK.iclock.push({id:icid, lvl:1, iclock:icMake(icid, i), q:'الساعة الداخلية'}); }
+  /* ===== مكتبة من جداول حقائق مؤكدة: كل سؤال وخياراته تتولد من الجدول، فما يطلع جواب غلط ===== */
+  // يطلع 3 خيارات غلط من نفس الجدول، مختلفة عن الجواب، وبنفس الترتيب كل مرة
+  const pickWrong = (seed, right, pool) => { const r = seeded(seed), opts = [...new Set(pool.filter(x => x !== right))]; for (let i = opts.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [opts[i], opts[j]] = [opts[j], opts[i]]; } return opts.slice(0, 3); };
+  const fromTable = (prefix, rows, makeQ, lvlOf) => rows.map(([k, v], i) => { const id = prefix + String(i + 1).padStart(3, '0'); return {id, lvl:lvlOf(k, i), q:makeQ(k), o:[v, ...pickWrong(id, v, rows.map(x => x[1]))], hint:'', note:''}; });
+  const yr = y => y >= 2010 ? 1 : y >= 1986 ? 2 : 3;
+  const WC = [[1930,'الأوروغواي','الأوروغواي'],[1934,'إيطاليا','إيطاليا'],[1938,'إيطاليا','فرنسا'],[1950,'الأوروغواي','البرازيل'],[1954,'ألمانيا الغربية','سويسرا'],[1958,'البرازيل','السويد'],[1962,'البرازيل','تشيلي'],[1966,'إنجلترا','إنجلترا'],[1970,'البرازيل','المكسيك'],[1974,'ألمانيا الغربية','ألمانيا الغربية'],[1978,'الأرجنتين','الأرجنتين'],[1982,'إيطاليا','إسبانيا'],[1986,'الأرجنتين','المكسيك'],[1990,'ألمانيا الغربية','إيطاليا'],[1994,'البرازيل','الولايات المتحدة'],[1998,'فرنسا','فرنسا'],[2002,'البرازيل','كوريا الجنوبية واليابان'],[2006,'إيطاليا','ألمانيا'],[2010,'إسبانيا','جنوب أفريقيا'],[2014,'ألمانيا','البرازيل'],[2018,'فرنسا','روسيا'],[2022,'الأرجنتين','قطر'],[2026,'إسبانيا','أمريكا وكندا والمكسيك']];
+  add('football', fromTable('Tw', WC.map(([y, w]) => [y, w]), y => `أي منتخب فاز بكأس العالم ${y}؟`, y => yr(y)));
+  add('football', fromTable('Th', WC.map(([y, , h]) => [y, h]), y => `وين أقيم كأس العالم ${y}؟`, y => y >= 2002 ? 1 : y >= 1978 ? 2 : 3));
+  const UCL = [[2000,'ريال مدريد'],[2001,'بايرن ميونخ'],[2002,'ريال مدريد'],[2003,'ميلان'],[2004,'بورتو'],[2005,'ليفربول'],[2006,'برشلونة'],[2007,'ميلان'],[2008,'مانشستر يونايتد'],[2009,'برشلونة'],[2010,'إنتر'],[2011,'برشلونة'],[2012,'تشيلسي'],[2013,'بايرن ميونخ'],[2014,'ريال مدريد'],[2015,'برشلونة'],[2016,'ريال مدريد'],[2017,'ريال مدريد'],[2018,'ريال مدريد'],[2019,'ليفربول'],[2020,'بايرن ميونخ'],[2021,'تشيلسي'],[2022,'ريال مدريد'],[2023,'مانشستر سيتي'],[2024,'ريال مدريد'],[2025,'باريس سان جيرمان'],[2026,'باريس سان جيرمان']];
+  add('football', fromTable('Tu', UCL, y => `أي نادٍ فاز بدوري أبطال أوروبا ${y}؟`, y => y >= 2018 ? 1 : y >= 2008 ? 2 : 3));
+  const BDO = [[2007,'كاكا'],[2008,'كريستيانو رونالدو'],[2009,'ليونيل ميسي'],[2010,'ليونيل ميسي'],[2011,'ليونيل ميسي'],[2012,'ليونيل ميسي'],[2013,'كريستيانو رونالدو'],[2014,'كريستيانو رونالدو'],[2015,'ليونيل ميسي'],[2016,'كريستيانو رونالدو'],[2017,'كريستيانو رونالدو'],[2018,'لوكا مودريتش'],[2019,'ليونيل ميسي'],[2021,'ليونيل ميسي'],[2022,'كريم بنزيما'],[2023,'ليونيل ميسي'],[2024,'رودري'],[2025,'عثمان ديمبيلي'],[2026,'هاري كين']];
+  add('football', fromTable('Tb', BDO, y => `منو فاز بالكرة الذهبية ${y}؟`, y => y >= 2018 ? 1 : 2).map(q => (q.o = [q.o[0], ...pickWrong(q.id, q.o[0], ['ليونيل ميسي','كريستيانو رونالدو','لوكا مودريتش','كريم بنزيما','رودري','كاكا','عثمان ديمبيلي','هاري كين','كيليان مبابي','فيرجيل فان دايك','محمد صلاح','روبرت ليفاندوفسكي'])], q)));
+  const EURO = [[1960,'الاتحاد السوفيتي'],[1964,'إسبانيا'],[1968,'إيطاليا'],[1972,'ألمانيا الغربية'],[1976,'تشيكوسلوفاكيا'],[1980,'ألمانيا الغربية'],[1984,'فرنسا'],[1988,'هولندا'],[1992,'الدنمارك'],[1996,'ألمانيا'],[2000,'فرنسا'],[2004,'اليونان'],[2008,'إسبانيا'],[2012,'إسبانيا'],[2016,'البرتغال'],[2020,'إيطاليا'],[2024,'إسبانيا']];
+  add('football', fromTable('Te', EURO, y => `أي منتخب فاز ببطولة أمم أوروبا ${y}؟`, y => y >= 2004 ? 1 : y >= 1984 ? 2 : 3));
+  const ASIA = [[1968,'إيران'],[1972,'إيران'],[1976,'إيران'],[1980,'الكويت'],[1984,'السعودية'],[1988,'السعودية'],[1992,'اليابان'],[1996,'السعودية'],[2000,'اليابان'],[2004,'اليابان'],[2007,'العراق'],[2011,'اليابان'],[2015,'أستراليا'],[2019,'قطر'],[2023,'قطر']];
+  add('football', fromTable('Ta', ASIA, y => `أي منتخب فاز بكأس آسيا ${y}؟`, y => y >= 2007 ? 1 : y >= 1984 ? 2 : 3));
+  const AFCON = [[2000,'الكاميرون'],[2002,'الكاميرون'],[2004,'تونس'],[2006,'مصر'],[2008,'مصر'],[2010,'مصر'],[2012,'زامبيا'],[2013,'نيجيريا'],[2015,'ساحل العاج'],[2017,'الكاميرون'],[2019,'الجزائر'],[2021,'السنغال'],[2023,'ساحل العاج']];
+  add('football', fromTable('Tf', AFCON, y => `أي منتخب فاز بكأس أمم أفريقيا ${y}؟`, y => y >= 2019 ? 1 : y >= 2006 ? 2 : 3));
+  // عملات ولغات الدول (الرقم الثالث: الصعوبة)
+  const CUR = [['اليابان','الين',1],['الصين','اليوان',1],['الهند','الروبية الهندية',1],['روسيا','الروبل',1],['بريطانيا','الجنيه الإسترليني',1],['سويسرا','الفرنك السويسري',2],['تركيا','الليرة التركية',1],['البرازيل','الريال البرازيلي',2],['المكسيك','البيزو المكسيكي',2],['كوريا الجنوبية','الوون',2],['إيران','الريال الإيراني',2],['مصر','الجنيه المصري',1],['السعودية','الريال السعودي',1],['الكويت','الدينار الكويتي',1],['الأردن','الدينار الأردني',1],['الإمارات','الدرهم الإماراتي',1],['المغرب','الدرهم المغربي',1],['الجزائر','الدينار الجزائري',2],['تونس','الدينار التونسي',2],['ليبيا','الدينار الليبي',2],['قطر','الريال القطري',1],['عُمان','الريال العُماني',2],['البحرين','الدينار البحريني',2],['سوريا','الليرة السورية',1],['لبنان','الليرة اللبنانية',1],['اليمن','الريال اليمني',2],['السودان','الجنيه السوداني',2],['جنوب أفريقيا','الراند',3],['أستراليا','الدولار الأسترالي',2],['كندا','الدولار الكندي',2],['السويد','الكرونة السويدية',3],['النرويج','الكرونة النرويجية',3],['الدنمارك','الكرونة الدنماركية',3],['بولندا','الزلوتي',3],['تايلاند','البات',3],['إندونيسيا','الروبية الإندونيسية',3],['ماليزيا','الرينغيت',3],['باكستان','الروبية الباكستانية',2],['بنغلاديش','التاكا',3],['نيجيريا','النايرا',3],['الأرجنتين','البيزو الأرجنتيني',2],['فيتنام','الدونغ',3],['المجر','الفورنت',3],['أوكرانيا','الهريفنيا',3]];
+  add('general', fromTable('Tc', CUR.map(([c, v]) => [c, v]), c => `ما عملة ${c}؟`, (c, i) => CUR[i][2]));
+  const LANG = [['البرازيل','البرتغالية',1],['المكسيك','الإسبانية',1],['الأرجنتين','الإسبانية',1],['إيران','الفارسية',1],['باكستان','الأردية',2],['إثيوبيا','الأمهرية',3],['اليونان','اليونانية',1],['هولندا','الهولندية',1],['النمسا','الألمانية',2],['البرتغال','البرتغالية',1],['أنغولا','البرتغالية',3],['موزمبيق','البرتغالية',3],['إندونيسيا','الإندونيسية',2],['تنزانيا','السواحيلية',3],['كوبا','الإسبانية',2],['تشيلي','الإسبانية',2],['أفغانستان','البشتوية والدارية',3],['اليابان','اليابانية',1],['كوريا الجنوبية','الكورية',1],['تركيا','التركية',1]];
+  add('general', fromTable('Tl', LANG.map(([c, v]) => [c, v]), c => `ما اللغة الرسمية في ${c}؟`, (c, i) => LANG[i][2]));
   for (let i = 0; i < 20; i++) { const tcid = 'tcM' + String(i + 1).padStart(2, '0'); BANK.tclock.push({id:tcid, lvl:1, tclock:7 + Math.floor(seeded(tcid)() * 9)}); }
 }
+/* شيل الأسئلة المكررة بصياغة ثانية: نفس الجواب ونفس الأرقام وأغلب الكلمات نفسها.
+   الفقرات المولّدة تلقائياً (مشاهد وأوزان وأشكال ومتتاليات) ما ننطيها، لأن كل وحدة إلها شكل مختلف */
+(function dedupeBank(){
+  const nk = s => String(s || '').replace(/[ًٌٍَُِّْـ«»"'().,،؛؟?!\-:]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+  const STOP = new Set('من ما أي اي في على عن الى إلى هو هي كم كان كانت التي الذي اللي هل او أو و مع حتى بعد قبل ذلك هذا هذه عام'.split(' ').map(nk));
+  const words = q => new Set(nk(q).split(/\s+/).map(w => w.replace(/^(وال|بال|فال|كال|لل|ال|و)/, '')).filter(w => w.length > 1 && !STOP.has(w)));
+  const nums = q => (String(q).replace(/[٪%]/g, '').match(/\d+/g) || []).join(',');
+  const most = q => /اكثر|أكثر/.test(q);
+  const jac = (a, b) => { let i = 0; a.forEach(x => { if (b.has(x)) i++; }); return i / (a.size + b.size - i || 1); };
+  const SKIP = new Set(['look', 'scale', 'shapes', 'seqs', 'match']);
+  for (const cat in BANK) {
+    if (SKIP.has(cat)) continue;
+    const arr = BANK[cat], drop = new Set(), qs = arr.filter(q => q.o && q.q && !q.clues).map(q => ({q, w:words(q.q), a:nk(q.o[0]), n:nums(q.q), m:most(q.q)}));
+    for (let i = 0; i < qs.length; i++) {
+      if (drop.has(qs[i].q)) continue;
+      for (let j = i + 1; j < qs.length; j++) {
+        const A = qs[i], B = qs[j];
+        if (drop.has(B.q) || B.a !== A.a || B.n !== A.n || B.m !== A.m) continue;
+        if (jac(A.w, B.w) >= 0.55) drop.add(B.q);
+      }
+    }
+    // العواصم: إذا سؤال «ما عاصمة مصر؟» موجود، نشيل المقلوب «القاهرة عاصمة أي دولة؟»
+    if (cat === 'capitals') {
+      const fwd = new Set(arr.map(q => (q.q.match(/^ما عاصمة\s+(.+?)[؟?]/) || [])[1]).filter(Boolean).map(nk));
+      arr.forEach(q => { if (/عاصمة أي دولة/.test(q.q) && fwd.has(nk(q.o[0]))) drop.add(q); });
+    }
+    if (drop.size) BANK[cat] = arr.filter(q => !drop.has(q));
+  }
+})();
 const Q = []; for (const cat in BANK) for (const q of BANK[cat]) Q.push(prepCapital(prepColors(Object.assign({cat}, q))));
 const QBY = Object.fromEntries(Q.map(q => [q.id, q]));
 const RD = Object.fromEntries(ROUNDS.map(r => [r.id, r]));
@@ -4347,7 +4460,18 @@ function drawQuestions(def, n, preferLvl){
   }
   if (preferLvl) list = list.filter(q => q.lvl === preferLvl).concat(list.filter(q => q.lvl !== preferLvl));
   if (list.length < n) list = list.concat(rank(Q.filter(q => fits(q) && !def.levels.includes(q.lvl))));
-  return list.slice(0, n).map(q => q.id);
+  // نفس الدولة أو نفس الجواب ما يتكرر بنفس السهرة (علم ثم عاصمته ثم ألوانه...) إلا إذا ما بقى غيره
+  const keys = q => { const k = []; if (q.o && q.o[0] && !/^\d+$/.test(String(q.o[0]))) k.push('a:' + String(q.o[0]).replace(/^ال/, '')); if (q.flag) k.push('f:' + q.flag); if (q.cc) k.push('f:' + q.cc); return k; };
+  const usedK = new Set([...S.used, ...S.plan].flatMap(id => QBY[id] ? keys(QBY[id]) : []));
+  const out = [], later = [];
+  for (const q of list) {
+    if (out.length >= n) break;
+    const k = keys(q);
+    if (k.some(x => usedK.has(x))) { later.push(q); continue; }
+    k.forEach(x => usedK.add(x)); out.push(q);
+  }
+  while (out.length < n && later.length) out.push(later.shift());
+  return out.map(q => q.id);
 }
 
 function newGame(settings, names){
@@ -4928,7 +5052,7 @@ const pname = k => PL[k] ? PL[k].name : '؟';
 const pteam = k => PL[k] ? PL[k].team : 0;
 const teamNames = () => S ? S.teams.map(t => t.name) : P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
 // فقرات تشتغل ويه 3 فرق (الباقي مبني على فريقين بالضبط: جرس، قنبلة، مزاد، وفقرات الجوال الجماعية)
-const TEAM3_OK = ['general','brands','babhara','shapes','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
+const TEAM3_OK = ['general','brands','babhara','shapes','match','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
 const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && !(P.deleted || []).includes(def.id) &&(!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
 let roundEdit = false;   // وضع إخفاء الفقرات في الشاشة الرئيسية
 let delAsk = null;       // الفقرة اللي ننتظر تأكيد حذفها النهائي
@@ -6967,7 +7091,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611210902';
+const GAME_VER = '202611210942';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7196,7 +7320,7 @@ function partMcq(c, q, def){
     ${c.stage === 'steal' ? `<div class="stealban">سرقة! فريق ${esc(S.teams[other].name)} يجاوب الآن على ${ltr(Math.round(base / 2))} نقطة</div>` : ''}
     ${catIcon(q.cat)}
     <p class="qtext">${esc(q.q)}</p>
-    ${q.fig ? `<div class="fig">${q.fig}</div>` : ''}
+    ${q.fig ? `<div class="fig"${q.cat === 'match' ? ' style="--figw:440px"' : ''}>${q.fig}</div>` : ''}
     ${tiles || (q.flag ? `<div class="flag">${flagSvg(q.flag)}</div>` : '')}
     ${q.cc && (c.stage === 'judge' || c.stage === 'done') ? `<div class="flag">${flagSvg(q.cc)}</div>` : ''}
     ${clues}
