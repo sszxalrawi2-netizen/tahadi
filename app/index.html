@@ -5064,6 +5064,8 @@ function netIn(m){
     const key = String(d.key || '').slice(0, 40), name = String(d.name || '').trim().slice(0, 16), team = d.team === 1 || d.team === 2 ? Math.min(d.team, P.nteams === 3 ? 2 : 1) : 0;
     if (!key || !name) return;
     const isNew = !PL[key]; PL[key] = {name, team}; savePL();
+    // اللاعب رجع باتصال جديد: نشيل اتصاله القديم الميت حتى ما يتكرر
+    for (const id in NET.conn) if (id !== m.id && NET.conn[id] === key) { delete NET.conn[id]; delete NET.last[id]; }
     NET.conn[m.id] = key; NET.last[m.id] = null;
     if (isNew) sfx('tap');
     netChanged(); return;
@@ -5657,7 +5659,7 @@ function reactEnd(){
 let saveT = null;
 const saveSoon = () => { clearTimeout(saveT); saveT = setTimeout(save, 1200); };
 const rotKey = c => { const ks = c.pk.slice().sort(); return ks[S.i % ks.length]; };   // دور الرسام أو صاحب المعلومات
-const digitsEn = s => String(s).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+const digitsEn = s => String(s).replace(/[٠-٩۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'.indexOf(d) % 10);
 // هل التخمين يطابق الجواب؟ يقبل الصيغة بين القوسين وبدون «ال» والهمزات
 function guessOk(guess, answer, loose){
   // في اللغز المقسوم يكفي اسم العائلة أو كلمة مميزة من الجواب
@@ -6111,7 +6113,7 @@ function escSetup(c){
 const escLocked = (c, t) => Math.max(0, c.elock[t] - Date.now());
 const escMine = (c, key) => { const t = pteam(key), ks = c.tm[t], i = ks.indexOf(key); return i < 0 ? [] : c.esc[t].p.filter(p => p.pos % ks.length === i); };
 function escTry(key, v){
-  const c = S.cur, t = pteam(key), code = String(v || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, '');
+  const c = S.cur, t = pteam(key), code = String(v || '').replace(/[٠-٩۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'.indexOf(d) % 10).replace(/\D/g, '');
   if (code.length !== 4 || c.solved[t] || escLocked(c, t)) return;
   const right = c.esc[t].code, ok = Array.from(code).filter((d, i) => d === right[i]).length;
   c.ea[t].push({code, ok, by:key});
@@ -6187,7 +6189,7 @@ const rlLocked = (c, t) => Math.max(0, c.rlock[t] - Date.now());
 function rlTry(key, v){
   const c = S.cur, t = pteam(key), R = QBY[c.id].relay, s = c.rl[t];
   if (c.stage !== 'play' || c.solved[t] || key !== rlWho(c, t, s) || rlLocked(c, t)) return;
-  const n = +String(v || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d-]/g, '');
+  const n = +String(v || '').replace(/[٠-٩۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'.indexOf(d) % 10).replace(/[^\d-]/g, '');
   if (!String(v || '').trim()) return;
   if (n === R[s].v) {
     c.rby[t].push(key); c.rl[t]++; sfx('tap');
@@ -7034,7 +7036,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611181023';
+const GAME_VER = '202611210902';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -8556,7 +8558,7 @@ document.addEventListener('click', e => {
     case 'adj': { const t = +el.dataset.t; S.teams[t].score += +el.dataset.d; bump = t; save(); render(); break; }
     case 'adjIn': {
       const t = +el.dataset.t, inp = document.getElementById('adjv' + t);
-      const n = Math.round(+String(inp && inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[^\d]/g, ''));
+      const n = Math.round(+String(inp && inp.value || '').replace(/[٠-٩۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'.indexOf(d) % 10).replace(/[^\d]/g, ''));
       if (!n) { toast('اكتب عدد النقاط أول'); inp && inp.focus(); break; }
       const d = n * +el.dataset.s; S.teams[t].score += d; bump = t; save(); render();
       toast(`${S.teams[t].name}: ${d > 0 ? '+' : '−'}${Math.abs(d)} نقطة`); break;

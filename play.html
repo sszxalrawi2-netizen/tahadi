@@ -305,7 +305,8 @@ const RELAY = (() => {
     // إذا ما رد التابلت على هذي الخدمة نجرب الخدمة التالية
     const watch = setInterval(() => {
       const c = cli, now = Date.now();
-      if (found && now - heard > 40000) set('wait');
+      // التابلت يرسل نبضة كل 15 ثانية: إذا ما سمعنا شي 35 ثانية، الاتصال ميت، نعيد الاتصال
+      if (found && now - heard > 35000) { set('wait'); if (c) { heard = now; c.end(); } }
       if (c && c.open && !found && now - since > 7000) { bi++; c.end(); }
     }, 2000);
     async function start(){
@@ -364,6 +365,8 @@ function send(m){
 function onData(m){
   if (m.t === 'who') hello();
   else if (m.t === 'view') {
+    // التابلت نسانا (اتصال جديد): نعرّف بنفسنا من جديد ونرجع لنفس الفريق، بدل ما تطلع شاشة الانضمام
+    if (m.v && m.v.k === 'join' && me && !editing) { hello(); return; }
     view = m.v; if (!local || local.vid !== view.vid) local = {vid:view.vid};
     // المضيف قد ينقل اللاعب لفريق آخر
     if (view.you && me && !editing && (view.you.team !== me.team || view.you.name !== me.name)) { me.team = view.you.team; me.name = view.you.name; store.set(me); } if (view.k === 'react' && view.go) reactT0 = 0; render(); buzzFx(); vibFx();
@@ -684,11 +687,17 @@ function body(){
   return waiting('انظروا إلى التابلت', '');
 }
 
+let lastHtml = '';
 function render(){
   if (view && view.th && document.documentElement.dataset.theme !== view.th) document.documentElement.dataset.theme = view.th;
+  // إذا الشاشة نفسها ما تغيّرت (مثلاً بس الوقت المتبقي تغيّر)، ما نعيد رسمها،
+  // حتى ما ينسد الكيبورد ويضيع اللي ينكتب بنص الكتابة
+  const html = header() + body();
+  if (html === lastHtml && app.firstChild) return;
+  lastHtml = html;
   const f = document.activeElement && document.activeElement.id;
   const val = f && document.getElementById(f) ? document.getElementById(f).value : null;
-  app.innerHTML = header() + body();
+  app.innerHTML = html;
   if (f && document.getElementById(f)) { const el = document.getElementById(f); if (val != null) el.value = val; el.focus(); }
   // يبدأ القياس لحظة ظهور الأخضر على الشاشة
   if (view && view.k === 'react' && view.go && !local.res && !local.t0) { const l = local; l.t0 = performance.now(); requestAnimationFrame(() => { if (!l.res) l.t0 = performance.now(); }); }
@@ -763,7 +772,7 @@ app.addEventListener('click', e => {
   const a = el.dataset.act;
   if (a === 'room') {
     const inp = document.getElementById('rm');
-    const v = (inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, '');
+    const v = (inp.value || '').replace(/[٠-٩۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'.indexOf(d) % 10).replace(/\D/g, '');
     if (v.length !== 6) { inp.focus(); alert('الرمز 6 أرقام'); return; }
     joinRoom(v, 0); return;
   }
@@ -778,7 +787,7 @@ app.addEventListener('click', e => {
   }
   else if (a === 'edit') { editing = true; draftTeam = me ? me.team : null; render(); }
   else if (a === 'buzz') { if (!local.sent) { local.sent = true; send({t:'buzz', vid:view.vid}); try { navigator.vibrate && navigator.vibrate(80); } catch(_){} render(); } }
-  else if (a === 'sendNum') { const v = (document.getElementById('num').value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[,،\s]/g, ''); if (v === '' || isNaN(+v)) return; send({t:'num', vid:view.vid, v:+v}); document.activeElement && document.activeElement.blur(); }
+  else if (a === 'sendNum') { const v = (document.getElementById('num').value || '').replace(/[٠-٩۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'.indexOf(d) % 10).replace(/[,،\s]/g, ''); if (v === '' || isNaN(+v)) return; send({t:'num', vid:view.vid, v:+v}); document.activeElement && document.activeElement.blur(); }
   else if (a === 'sendText') { const v = (document.getElementById('txt').value || '').trim().slice(0, 40); if (!v) return; send({t:'text', vid:view.vid, v}); document.activeElement && document.activeElement.blur(); }
   else if (a === 'sendForm') { const v = (view.cats || []).map((_, i) => { const el2 = document.getElementById('f' + i); return el2 ? el2.value.trim().slice(0, 30) : ''; }); if (!v.some(Boolean)) return; local.f = v.slice(); send({t:'form', vid:view.vid, v}); document.activeElement && document.activeElement.blur(); }
   else if (a === 'vote') { send({t:'vote', vid:view.vid, v:el.dataset.v}); }
@@ -796,9 +805,9 @@ app.addEventListener('click', e => {
   else if (a === 'sendGuess') { const inp = document.getElementById('gs'); const v = (inp.value || '').trim().slice(0, 40); if (!v) return; send({t:'guess', vid:view.vid, v}); inp.value = ''; inp.focus(); }
   else if (a === 'tcStart') { local.t0 = performance.now(); render(); }
   else if (a === 'tcStop') { if (!local.t0) return; local.ms = Math.round(performance.now() - local.t0); send({t:'tclock', vid:view.vid, ms:local.ms}); try { navigator.vibrate && navigator.vibrate(60); } catch(_){} render(); }
-  else if (a === 'snSet') { const inp = document.getElementById('snv'); const n = +(inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, ''); if (!(n >= 1 && n <= view.max)) { alert(`اكتب رقم من 1 لـ${view.max}`); inp.focus(); return; } send({t:'snset', vid:view.vid, v:n}); inp.value = ''; inp.blur(); }
+  else if (a === 'snSet') { const inp = document.getElementById('snv'); const n = +(inp.value || '').replace(/[٠-٩۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'.indexOf(d) % 10).replace(/\D/g, ''); if (!(n >= 1 && n <= view.max)) { alert(`اكتب رقم من 1 لـ${view.max}`); inp.focus(); return; } send({t:'snset', vid:view.vid, v:n}); inp.value = ''; inp.blur(); }
   else if (a === 'snAsk') {
-    const q = el.dataset.q, inp = document.getElementById('snq'), raw = (inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, ''), n = +raw;
+    const q = el.dataset.q, inp = document.getElementById('snq'), raw = (inp.value || '').replace(/[٠-٩۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'.indexOf(d) % 10).replace(/\D/g, ''), n = +raw;
     if (q !== 'even') {
       const ok = raw !== '' && (q === 'has' ? n <= 9 : q === 'div' ? n >= 2 && n <= 100 : n >= 1 && n <= view.max);
       if (!ok) { alert(q === 'has' ? 'اكتب رقم واحد من 0 لـ9' : q === 'div' ? 'اكتب رقم من 2 لـ100' : `اكتب رقم من 1 لـ${view.max}`); inp.focus(); return; }
@@ -824,7 +833,7 @@ app.addEventListener('click', e => {
   else if (a === 'mrShow') { local.show = true; render(); }
   else if (a === 'mrHide') { local.show = false; render(); }
   else if (a === 'mrSeen') { local.show = false; send({t:'mfSeen', vid:view.vid}); }
-  else if (a === 'sendCode') { const inp = document.getElementById('code'); const v = (inp.value || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g, ''); if (v.length !== 4) { inp.focus(); return; } local.code = ''; send({t:'code', vid:view.vid, v}); try { navigator.vibrate && navigator.vibrate(30); } catch(_){} }
+  else if (a === 'sendCode') { const inp = document.getElementById('code'); const v = (inp.value || '').replace(/[٠-٩۰-۹]/g, d => '٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹'.indexOf(d) % 10).replace(/\D/g, ''); if (v.length !== 4) { inp.focus(); return; } local.code = ''; send({t:'code', vid:view.vid, v}); try { navigator.vibrate && navigator.vibrate(30); } catch(_){} }
   else if (a === 'tgN') { local.tok = (local.tok || []).concat([+el.dataset.i]); render(); }
   else if (a === 'tgO') { local.tok = (local.tok || []).concat([el.dataset.o]); render(); }
   else if (a === 'tgB') { local.tok = (local.tok || []).slice(0, -1); render(); }
@@ -834,11 +843,21 @@ app.addEventListener('click', e => {
   else if (a === 'cardSave') { if (local.cardUrl) saveCard(local.cardUrl, view.card.id); }
   else if (a === 'bLock') { const v = local.bet != null ? local.bet : (view.mine || 0); send({t:'bet', vid:view.vid, v}); }
 });
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState !== 'visible') return;
-  if (relay) { if (!online) relay.retry(); return; }
+// لما اللاعب يطلع من اللعبة (يقفل الشاشة أو يفتح تطبيق ثاني) أندرويد يقتل الاتصال بصمت.
+// فإذا رجع بعد أكثر من ثانيتين، نعيد الاتصال من جديد بدل ما نظن إنه بعده شغال.
+let hiddenAt = 0;
+function wake(force){
+  if (EMBED) return;
+  if (relay) { if (force || !online) relay.retry(); return; }
+  if (force && ws) { const w = ws; ws = null; w.onclose = null; try { w.close(); } catch(e){} online = false; render(); connect(); return; }
   if (!ws || ws.readyState > 1) { try { ws && ws.close(); } catch(e){} }
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState !== 'visible') { hiddenAt = Date.now(); return; }
+  wake(hiddenAt && Date.now() - hiddenAt > 2000); hiddenAt = 0;
 });
+window.addEventListener('pageshow', e => { if (e.persisted) wake(true); });
+window.addEventListener('online', () => wake(true));
 window.addEventListener('hashchange', () => { const m = location.hash.match(/^#(\d{6})(?:-(\d))?/); if (!EMBED && m && m[1] !== room) { NETPAGE = true; if (ws) { const w = ws; ws = null; w.onclose = null; try { w.close(); } catch(_){} } joinRoom(m[1], +(m[2] || 0)); } });
 render();
 connect();
