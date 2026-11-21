@@ -3289,7 +3289,7 @@ BANK.letters = Array.from('ابتجحدرزسشصعفقكلمنهي').map((l, i)
     [1, 2, 3].forEach(l => {
       const rnd = seeded('match' + l), pool = byLvl[l].slice();
       for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
-      pool.slice(0, 30).forEach(({s, sol}) => {
+      pool.slice(0, l === 1 ? 30 : 70).forEach(({s, sol}) => {
         // خيارات خاطئة مقنعة: معادلات صحيحة بنفس الطول ونفس عدد الأعواد، أقرب شي للمعادلة الأصلية
         const wrong = trueEqs.filter(t => t !== sol && t.length === s.length && sticks(t) === sticks(s)).sort((x, y) => diff(s, x) - diff(s, y)).slice(0, 3);
         if (wrong.length < 3) return;
@@ -4380,6 +4380,16 @@ BANK.letters = Array.from('ابتجحدرزسشصعفقكلمنهي').map((l, i)
   add('general', fromTable('Tc', CUR.map(([c, v]) => [c, v]), c => `ما عملة ${c}؟`, (c, i) => CUR[i][2]));
   const LANG = [['البرازيل','البرتغالية',1],['المكسيك','الإسبانية',1],['الأرجنتين','الإسبانية',1],['إيران','الفارسية',1],['باكستان','الأردية',2],['إثيوبيا','الأمهرية',3],['اليونان','اليونانية',1],['هولندا','الهولندية',1],['النمسا','الألمانية',2],['البرتغال','البرتغالية',1],['أنغولا','البرتغالية',3],['موزمبيق','البرتغالية',3],['إندونيسيا','الإندونيسية',2],['تنزانيا','السواحيلية',3],['كوبا','الإسبانية',2],['تشيلي','الإسبانية',2],['أفغانستان','البشتوية والدارية',3],['اليابان','اليابانية',1],['كوريا الجنوبية','الكورية',1],['تركيا','التركية',1]];
   add('general', fromTable('Tl', LANG.map(([c, v]) => [c, v]), c => `ما اللغة الرسمية في ${c}؟`, (c, i) => LANG[i][2]));
+  // ألغاز صعبة إضافية للفقرات اللي تتولد تلقائياً (لوضع «صعبة»)
+  add('seqs', Array.from({length:40}, (_, i) => makeSeq(`sqH${String(i + 1).padStart(2, '0')}`, 3)).filter(Boolean));
+  add('calc', Array.from({length:40}, (_, i) => makeCalc(`clH${String(i + 1).padStart(2, '0')}`, 3)).filter(Boolean));
+  const hardPush = (cat, make, n) => BANK[cat].push(...Array.from({length:n}, (_, i) => make(i)).filter(Boolean));
+  hardPush('scale', i => makeScale(`scH${String(i + 1).padStart(2, '0')}`, 3), 20);
+  hardPush('relay', i => { const id2 = `rlH${i + 1}`; return {id:id2, lvl:3, relay:rlMake(id2, 3), q:'التتابع'}; }, 14);
+  hardPush('maze', i => { const id2 = `mzH${i + 1}`; return {id:id2, lvl:3, maze:makeMaze(id2, 3), q:'المتاهة الجماعية'}; }, 14);
+  hardPush('tmap', i => makeMap(`mpH${String(i + 1).padStart(2, '0')}`, 3), 14);
+  hardPush('escape', i => ({id:`esH${i + 1}`, lvl:3, escape:true, q:'غرفة الهروب'}), 14);
+  hardPush('target', i => ({id:`tgH${i + 1}`, lvl:3, target:true, q:'هدف الأرقام'}), 14);
   for (let i = 0; i < 20; i++) { const tcid = 'tcM' + String(i + 1).padStart(2, '0'); BANK.tclock.push({id:tcid, lvl:1, tclock:7 + Math.floor(seeded(tcid)() * 9)}); }
 }
 /* شيل الأسئلة المكررة بصياغة ثانية: نفس الجواب ونفس الأرقام وأغلب الكلمات نفسها.
@@ -4446,7 +4456,7 @@ const poolCount = r => Q.filter(q => r.cats.includes(q.cat) && r.levels.includes
 const lvlDots = l => `<span class="lvl" title="${LEVEL_NAMES[l]}">${[1,2,3].map(n => `<i class="${n <= l ? 'f' : ''}"></i>`).join('')}</span>`;
 function perTeamText(n){ return n === 2 ? 'سؤالان لكل فريق' : `${n} أسئلة لكل فريق`; }
 
-const DEFAULTS = {names:['الصقور','النسور','الفهود'], nteams:2, perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, fs:'n', test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
+const DEFAULTS = {names:['الصقور','النسور','الفهود'], nteams:2, perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, fs:'n', diff:'hard', test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
 const WAGER_FLOOR = 300;   // الفريق المتأخر يقدر يراهن حتى هذا الرقم حتى لو نقاطه أقل
 const WAGER_DEF = {cats:['general','football','iq','capitals'], levels:[3]};
 let P = Object.assign({}, DEFAULTS, store.get(PREFS) || {});
@@ -4519,6 +4529,9 @@ function drawQuestions(def, n, preferLvl){
   const used = new Set([...S.used, ...S.plan]);
   const bad = new Set(P.bad || []);
   const fits = q => def.cats.includes(q.cat) && !used.has(q.id) && !bad.has(q.id);
+  // وضع «صعبة»: نجيب الصعب أول ثم المتوسط، وبعدها مستويات الفقرة الأصلية إذا ما كفّت
+  const hard = P.diff === 'hard', HL = [3, 2];
+  if (hard) def = Object.assign({}, def, {levels:HL});
   const rank = arr => shuffle(arr.filter(q => !seen.has(q.id))).concat(shuffle(arr.filter(q => seen.has(q.id))));
   let list = rank(Q.filter(q => fits(q) && def.levels.includes(q.lvl)));
   if (def.cats.length > 1) {           // وزّع الفقرات بالتساوي في الجولة الصعبة
@@ -4528,6 +4541,7 @@ function drawQuestions(def, n, preferLvl){
     list = mixed;
   }
   if (preferLvl) list = list.filter(q => q.lvl === preferLvl).concat(list.filter(q => q.lvl !== preferLvl));
+  if (hard && !preferLvl) list = list.filter(q => q.lvl === 3).concat(list.filter(q => q.lvl !== 3));
   if (list.length < n) list = list.concat(rank(Q.filter(q => fits(q) && !def.levels.includes(q.lvl))));
   // نفس الدولة أو نفس الجواب ما يتكرر بنفس السهرة (علم ثم عاصمته ثم ألوانه...) إلا إذا ما بقى غيره
   const keys = q => { const k = []; if (q.o && q.o[0] && !/^\d+$/.test(String(q.o[0]))) k.push('a:' + String(q.o[0]).replace(/^ال/, '')); if (q.flag) k.push('f:' + q.flag); if (q.cc) k.push('f:' + q.cc); return k; };
@@ -7106,6 +7120,7 @@ function viewHome(){
     <section class="panel">
       <h2>الإعدادات</h2>
       <div class="field"><span class="label">ألوان اللعبة</span><div class="themes">${THEMES.map(([k, n, cs]) => `<button type="button" data-act="theme" data-v="${k}" aria-pressed="${(P.theme || 'fun') === k}"><span class="sw">${cs.map(c => `<i style="background:${c}"></i>`).join('')}</span>${n}</button>`).join('')}</div></div>
+      <div class="field"><span class="label">صعوبة الأسئلة</span>${seg('diff', ['mix','hard'], ['متنوعة','صعبة'])}<small class="muted">«صعبة»: كل الفقرات تجيب الأسئلة الصعبة أول، وبعدها المتوسطة. السهلة ما تطلع إلا إذا خلصت الباقية.</small></div>
       <div class="field"><span class="label">حجم الكتابة على التابلت</span>${seg('fs', ['n','l','xl'], ['عادي','كبير','كبير جداً'])}</div>
       <div class="field"><span class="label">عدد الأسئلة لكل فريق في الجولة</span>${seg('perTeam', [1,2,3,4])}</div>
       <div class="field"><span class="label">وقت الإجابة (بالثواني)</span>${seg('time', [30,45,60,90])}</div>
@@ -7160,7 +7175,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611210942';
+const GAME_VER = '202611211002';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
