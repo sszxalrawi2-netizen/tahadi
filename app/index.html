@@ -4456,7 +4456,7 @@ const poolCount = r => Q.filter(q => r.cats.includes(q.cat) && r.levels.includes
 const lvlDots = l => `<span class="lvl" title="${LEVEL_NAMES[l]}">${[1,2,3].map(n => `<i class="${n <= l ? 'f' : ''}"></i>`).join('')}</span>`;
 function perTeamText(n){ return n === 2 ? 'سؤالان لكل فريق' : `${n} أسئلة لكل فريق`; }
 
-const DEFAULTS = {names:['الصقور','النسور','الفهود'], nteams:2, perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, fs:'n', diff:'hard', test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
+const DEFAULTS = {names:['الصقور','النسور','الفهود'], nteams:2, perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, fs:'n', diff:'hard', play:'tablet', test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
 const WAGER_FLOOR = 300;   // الفريق المتأخر يقدر يراهن حتى هذا الرقم حتى لو نقاطه أقل
 const WAGER_DEF = {cats:['general','football','iq','capitals'], levels:[3]};
 let P = Object.assign({}, DEFAULTS, store.get(PREFS) || {});
@@ -5136,7 +5136,9 @@ const pteam = k => PL[k] ? PL[k].team : 0;
 const teamNames = () => S ? S.teams.map(t => t.name) : P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
 // فقرات تشتغل ويه 3 فرق (الباقي مبني على فريقين بالضبط: جرس، قنبلة، مزاد، وفقرات الجوال الجماعية)
 const TEAM3_OK = ['general','brands','babhara','shapes','match','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
-const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && !(P.deleted || []).includes(def.id) &&(!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
+// «بدون جوال»: نخفي الفقرات اللي تحتاج جوالات (سباق الجرس وراهن على صاحبك يبقون، لأن إلهم أزرار على التابلت)
+const phoneRound = def => NET_TYPES.includes(def.type);
+const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && !(P.deleted || []).includes(def.id) && !(P.play !== 'phone' && phoneRound(def)) &&(!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
 let roundEdit = false;   // وضع إخفاء الفقرات في الشاشة الرئيسية
 let delAsk = null;       // الفقرة اللي ننتظر تأكيد حذفها النهائي
 
@@ -7113,6 +7115,7 @@ function viewHome(){
     ${lobbyPanel()}
     <section class="panel">
       <h2>الفقرات</h2>
+      <div class="field"><span class="label">طريقة اللعب</span>${seg('play', ['tablet','phone'], ['📺 بدون جوال','📱 ويه الجوال'])}<small class="muted">${P.play === 'phone' ? 'كل الفقرات، وبيها فقرات يلعبها كل لاعب من جواله.' : `بس فقرات التابلت، وماكو أحد يحتاج جواله. (${ROUNDS.filter(r => phoneRound(r)).length} فقرة جوال مخفية)`}</small></div>
       ${roundEdit ? '<p class="subtle">اضغط 🗑 جنب الفقرة حتى تختفي من القائمة ومن اللعب. تقدر ترجعها بأي وقت من «الفقرات المخفية»، أو تحذفها من هناك نهائياً.</p>' : ''}
       <div class="rlist">${rounds}</div>
       ${hiddenBox}
@@ -7175,7 +7178,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611211002';
+const GAME_VER = '202611211031';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
