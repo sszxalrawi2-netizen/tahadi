@@ -1937,6 +1937,7 @@ const ROUNDS = [
   {id:'bomb', group:'تحديات تفاعلية', name:'القنبلة', desc:'مرّروا القنبلة بإجابة صحيحة قبل أن تنفجر بأيديكم', cats:['bomb'], levels:[1,2,3], mult:1, type:'bomb'},
   {id:'auction', group:'تحديات تفاعلية', name:'المزاد', desc:'زايدوا على عدد الإجابات، ومن يربح المزاد يثبت كلامه', cats:['auction'], levels:[1,2,3], mult:1, type:'auction'},
   {id:'reverse', group:'تحديات تفاعلية', name:'بالمقلوب', desc:'اسمعوا الكلمة مقلوبة وخمّنوا الكلمة الصحيحة', cats:['reverse'], levels:[1,2,3], mult:1, type:'reverse'},
+  {id:'hot', group:'تحديات تفاعلية', name:'الكرسي الساخن', desc:'لاعب واحد يجاوب 5 أسئلة ورا بعض بدون خيارات، والصعوبة تزيد بالترتيب', cats:['general','capitals','football','iq','logic','brands','calc','seqs','anagram'], levels:[1,2,3], mult:1, type:'hot', count:n => Math.max(1, Math.round(n / 2)) * 2},
   {id:'tchain', group:'تحديات تفاعلية', name:'سباق التتابع البشري', desc:'كل سؤال يجاوبه لاعب ثاني من الفريق لحاله، والسلسلة تكبر، والغلط يصفّرها', cats:['general','capitals','football','iq','logic','odd','brands','calc','seqs','anagram'], levels:[1,2,3], mult:1, type:'tchain', count:n => Math.max(1, Math.round(n / 2)) * 2},
   {id:'bankr', group:'تحديات تفاعلية', name:'البنك', desc:'تراهنون قبل ما تشوفون السؤال، والخصم يكدر يرفع الرهان للضعف', cats:['general','capitals','football','iq','logic','odd','brands','calc','seqs','anagram'], levels:[1,2,3], mult:1, type:'bank'},
   {id:'greed', group:'تحديات تفاعلية', name:'اطمع أو وقّف', desc:'سلم من 5 أسئلة، كل جواب صح يضاعف الرصيد. توقفون وتأخذونه، أو تطمعون وتخاطرون بكل شي', cats:['general','capitals','football','iq','logic','odd','calc','seqs'], levels:[1,2,3], mult:1, type:'greed', count:n => Math.max(1, Math.round(n / 2)) * 2},
@@ -1996,6 +1997,7 @@ const ROUND_GUIDE = {
   seqs:{p:G_ANY, pt:1, t:'5 د', tags:'🧠 ذكاء', how:'سلسلة أرقام، اكتشفوا القاعدة واختاروا الرقم الجاي.'},
   calc:{p:G_ANY, pt:1, t:'5 د', tags:'🧮 حساب', how:'حساب ذهني سريع بدون ورقة ولا جوال.'},
   anagram:{p:G_ANY, pt:1, t:'5 د', tags:'🔤 حروف', how:'حروف مبعثرة، رتبوها حتى تطلع دولة أو لاعب أو مدينة.'},
+  hot:{p:G_ANY, pt:1, t:'8 د', tags:'🔥 ضغط · 🧠 بدون خيارات', how:'كل فريق يختار واحد يقعد بالكرسي. يجاوب 5 أسئلة ورا بعض لحاله وبدون خيارات، 10 ثواني لكل سؤال، والأسئلة تصعب بالترتيب. كل سؤال نقاطه أكثر من اللي قبله، والخمسة كلها صح تعطي مكافأة.'},
   tchain:{p:'أحسن 3 بكل فريق أو أكثر', pt:1, t:'8 د', tags:'⛓️ تتابع · 🎲 مخاطرة', how:'كل فريق يبني سلسلة: كل سؤال يجاوبه لاعب ثاني من الفريق لحاله بدون مساعدة. كل جواب صح يضيف حلقة نقاطها أكبر (50، 100، 150… لحد 300). بعد أي جواب صح تكدرون تثبّتون وتاخذون السلسلة، بس الغلط يصفّرها.'},
   bankr:{p:G_ANY, pt:1, t:'8 د', tags:'🏦 رهان · 😈 مقالب', how:'قبل كل سؤال الفريق يشوف بس الفئة والصعوبة ويراهن. الفريق الثاني يكدر يرفع الرهان للضعف: إذا قبلوا يجاوبون على الضعف، وإذا انسحبوا يخسرون نص الرهان. الجواب الصح يربح الرهان، والغلط يروح للخصم.'},
   hex:{p:G_ANY, pt:1, t:'10–15 د', tags:'🔠 حروف · 🎯 خطة', how:'لوحة خلايا سداسية، بكل خلية حرف. الفريق اللي دوره يختار خلية، ويطلع سؤال جوابه يبدأ بهذا الحرف. أول فريق يكول الجواب الصح ياخذ الخلية ويختار اللي بعدها. فريق يحاول يوصّل يمين بيسار، والثاني فوك بجوه، وأول واحد يوصّل يفوز.'},
@@ -2114,7 +2116,7 @@ const LIFES = [
   {id:'dbl', g:'×2', name:'مضاعفة'},
   {id:'swap', g:'⇄', name:'تبديل السؤال'},
 ];
-const LIFES_FOR = {tchain:[], bank:[], hex:[], mcq:['fifty','hint','time','dbl','swap'], list:['time','dbl','swap'], num:[], order:['hint','time','dbl','swap'], rapid:['time','dbl','swap'], describe:['time','dbl'], reverse:['time','dbl'], auction:[], bomb:[], buzz:[], memory:['time','dbl'], draw:['time','dbl'], all:[], spy:[], liar:[], who:[], react:[], alike:[], wrote:[], pdraw:[], fast:[], tclock:[], truth:[], split:[], coop:[], tmem:[], wordle:[], chain:[], secret:[], tmap:[], race:[], letters:[], greed:['fifty','time'], escape:[], target:[], trust:[], duel:[], board:[], mafia:[], maze:[], iclock:[], snum:[], relay:[]};
+const LIFES_FOR = {hot:[], tchain:[], bank:[], hex:[], mcq:['fifty','hint','time','dbl','swap'], list:['time','dbl','swap'], num:[], order:['hint','time','dbl','swap'], rapid:['time','dbl','swap'], describe:['time','dbl'], reverse:['time','dbl'], auction:[], bomb:[], buzz:[], memory:['time','dbl'], draw:['time','dbl'], all:[], spy:[], liar:[], who:[], react:[], alike:[], wrote:[], pdraw:[], fast:[], tclock:[], truth:[], split:[], coop:[], tmem:[], wordle:[], chain:[], secret:[], tmap:[], race:[], letters:[], greed:['fifty','time'], escape:[], target:[], trust:[], duel:[], board:[], mafia:[], maze:[], iclock:[], snum:[], relay:[]};
 const preStage = t => t === 'describe' || t === 'reverse' || t === 'bomb' || t === 'memory' || t === 'draw';   // فقرات تبدأ بشاشة تحضير قبل الوقت
 const STEAL_SECONDS = 20;
 const LETTERS = ['أ','ب','ج','د'];
@@ -4740,8 +4742,8 @@ function buildRound(){
   if (S.settings.llMode === 'round') S.teams.forEach(t => t.ll = freshLL());
 }
 function newCur(id, team){
-  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'mafia'].includes(rt) ? rt : qType(q);
-  const ms = q.scene && !['race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'mafia'].includes(t) ? q.scene.ms : (t === 'snum' ? SN_SET : t === 'relay' ? RL_TIME : t === 'maze' ? MAZE_TIME : t === 'iclock' ? IC_TIME : t === 'duel' ? DUEL_TIME : t === 'escape' ? ESC_TIME : t === 'target' ? TG_TIME : t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
+  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'mafia'].includes(rt) ? rt : qType(q);
+  const ms = q.scene && !['race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'mafia'].includes(t) ? q.scene.ms : (t === 'snum' ? SN_SET : t === 'relay' ? RL_TIME : t === 'maze' ? MAZE_TIME : t === 'iclock' ? IC_TIME : t === 'duel' ? DUEL_TIME : t === 'escape' ? ESC_TIME : t === 'target' ? TG_TIME : t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
   return {id, team, t, stage: t === 'auction' ? 'bid' : (preStage(t) || t === 'buzz' || q.scene || NET_TYPES.includes(t)) ? 'ready' : 'answer',
     pk:[], picks:{}, votes:{}, fakes:{}, ferr:{}, opts:[], rx:{}, res2:null, spyKey:null, turn:[], buzzBy:null, nums:null, numBy:null, buzzer:null, textShown:false, recording:false, bid:AUCTION_START, bidder:null, cnt:0, wOrder: shuffle((q.words || []).map((_, i) => i)), wi:0, got:[], skipped:[], result:null, timeLeft:ms, max:ms, running:false, dbl:false, lock:null, gained:0,
     order:shuffle([0,1,2,3]), gone:[], hint:false, pick:null, spick:null, sres:null, sgained:0,
@@ -4762,6 +4764,7 @@ function startQuestion(){
   if (S.cur.t === 'board') { boardSetup(S.cur); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'hex') { hexSetup(S.cur); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'tchain') { chSetup(S.cur); S.used.push(id); markSeen(id); S.phase = 'question'; timerStart(); save(); render(); return; }
+  if (S.cur.t === 'hot') { S.used.push(id); markSeen(id); hotSetup(S.cur); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'bank') { bankSetup(S.cur); S.used.push(id); markSeen(id); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'trust') { trustSetup(S.cur); S.used.push(id); markSeen(id); S.phase = 'question'; save(); render(); return; }
   initPQ(S.cur); goldMaybe(S.cur);
@@ -5307,7 +5310,7 @@ const pname = k => PL[k] ? PL[k].name : '؟';
 const pteam = k => PL[k] ? PL[k].team : 0;
 const teamNames = () => S ? S.teams.map(t => t.name) : P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
 // فقرات تشتغل ويه 3 فرق (الباقي مبني على فريقين بالضبط: جرس، قنبلة، مزاد، وفقرات الجوال الجماعية)
-const TEAM3_OK = ['general','brands','babhara','shapes','match','rule','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
+const TEAM3_OK = ['general','brands','babhara','shapes','match','rule','hot','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
 // «بدون جوال»: نخفي الفقرات اللي تحتاج جوالات (سباق الجرس وراهن على صاحبك يبقون، لأن إلهم أزرار على التابلت)
 const phoneRound = def => NET_TYPES.includes(def.type);
 const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && !(P.deleted || []).includes(def.id) && !(P.play !== 'phone' && phoneRound(def)) &&(!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
@@ -6341,6 +6344,36 @@ function greedBank(){
   c.banked = true; c.stage = 'done'; save(); render();
 }
 
+/* --- الكرسي الساخن: لاعب واحد يجاوب 5 أسئلة ورا بعض بدون خيارات، والصعوبة تزيد بترتيب ثابت --- */
+const HOT_VALS = [100, 150, 200, 300, 400], HOT_BONUS = 300, HOT_TIME = 10;
+const HOT_ORDER = () => P.diff === 'hard' ? [2, 2, 3, 3, 3] : [1, 2, 2, 3, 3];
+// سؤال بنفس الصعوبة المطلوبة بالترتيب، وإذا خلصت نجيب الأقرب
+function hotDraw(lvl){
+  const def = roundDef(), used = new Set([...S.used, ...S.plan]), seen = new Set(store.get(SEEN) || []);
+  const ok = q => def.cats.includes(q.cat) && plainMcq(q) && !used.has(q.id) && String(q.o[0]).length <= 30;
+  const rank = arr => shuffle(arr.filter(q => !seen.has(q.id))).concat(shuffle(arr.filter(q => seen.has(q.id))));
+  const near = [lvl, lvl === 3 ? 2 : 3, lvl === 1 ? 2 : 1];
+  let q = null; for (const l of near) { q = rank(Q.filter(x => ok(x) && x.lvl === l))[0]; if (q) break; }
+  if (q) { S.used.push(q.id); markSeen(q.id); }
+  return q ? q.id : null;
+}
+const hotWho = c => { const ks = (typeof onlineKeys === 'function' ? onlineKeys() : []).filter(k => pteam(k) === c.team); return ks.length ? pname(ks[Math.floor(S.i / S.teams.length) % ks.length]) : ''; };
+function hotSetup(c){ c.hi = 0; c.hres = []; c.hlv = HOT_ORDER(); c.hq = hotDraw(c.hlv[0]) || c.id; c.hpts = 0; c.stage = 'seat'; c.timeLeft = c.max = HOT_TIME * 1000; }
+function hotStart(){ const c = S.cur; if (!c || c.t !== 'hot' || c.stage !== 'seat') return; c.stage = 'answer'; c.timeLeft = c.max = HOT_TIME * 1000; timerStart(); sfx('reveal'); save(); render(); }
+function hotReveal(){ const c = S.cur; if (!c || c.t !== 'hot' || c.stage !== 'answer') return; timerStop(); c.stage = 'judge'; sfx('reveal'); save(); render(); }
+function hotJudge(ok){
+  const c = S.cur; if (!c || c.t !== 'hot' || c.stage !== 'judge') return;
+  const m = roundDef().mult, v = HOT_VALS[c.hi] * m;
+  c.hres.push(ok); if (ok) { c.hpts += v; award(c.team, v); bump = c.team; sfx('win'); } else sfx('lose');
+  c.hi++;
+  if (c.hi >= HOT_VALS.length) {
+    if (c.hres.every(Boolean)) { c.hbonus = HOT_BONUS * m; c.hpts += c.hbonus; award(c.team, c.hbonus); sfx('fanfare'); }
+    c.gained = c.hpts; c.result = c.hpts ? 'correct' : 'wrong'; c.stage = 'done'; save(); render(); return;
+  }
+  const nq = hotDraw(c.hlv[c.hi]); if (nq) c.hq = nq;
+  c.stage = 'answer'; c.timeLeft = c.max = HOT_TIME * 1000; timerStart(); save(); render();
+}
+
 /* --- سباق التتابع البشري: كل سؤال يجاوبه لاعب ثاني من الفريق، والسلسلة تكبر، والغلط يصفّرها --- */
 const CH_VALS = [50, 100, 150, 200, 250, 300], CH_TIME = 15;
 const PLAIN_CATS = ['general', 'capitals', 'football', 'iq', 'logic', 'odd', 'brands', 'calc', 'seqs', 'anagram'];
@@ -7201,6 +7234,7 @@ function timeout(){
   else if (c.t === 'greed') { if (c.stage === 'answer') { c.lost = c.pot; c.pot = 0; c.result = 'timeout'; c.stage = 'done'; } }
   else if (c.t === 'tchain') { if (c.stage === 'answer') { c.lost = c.pot; c.pot = 0; c.result = 'timeout'; c.stage = 'done'; } }
   else if (c.t === 'bank') { if (c.stage === 'answer') { bankPick(-1); return; } }
+  else if (c.t === 'hot') { if (c.stage === 'answer') { c.stage = 'judge'; sfx('reveal'); } }
   else if (c.stage === 'answer') { c.lock = basePts(); c.result = 'timeout'; c.stage = canSteal() ? 'wrong' : 'done'; if (c.t === 'mcq') streakReset(c.team); }
   else if (c.stage === 'steal') { c.sres = 'timeout'; c.stage = 'done'; }
   save(); render();
@@ -7495,7 +7529,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611221234';
+const GAME_VER = '202611221239';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7540,6 +7574,9 @@ function viewIntro(){
   } else if (def.type === 'num') {
     rules = [[n * 2, 'أسئلة للفريقين معاً'], [ltr(200 * def.mult), 'للفريق الأقرب'], [NUM_TIME, 'ثانية للكتابة']];
     how = 'كل فريق يكتب رقمه على ورقة دون أن يراه الآخر. بعد الكشف يضغط المضيف على الفريق الأقرب. المطابقة التامة تأخذ ضعف النقاط، والتعادل يقسمها.';
+  } else if (def.type === 'hot') {
+    rules = [[HOT_VALS.length, 'أسئلة ورا بعض'], [HOT_TIME, 'ثواني لكل سؤال'], [ltr(HOT_BONUS * def.mult), 'إذا الخمسة صح']];
+    how = `كل فريق يختار واحد يقعد بالكرسي، ويجاوب ${HOT_VALS.length} أسئلة ورا بعض <b>لحاله وبدون خيارات</b>. الأسئلة تصعب بالترتيب (${P.diff === 'hard' ? 'متوسط، متوسط، صعب، صعب، صعب' : 'سهل، متوسط، متوسط، صعب، صعب'})، وكل سؤال نقاطه أكثر من اللي قبله. المضيف يكشف الجواب ويحكم.`;
   } else if (def.type === 'tchain') {
     rules = [[CH_VALS.length, 'حلقات بالسلسلة'], [ltr(CH_VALS.reduce((s, v) => s + v, 0) * def.mult), 'أعلى سلسلة'], [CH_TIME, 'ثانية لكل سؤال']];
     how = `كل فريق يبني سلسلة بالدور. كل سؤال يجاوبه لاعب ثاني من الفريق <b>لحاله</b>، والباقين ممنوع يساعدون. كل جواب صح يضيف حلقة أغلى من اللي قبلها، وبعده تقررون: تكمّلون لو تثبّتون وتاخذون السلسلة. الغلط يصفّر السلسلة كلها.`;
@@ -8494,6 +8531,22 @@ function mcqOpts(prefix, q, ord, act, stage, picked){
   const done = stage === 'done', cls = oi => !done ? '' : oi === 0 ? 'right' : oi === picked ? 'wrong' : '';
   return `<div class="opts ${qaCls(prefix + q.id, done ? 'reveal' : 'answer')}">${ord.map((oi, k) => `<button class="opt ${cls(oi)}" data-act="${act}" data-i="${oi}" ${done ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>`;
 }
+function partHot(c, q0, def){
+  const q = QBY[c.hq], m = def.mult, L = HOT_VALS.length, t = c.team, who = hotWho(c);
+  const tnm = `<b style="color:${TEAM_COLORS[t]}">${esc(S.teams[t].name)}</b>`;
+  const ladder = `<div class="ladder">${HOT_VALS.map((v, i) => `<span class="${i < c.hi ? (c.hres[i] ? 'ok' : 'no') : ''}${i === c.hi && c.stage !== 'done' && c.stage !== 'seat' ? ' now' : ''}">${ltr(v * m)}</span>`).join('')}</div>`;
+  const lv = c.hlv[Math.min(c.hi, L - 1)];
+  const head = `<article class="qcard"><div class="meta"><span class="chip">🔥 الكرسي الساخن</span><span>السؤال ${ltr(Math.min(c.hi + 1, L))} من ${ltr(L)}</span>${lvlDots(lv)}<span class="pts">${ltr(HOT_VALS[Math.min(c.hi, L - 1)] * m)}</span></div>
+    <div class="potline">نقاطه: <b>${ltr(c.hpts || 0)}</b></div>${ladder}`;
+  if (c.stage === 'seat') return `<article class="qcard"><div class="meta"><span class="chip">🔥 الكرسي الساخن</span></div><p class="qtext">فريق ${tnm}: ${who ? `يقعد <b>${esc(who)}</b> بالكرسي` : 'اختاروا واحد يقعد بالكرسي'}</p>
+      <div class="howround">${L} أسئلة ورا بعض، تصعب بالترتيب، و${HOT_TIME} ثواني بس لكل سؤال. يجاوب <b>لحاله وبدون خيارات</b>، وفريقه يتفرج بس. إذا جاوب الخمسة كلها صح ياخذ ${ltr(HOT_BONUS * m)} زيادة.</div></article>
+    <button class="btn primary block" data-act="htStart">ابدأ 🔥</button>`;
+  if (c.stage === 'answer') return head + `<p class="qtext">${esc(q.q)}</p></article><div class="howround hotnote">${who ? esc(who) : 'اللاعب'} يكول جوابه بصوت عالي</div><button class="btn ghost block" data-act="htReveal">قال جوابه، اكشف</button>`;
+  if (c.stage === 'judge') return head + `<p class="qtext">${esc(q.q)}</p></article><div class="verdict judge"><span class="label">الجواب الصحيح</span><span class="big">${esc(q.o[0])}</span><span class="note">هل قال هذا الجواب؟</span></div>
+    <div class="actions"><button class="btn good" data-act="htJudge" data-v="1">صح ${ltr('+' + HOT_VALS[c.hi] * m)}</button><button class="btn danger" data-act="htJudge" data-v="0">غلط</button></div>`;
+  const all = c.hres.every(Boolean), n = c.hres.filter(Boolean).length;
+  return head + `</article><div class="verdict ${c.hpts ? 'ok' : 'no'}"><span class="big">${all ? `🏆 الخمسة كلها صح! ${ltr('+' + c.hpts)}` : `${ltr(n)} من ${ltr(L)} صح · ${ltr('+' + c.hpts)} لفريق ${tnm}`}</span>${c.hbonus ? `<span class="note">ويه مكافأة ${ltr(c.hbonus)}</span>` : ''}</div>` + nextBtn();
+}
 function partTchain(c, q0, def){
   const q = QBY[c.cq], L = CH_VALS.length, m = def.mult, done = c.stage === 'done';
   const links = `<div class="ladder">${CH_VALS.map((v, i) => `<span class="${i < c.ci ? 'ok' : ''}${i === c.ci && c.stage === 'answer' ? ' now' : ''}${done && c.result !== 'correct' && i === c.ci ? ' no' : ''}">${ltr(v * m)}</span>`).join('')}</div>`;
@@ -8549,7 +8602,7 @@ function viewQuestion(){
   const dots = S.plan.map((_, i) => `<i class="${i < S.i ? (S.res[i] === 'ok' ? 'ok' : S.res[i] === 'no' ? 'no' : '') : i === S.i ? 'now' : ''}"></i>`).join('');
   const sec = Math.ceil(c.timeLeft / 1000);
   const live = timerLive(c);
-  const body = c.stage === 'choose' ? partPick(c, def) : c.t === 'board' ? partBoard(c, q, def) : c.t === 'hex' ? partHex(c, q, def) : c.t === 'tchain' ? partTchain(c, q, def) : c.t === 'bank' ? partBank(c, q, def) : c.t === 'maze' ? partMaze(c, q, def) : c.t === 'snum' ? partSnum(c, q, def) : c.t === 'relay' ? partRelay(c, q, def) :c.t === 'iclock' ? partIclock(c, q, def) :c.t === 'mafia' ? partMafia(c, q, def) : c.t === 'duel' ? partDuel(c, q, def) : c.t === 'escape' ? partEscape(c, q, def) : c.t === 'target' ? partTarget(c, q, def) : c.t === 'trust' ? partTrust(c, q, def) : c.t === 'greed' ? partGreed(c, q, def) : c.t === 'letters' ? partLetters(c, q, def) : c.t === 'race' ? partRace(c, q, def) : c.t === 'secret' ? partSecret(c, q, def) : c.t === 'tmap' ? partTmap(c, q, def) : c.t === 'wordle' ? partWordle(c, q, def) : c.t === 'chain' ? partChain(c, q, def) : COOP_TYPES.includes(c.t) ? partCoop(c, q, def) : c.t === 'alike' ? partAlike(c, q, def) : c.t === 'wrote' ? partWrote(c, q, def) : c.t === 'pdraw' ? partPdraw(c, q, def) : c.t === 'fast' ? partFast(c, q, def) : c.t === 'tclock' ? partTclock(c, q, def) : c.t === 'truth' ? partTruth(c, q, def) : c.t === 'all' ? partAll(c, q, def) : c.t === 'who' ? partWho(c, q, def) : c.t === 'liar' ? partLiar(c, q, def) : c.t === 'spy' ? partSpy(c, q, def) : c.t === 'react' ? partReact(c, q, def) : c.t === 'list' ? partList(c, q, def) : c.t === 'num' ? partNum(c, q, def) : c.t === 'order' ? partOrder(c, q, def) : c.t === 'rapid' ? partRapid(c, q, def) : c.t === 'describe' ? partDescribe(c, q, def) : c.t === 'reverse' ? partReverse(c, q, def) : c.t === 'auction' ? partAuction(c, q, def) : c.t === 'bomb' ? partBomb(c, q, def) : c.t === 'buzz' ? partBuzz(c, q, def) : c.t === 'memory' ? partMemory(c, q, def) : c.t === 'draw' ? partDraw(c, q, def) : partMcq(c, q, def);
+  const body = c.stage === 'choose' ? partPick(c, def) : c.t === 'board' ? partBoard(c, q, def) : c.t === 'hex' ? partHex(c, q, def) : c.t === 'tchain' ? partTchain(c, q, def) : c.t === 'hot' ? partHot(c, q, def) : c.t === 'bank' ? partBank(c, q, def) : c.t === 'maze' ? partMaze(c, q, def) : c.t === 'snum' ? partSnum(c, q, def) : c.t === 'relay' ? partRelay(c, q, def) :c.t === 'iclock' ? partIclock(c, q, def) :c.t === 'mafia' ? partMafia(c, q, def) : c.t === 'duel' ? partDuel(c, q, def) : c.t === 'escape' ? partEscape(c, q, def) : c.t === 'target' ? partTarget(c, q, def) : c.t === 'trust' ? partTrust(c, q, def) : c.t === 'greed' ? partGreed(c, q, def) : c.t === 'letters' ? partLetters(c, q, def) : c.t === 'race' ? partRace(c, q, def) : c.t === 'secret' ? partSecret(c, q, def) : c.t === 'tmap' ? partTmap(c, q, def) : c.t === 'wordle' ? partWordle(c, q, def) : c.t === 'chain' ? partChain(c, q, def) : COOP_TYPES.includes(c.t) ? partCoop(c, q, def) : c.t === 'alike' ? partAlike(c, q, def) : c.t === 'wrote' ? partWrote(c, q, def) : c.t === 'pdraw' ? partPdraw(c, q, def) : c.t === 'fast' ? partFast(c, q, def) : c.t === 'tclock' ? partTclock(c, q, def) : c.t === 'truth' ? partTruth(c, q, def) : c.t === 'all' ? partAll(c, q, def) : c.t === 'who' ? partWho(c, q, def) : c.t === 'liar' ? partLiar(c, q, def) : c.t === 'spy' ? partSpy(c, q, def) : c.t === 'react' ? partReact(c, q, def) : c.t === 'list' ? partList(c, q, def) : c.t === 'num' ? partNum(c, q, def) : c.t === 'order' ? partOrder(c, q, def) : c.t === 'rapid' ? partRapid(c, q, def) : c.t === 'describe' ? partDescribe(c, q, def) : c.t === 'reverse' ? partReverse(c, q, def) : c.t === 'auction' ? partAuction(c, q, def) : c.t === 'bomb' ? partBomb(c, q, def) : c.t === 'buzz' ? partBuzz(c, q, def) : c.t === 'memory' ? partMemory(c, q, def) : c.t === 'draw' ? partDraw(c, q, def) : partMcq(c, q, def);
   let lifes = '';
   const allowed = LIFES_FOR[c.t];
   if (c.stage === (preStage(c.t) ? 'ready' : 'answer') && allowed.length) {
@@ -8939,6 +8992,9 @@ document.addEventListener('click', e => {
     case 'pqDecide': pqDecide(); break;
     case 'raceEnd': if (c && c.t === 'race') raceEnd(); break;
     case 'gPick': greedPick(+el.dataset.i); break;
+    case 'htStart': hotStart(); break;
+    case 'htReveal': hotReveal(); break;
+    case 'htJudge': hotJudge(el.dataset.v === '1'); break;
     case 'chPick': chPick(+el.dataset.i); break;
     case 'chGo': chGo(); break;
     case 'chBank': chBank(); break;
