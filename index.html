@@ -569,6 +569,11 @@ button.bcell:active{transform:scale(.96)}
 .pchips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:8px}
 .pchip{border:2px solid var(--tc);background:transparent;color:var(--tc);border-radius:99px;padding:6px 14px;font-weight:700;font-size:1rem}
 .pchip.on{background:var(--tc);color:#fff}
+.ldscore{display:flex;align-items:center;justify-content:center;gap:10px}.ldscore>div{flex:1;text-align:center;padding:8px;border-radius:16px;background:color-mix(in srgb,var(--tc) 14%,transparent);border:2px solid var(--tc)}
+.ldscore span{display:block;font-weight:700;color:var(--tc)}.ldscore b{font-family:var(--display);font-weight:400;font-size:2.2rem;line-height:1.1;color:var(--tc)}
+.ldscore i{display:flex;justify-content:center;gap:4px}.ldscore em{width:12px;height:12px;border-radius:50%;border:2px solid var(--tc)}.ldscore em.on{background:var(--tc)}.ldvs{font-family:var(--display);color:var(--muted)}
+.ldbuzzers{display:grid;grid-template-columns:1fr 1fr;gap:12px}.ldbuzz{min-height:170px;border:none;border-radius:24px;background:var(--tc);color:#fff;font-family:var(--display);font-size:clamp(1.4rem,5vw,2rem);box-shadow:0 8px 0 color-mix(in srgb,var(--tc) 55%,#000);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;touch-action:manipulation}
+.ldbuzz small{font-family:var(--body);font-size:1rem;opacity:.9}.ldbuzz:active{transform:translateY(6px);box-shadow:0 2px 0 color-mix(in srgb,var(--tc) 55%,#000)}.ldbuzz:disabled{opacity:.35}
 .chwho{text-align:center;font-size:1.1rem;padding:10px 14px;border-radius:16px;background:color-mix(in srgb,var(--tc) 14%,transparent);border:2px solid var(--tc)}
 .chwho b{font-family:var(--display);font-weight:400;font-size:1.7rem;color:var(--tc)}.chwho small{display:block;color:var(--muted);font-size:.8rem}
 .betgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.betgrid .btn{font-size:1.4rem}
@@ -1872,6 +1877,7 @@ const ROUNDS = [
   {id:'bomb', group:'تحديات تفاعلية', name:'القنبلة', desc:'مرّروا القنبلة بإجابة صحيحة قبل أن تنفجر بأيديكم', cats:['bomb'], levels:[1,2,3], mult:1, type:'bomb'},
   {id:'auction', group:'تحديات تفاعلية', name:'المزاد', desc:'زايدوا على عدد الإجابات، ومن يربح المزاد يثبت كلامه', cats:['auction'], levels:[1,2,3], mult:1, type:'auction'},
   {id:'reverse', group:'تحديات تفاعلية', name:'بالمقلوب', desc:'اسمعوا الكلمة مقلوبة وخمّنوا الكلمة الصحيحة', cats:['reverse'], levels:[1,2,3], mult:1, type:'reverse'},
+  {id:'lead', group:'تحديات تفاعلية', name:'تحدي القادة', desc:'قائد كل فريق وجهاً لوجه، أسئلة صعبة جداً ومنوعة، وأول واحد يوصل 4 يفوز', cats:['general'], levels:[3], mult:1, type:'lead', count:() => 1},
   {id:'hot', group:'تحديات تفاعلية', name:'الكرسي الساخن', desc:'لاعب واحد يجاوب 5 أسئلة ورا بعض بدون خيارات، والصعوبة تزيد بالترتيب', cats:['general','capitals','football','iq','logic','brands','calc','seqs','anagram'], levels:[1,2,3], mult:1, type:'hot', count:n => Math.max(1, Math.round(n / 2)) * 2},
   {id:'tchain', group:'تحديات تفاعلية', name:'سباق التتابع البشري', desc:'كل سؤال يجاوبه لاعب ثاني من الفريق لحاله، والسلسلة تكبر، والغلط يصفّرها', cats:['general','capitals','football','iq','logic','odd','brands','calc','seqs','anagram'], levels:[1,2,3], mult:1, type:'tchain', count:n => Math.max(1, Math.round(n / 2)) * 2},
   {id:'bankr', group:'تحديات تفاعلية', name:'البنك', desc:'تراهنون قبل ما تشوفون السؤال، والخصم يكدر يرفع الرهان للضعف', cats:['general','capitals','football','iq','logic','odd','brands','calc','seqs','anagram'], levels:[1,2,3], mult:1, type:'bank'},
@@ -1932,6 +1938,7 @@ const ROUND_GUIDE = {
   seqs:{p:G_ANY, pt:1, t:'5 د', tags:'🧠 ذكاء', how:'سلسلة أرقام، اكتشفوا القاعدة واختاروا الرقم الجاي.'},
   calc:{p:G_ANY, pt:1, t:'5 د', tags:'🧮 حساب', how:'حساب ذهني سريع بدون ورقة ولا جوال.'},
   anagram:{p:G_ANY, pt:1, t:'5 د', tags:'🔤 حروف', how:'حروف مبعثرة، رتبوها حتى تطلع دولة أو لاعب أو مدينة.'},
+  lead:{p:G_ANY, pt:1, t:'8–12 د', tags:'👑 مواجهة · 🧠 صعب جداً', how:'قائد كل فريق يقعد قدام الثاني والتابلت بالنص. تطلع أسئلة صعبة جداً بدون خيارات، وكل سؤال من فئة مختلفة. أول قائد يضغط جهته يجاوب، والغلط يعطي الثاني فرصة. أول واحد يوصل 4 يفوز لفريقه.'},
   hot:{p:G_ANY, pt:1, t:'8 د', tags:'🔥 ضغط · 🧠 بدون خيارات', how:'كل فريق يختار واحد يقعد بالكرسي. يجاوب 5 أسئلة ورا بعض لحاله وبدون خيارات، 10 ثواني لكل سؤال، والأسئلة تصعب بالترتيب. كل سؤال نقاطه أكثر من اللي قبله، والخمسة كلها صح تعطي مكافأة.'},
   tchain:{p:'أحسن 3 بكل فريق أو أكثر', pt:1, t:'8 د', tags:'⛓️ تتابع · 🎲 مخاطرة', how:'كل فريق يبني سلسلة: كل سؤال يجاوبه لاعب ثاني من الفريق لحاله بدون مساعدة. كل جواب صح يضيف حلقة نقاطها أكبر (50، 100، 150… لحد 300). بعد أي جواب صح تكدرون تثبّتون وتاخذون السلسلة، بس الغلط يصفّرها.'},
   bankr:{p:G_ANY, pt:1, t:'8 د', tags:'🏦 رهان · 😈 مقالب', how:'قبل كل سؤال الفريق يشوف بس الفئة والصعوبة ويراهن. الفريق الثاني يكدر يرفع الرهان للضعف: إذا قبلوا يجاوبون على الضعف، وإذا انسحبوا يخسرون نص الرهان. الجواب الصح يربح الرهان، والغلط يروح للخصم.'},
@@ -2051,7 +2058,7 @@ const LIFES = [
   {id:'dbl', g:'×2', name:'مضاعفة'},
   {id:'swap', g:'⇄', name:'تبديل السؤال'},
 ];
-const LIFES_FOR = {hot:[], tchain:[], bank:[], hex:[], mcq:['fifty','hint','time','dbl','swap'], list:['time','dbl','swap'], num:[], order:['hint','time','dbl','swap'], rapid:['time','dbl','swap'], describe:['time','dbl'], reverse:['time','dbl'], auction:[], bomb:[], buzz:[], memory:['time','dbl'], draw:['time','dbl'], all:[], spy:[], liar:[], who:[], react:[], alike:[], wrote:[], pdraw:[], fast:[], tclock:[], truth:[], split:[], coop:[], tmem:[], wordle:[], chain:[], secret:[], tmap:[], race:[], letters:[], greed:['fifty','time'], escape:[], target:[], trust:[], duel:[], board:[], mafia:[], maze:[], iclock:[], snum:[], relay:[]};
+const LIFES_FOR = {lead:[], hot:[], tchain:[], bank:[], hex:[], mcq:['fifty','hint','time','dbl','swap'], list:['time','dbl','swap'], num:[], order:['hint','time','dbl','swap'], rapid:['time','dbl','swap'], describe:['time','dbl'], reverse:['time','dbl'], auction:[], bomb:[], buzz:[], memory:['time','dbl'], draw:['time','dbl'], all:[], spy:[], liar:[], who:[], react:[], alike:[], wrote:[], pdraw:[], fast:[], tclock:[], truth:[], split:[], coop:[], tmem:[], wordle:[], chain:[], secret:[], tmap:[], race:[], letters:[], greed:['fifty','time'], escape:[], target:[], trust:[], duel:[], board:[], mafia:[], maze:[], iclock:[], snum:[], relay:[]};
 const preStage = t => t === 'describe' || t === 'reverse' || t === 'bomb' || t === 'memory' || t === 'draw';   // فقرات تبدأ بشاشة تحضير قبل الوقت
 const STEAL_SECONDS = 20;
 const LETTERS = ['أ','ب','ج','د'];
@@ -4721,8 +4728,8 @@ function buildRound(){
   if (S.settings.llMode === 'round') S.teams.forEach(t => t.ll = freshLL());
 }
 function newCur(id, team){
-  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'mafia'].includes(rt) ? rt : qType(q);
-  const ms = q.scene && !['race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'mafia'].includes(t) ? q.scene.ms : (t === 'snum' ? SN_SET : t === 'relay' ? RL_TIME : t === 'maze' ? MAZE_TIME : t === 'iclock' ? IC_TIME : t === 'duel' ? DUEL_TIME : t === 'escape' ? ESC_TIME : t === 'target' ? TG_TIME : t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
+  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'lead', 'mafia'].includes(rt) ? rt : qType(q);
+  const ms = q.scene && !['race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'lead', 'mafia'].includes(t) ? q.scene.ms : (t === 'snum' ? SN_SET : t === 'relay' ? RL_TIME : t === 'maze' ? MAZE_TIME : t === 'iclock' ? IC_TIME : t === 'duel' ? DUEL_TIME : t === 'escape' ? ESC_TIME : t === 'target' ? TG_TIME : t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
   return {id, team, t, stage: t === 'auction' ? 'bid' : (preStage(t) || t === 'buzz' || q.scene || NET_TYPES.includes(t)) ? 'ready' : 'answer',
     pk:[], picks:{}, votes:{}, fakes:{}, ferr:{}, opts:[], rx:{}, res2:null, spyKey:null, turn:[], buzzBy:null, nums:null, numBy:null, buzzer:null, textShown:false, recording:false, bid:AUCTION_START, bidder:null, cnt:0, wOrder: shuffle((q.words || []).map((_, i) => i)), wi:0, got:[], skipped:[], result:null, timeLeft:ms, max:ms, running:false, dbl:false, lock:null, gained:0,
     order:shuffle([0,1,2,3]), gone:[], hint:false, pick:null, spick:null, sres:null, sgained:0,
@@ -4744,6 +4751,7 @@ function startQuestion(){
   if (S.cur.t === 'board') { boardSetup(S.cur); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'hex') { hexSetup(S.cur); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'tchain') { chSetup(S.cur); S.used.push(id); markSeen(id); S.phase = 'question'; timerStart(); save(); render(); return; }
+  if (S.cur.t === 'lead') { leadSetup(S.cur); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'hot') { S.used.push(id); markSeen(id); hotSetup(S.cur); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'bank') { bankSetup(S.cur); S.used.push(id); markSeen(id); S.phase = 'question'; save(); render(); return; }
   if (S.cur.t === 'trust') { trustSetup(S.cur); S.used.push(id); markSeen(id); S.phase = 'question'; save(); render(); return; }
@@ -4800,7 +4808,7 @@ function basePts(){
   if (c.t === 'trust') return LEVEL_POINTS[q.lvl] * m * (c.bet != null ? TRUST_BETS[c.bet].x : 1);
   return (stages(q) ? cluePts(c) : LEVEL_POINTS[q.lvl]) * m * (c.gold ? 2 : 1);
 }
-const activeTeam = () => !S.cur ? null : S.cur.t === 'hex' ? (S.cur.stage === 'pick' && S.cur.hx ? S.cur.hx.turn : null) : S.cur.t === 'board' && S.cur.bd ? (S.cur.stage === 'done' ? null : boardTeam(S.cur)) : S.cur.t === 'mafia' ? null : (S.cur.t === 'num' || NET_TYPES.includes(S.cur.t) || (S.cur.t === 'auction' && S.cur.stage === 'bid') || (S.cur.t === 'buzz' && S.cur.buzzer === null)) ? null : (S.cur.stage === 'steal' ? opp(S.cur.team) : S.cur.team);
+const activeTeam = () => !S.cur ? null : S.cur.t === 'lead' ? null : S.cur.t === 'hex' ? (S.cur.stage === 'pick' && S.cur.hx ? S.cur.hx.turn : null) : S.cur.t === 'board' && S.cur.bd ? (S.cur.stage === 'done' ? null : boardTeam(S.cur)) : S.cur.t === 'mafia' ? null : (S.cur.t === 'num' || NET_TYPES.includes(S.cur.t) || (S.cur.t === 'auction' && S.cur.stage === 'bid') || (S.cur.t === 'buzz' && S.cur.buzzer === null)) ? null : (S.cur.stage === 'steal' ? opp(S.cur.team) : S.cur.team);
 const remaining = () => [0,1,2,3].filter(i => !S.cur.gone.includes(i) && i !== S.cur.pick);
 const canSteal = () => S.settings.steal && remaining().length >= 2;
 function award(t, pts){ S.teams[t].score += pts; S.teams[t].correct++; bump = bump === null || bump === t ? t : 'both'; }
@@ -6336,6 +6344,59 @@ function greedBank(){
   c.banked = true; c.stage = 'done'; save(); render();
 }
 
+/* --- تحدي القادة: قائد كل فريق وجهاً لوجه، أسئلة صعبة جداً ومنوعة بدون خيارات، وأول واحد يوصل 4 يفوز --- */
+const LEAD_TO = 4, LEAD_MAX = 9, LEAD_PTS = 100, LEAD_WIN = 400, LEAD_TIME = 15;
+const LEAD_CATS = ['general', 'football', 'capitals', 'iq', 'logic', 'brands', 'calc', 'seqs', 'anagram', 'odd'];
+// سؤال صعب من فئة غير اللي قبلها (نلف على الفئات)، وجوابه قصير حتى ينكال من الراس
+function leadDraw(c){
+  const used = new Set([...S.used, ...S.plan]), seen = new Set(store.get(SEEN) || []);
+  const ok = q => plainMcq(q) && !used.has(q.id) && String(q.o[0]).length <= 30;
+  const rank = arr => shuffle(arr.filter(q => !seen.has(q.id))).concat(shuffle(arr.filter(q => seen.has(q.id))));
+  for (let k = 0; k < c.lcats.length; k++) {
+    const cat = c.lcats[(c.lci + k) % c.lcats.length];
+    const q = rank(Q.filter(x => x.cat === cat && x.lvl === 3 && ok(x)))[0] || rank(Q.filter(x => x.cat === cat && x.lvl === 2 && ok(x)))[0];
+    if (q) { c.lci = (c.lci + k + 1) % c.lcats.length; S.used.push(q.id); markSeen(q.id); return q.id; }
+  }
+  return null;
+}
+function leadSetup(c){
+  c.lcats = shuffle(LEAD_CATS.slice()); c.lci = 0; c.ls = [0, 0]; c.ln = 0; c.lres = [];
+  c.cap = [0, 1].map(t => P.who === 'pick' ? '' : (teamRoster(t)[0] || ''));
+  c.lq = null; c.lby = null; c.ltried = []; c.stage = 'ready'; c.timeLeft = c.max = LEAD_TIME * 1000;
+}
+const capName = (c, t) => c.cap[t] || `قائد ${S.teams[t].name}`;
+function leadNext(){
+  const c = S.cur; if (!c || c.t !== 'lead') return;
+  const id = leadDraw(c); if (!id) { leadFinish(); return; }
+  c.lq = id; c.lby = null; c.ltried = []; c.ln++; c.stage = 'buzz'; c.timeLeft = c.max = LEAD_TIME * 1000; timerStart(); sfx('reveal'); save(); render();
+}
+function leadBuzz(t){
+  const c = S.cur; if (!c || c.t !== 'lead' || (c.stage !== 'buzz' && c.stage !== 'steal') || c.ltried.includes(t)) return;
+  timerStop(); c.lby = t; c.ltried.push(t); c.stage = 'judge'; sfx('bell'); save(); render();
+}
+function leadJudge(ok){
+  const c = S.cur; if (!c || c.t !== 'lead' || c.stage !== 'judge') return;
+  const t = c.lby, m = roundDef().mult;
+  if (ok) { c.ls[t]++; award(t, LEAD_PTS * m); bump = t; c.lres.push(t); sfx('win'); c.stage = 'reveal'; }
+  else if (c.ltried.length < 2) { sfx('lose'); c.lby = null; c.stage = 'steal'; c.timeLeft = c.max = 8000; timerStart(); }
+  else { sfx('lose'); c.lres.push(null); c.stage = 'reveal'; }
+  save(); render();
+}
+// بعد كل سؤال: إذا واحد وصل 4، أو خلصت الأسئلة، تنتهي المواجهة
+function leadAfter(){
+  const c = S.cur; if (!c || c.t !== 'lead' || c.stage !== 'reveal') return;
+  if (c.ls[0] >= LEAD_TO || c.ls[1] >= LEAD_TO || c.ln >= LEAD_MAX) leadFinish(); else leadNext();
+}
+function leadFinish(){
+  const c = S.cur, m = roundDef().mult; timerStop();
+  const w = c.ls[0] === c.ls[1] ? null : c.ls[0] > c.ls[1] ? 0 : 1;
+  if (w != null) { award(w, LEAD_WIN * m); bump = w; sfx('fanfare'); } else sfx('reveal');
+  c.lwin = w; c.pts = [0, 1].map(t => c.ls[t] * LEAD_PTS * m + (w === t ? LEAD_WIN * m : 0)); c.gained = c.pts[0] + c.pts[1]; c.result = w != null ? 'correct' : 'wrong'; c.stage = 'done'; save(); render();
+}
+function leadTimeout(c){
+  if (c.stage === 'buzz' || c.stage === 'steal') { c.lres.push(c.stage === 'buzz' ? null : null); c.stage = 'reveal'; sfx('reveal'); }
+}
+
 /* --- الكرسي الساخن: لاعب واحد يجاوب 5 أسئلة ورا بعض بدون خيارات، والصعوبة تزيد بترتيب ثابت --- */
 const HOT_VALS = [100, 150, 200, 300, 400], HOT_BONUS = 300, HOT_TIME = 10;
 const HOT_ORDER = () => P.diff === 'hard' ? [2, 2, 3, 3, 3] : [1, 2, 2, 3, 3];
@@ -7227,6 +7288,7 @@ function timeout(){
   else if (c.t === 'tchain') { if (c.stage === 'answer') { c.lost = c.pot; c.pot = 0; c.result = 'timeout'; c.stage = 'done'; } }
   else if (c.t === 'bank') { if (c.stage === 'answer') { bankPick(-1); return; } }
   else if (c.t === 'hot') { if (c.stage === 'answer') { c.stage = 'judge'; sfx('reveal'); } }
+  else if (c.t === 'lead') leadTimeout(c);
   else if (c.stage === 'answer') { c.lock = basePts(); c.result = 'timeout'; c.stage = canSteal() ? 'wrong' : 'done'; if (c.t === 'mcq') streakReset(c.team); }
   else if (c.stage === 'steal') { c.sres = 'timeout'; c.stage = 'done'; }
   save(); render();
@@ -7400,7 +7462,7 @@ function updTimer(){
   el.classList.toggle('low', sec <= 5);
   el.classList.toggle('paused', !c.running);
 }
-const timerLive = c => c.stage === 'answer' || c.stage === 'steal' || c.stage === 'study' || c.stage === 'write' || c.stage === 'vote' || c.stage === 'talk' || c.stage === 'draw' || c.stage === 'play' || c.stage === 'recall' || c.stage === 'ask';
+const timerLive = c => c.stage === 'answer' || c.stage === 'steal' || (c.t === 'lead' && c.stage === 'buzz') || c.stage === 'study' || c.stage === 'write' || c.stage === 'vote' || c.stage === 'talk' || c.stage === 'draw' || c.stage === 'play' || c.stage === 'recall' || c.stage === 'ask';
 function toggleTimer(){
   const c = S.cur; if (!c || !timerLive(c)) return;
   if (c.running) timerStop(); else timerStart();
@@ -7522,7 +7584,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611221255';
+const GAME_VER = '202611221309';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7567,6 +7629,9 @@ function viewIntro(){
   } else if (def.type === 'num') {
     rules = [[n * 2, 'أسئلة للفريقين معاً'], [ltr(200 * def.mult), 'للفريق الأقرب'], [NUM_TIME, 'ثانية للكتابة']];
     how = 'كل فريق يكتب رقمه على ورقة دون أن يراه الآخر. بعد الكشف يضغط المضيف على الفريق الأقرب. المطابقة التامة تأخذ ضعف النقاط، والتعادل يقسمها.';
+  } else if (def.type === 'lead') {
+    rules = [[LEAD_TO, 'نقاط للفوز'], [ltr(LEAD_PTS * def.mult), 'لكل جواب صح'], [ltr(LEAD_WIN * def.mult), 'للقائد الفائز']];
+    how = `قائد كل فريق يقعد قدام الثاني والتابلت بالنص. أسئلة <b>صعبة جداً</b>، كل سؤال من فئة مختلفة، و<b>بدون خيارات</b>. أول قائد يضغط جهته يجاوب بصوت عالي، والمضيف يحكم. الغلط يعطي الثاني فرصة. أول واحد يوصل ${LEAD_TO} يفوز.`;
   } else if (def.type === 'hot') {
     rules = [[HOT_VALS.length, 'أسئلة ورا بعض'], [HOT_TIME, 'ثواني لكل سؤال'], [ltr(HOT_BONUS * def.mult), 'إذا الخمسة صح']];
     how = `كل فريق يختار واحد يقعد بالكرسي، ويجاوب ${HOT_VALS.length} أسئلة ورا بعض <b>لحاله وبدون خيارات</b>. الأسئلة تصعب بالترتيب (${P.diff === 'hard' ? 'متوسط، متوسط، صعب، صعب، صعب' : 'سهل، متوسط، متوسط، صعب، صعب'})، وكل سؤال نقاطه أكثر من اللي قبله. المضيف يكشف الجواب ويحكم.`;
@@ -8524,6 +8589,32 @@ function mcqOpts(prefix, q, ord, act, stage, picked){
   const done = stage === 'done', cls = oi => !done ? '' : oi === 0 ? 'right' : oi === picked ? 'wrong' : '';
   return `<div class="opts ${qaCls(prefix + q.id, done ? 'reveal' : 'answer')}">${ord.map((oi, k) => `<button class="opt ${cls(oi)}" data-act="${act}" data-i="${oi}" ${done ? 'disabled' : ''}><span class="k">${LETTERS[k]}</span><span>${esc(q.o[oi])}</span></button>`).join('')}</div>`;
 }
+function partLead(c, q0, def){
+  const m = def.mult, nm = t => `<b style="color:${TEAM_COLORS[t]}">${esc(capName(c, t))}</b>`;
+  const score = `<div class="ldscore">${[0, 1].map(t => `<div style="--tc:${TEAM_COLORS[t]}"><span>${esc(capName(c, t))}</span><b>${ltr(c.ls[t])}</b><i>${Array.from({length:LEAD_TO}, (_, k) => `<em class="${k < c.ls[t] ? 'on' : ''}"></em>`).join('')}</i></div>`).join('<span class="ldvs">ضد</span>')}</div>`;
+  if (c.stage === 'ready') {
+    const chips = t => P.who === 'pick' && teamRoster(t).length ? `<div class="pchips">${teamRoster(t).map(n => `<button type="button" class="pchip${c.cap[t] === n ? ' on' : ''}" style="--tc:${TEAM_COLORS[t]}" data-act="ldCap" data-t="${t}" data-n="${esc(n)}">${esc(n)}</button>`).join('')}</div>` : '';
+    return `<article class="qcard"><div class="meta"><span class="chip">👑 تحدي القادة</span></div><p class="qtext">${nm(0)} ضد ${nm(1)}</p>
+      ${[0, 1].map(t => chips(t) ? `<div class="chwho" style="--tc:${TEAM_COLORS[t]}">قائد ${esc(S.teams[t].name)}: <b>${esc(c.cap[t] || 'اختاروا 👇')}</b>${chips(t)}</div>` : '').join('')}
+      <div class="howround">القائدين يقعدون وجهاً لوجه، والتابلت بالنص. أسئلة <b>صعبة جداً</b> ومنوعة، <b>بدون خيارات</b>. أول واحد يضغط جهته يجاوب. الغلط يعطي الثاني فرصة. أول قائد يوصل ${ltr(LEAD_TO)} يفوز، وكل جواب صح ${ltr(LEAD_PTS * m)} لفريقه، والفائز ياخذ ${ltr(LEAD_WIN * m)} زيادة.</div></article>
+      <button class="btn primary block" data-act="ldStart">يلا المواجهة 👑</button>`;
+  }
+  if (c.stage === 'done') {
+    const head = c.lwin != null ? `👑 ${nm(c.lwin)} فاز بتحدي القادة!` : 'تعادل القادة';
+    return score + `<div class="verdict ok"><span class="big">${head}</span><span class="note">${[0, 1].map(t => `${esc(S.teams[t].name)} ${ltr('+' + c.pts[t])}`).join(' · ')}</span></div>` + nextBtn();
+  }
+  const q = QBY[c.lq];
+  const card = `<article class="qcard"><div class="meta"><span class="chip">👑 تحدي القادة</span><span class="chip">${CAT_NAMES[q.cat] || ''}</span><span>السؤال ${ltr(c.ln)}</span>${lvlDots(q.lvl)}</div><p class="qtext">${esc(q.q)}</p></article>`;
+  if (c.stage === 'buzz' || c.stage === 'steal') {
+    const btn = t => { const off = c.ltried.includes(t); return `<button class="ldbuzz" style="--tc:${TEAM_COLORS[t]}" data-act="ldBuzz" data-t="${t}" ${off ? 'disabled' : ''}>${esc(capName(c, t))}<small>${off ? 'غلط' : 'اضغط!'}</small></button>`; };
+    return score + card + (c.stage === 'steal' ? `<div class="stealban">فرصة لـ${esc(capName(c, 1 - c.ltried[0]))}!</div>` : '') + `<div class="ldbuzzers">${btn(0)}${btn(1)}</div>`;
+  }
+  if (c.stage === 'judge') return score + card + `<div class="verdict judge" style="--tc:${TEAM_COLORS[c.lby]}"><span class="big">${nm(c.lby)} يجاوب</span><span class="label">الجواب الصحيح</span><span class="big">${esc(q.o[0])}</span><span class="note">هل قال هذا الجواب؟</span></div>
+    <div class="actions"><button class="btn good" data-act="ldJudge" data-v="1">صح ✓</button><button class="btn danger" data-act="ldJudge" data-v="0">غلط ✗</button></div>`;
+  const last = c.lres[c.lres.length - 1];
+  return score + card + `<div class="verdict ${last != null ? 'ok' : 'no'}"><span class="big">${last != null ? `نقطة لـ${nm(last)}` : 'محد جاوبها'}</span><div class="ans">الجواب: <b>${esc(q.o[0])}</b></div>${q.note ? `<div class="note">${esc(q.note)}</div>` : ''}</div>
+    <button class="btn primary block" data-act="ldAfter">${c.ls[0] >= LEAD_TO || c.ls[1] >= LEAD_TO || c.ln >= LEAD_MAX ? 'شوف الفائز 👑' : 'السؤال الجاي'}</button>`;
+}
 function partHot(c, q0, def){
   const q = QBY[c.hq], m = def.mult, L = HOT_VALS.length, t = c.team, who = hotWho(c);
   const tnm = `<b style="color:${TEAM_COLORS[t]}">${esc(S.teams[t].name)}</b>`;
@@ -8595,7 +8686,7 @@ function viewQuestion(){
   const dots = S.plan.map((_, i) => `<i class="${i < S.i ? (S.res[i] === 'ok' ? 'ok' : S.res[i] === 'no' ? 'no' : '') : i === S.i ? 'now' : ''}"></i>`).join('');
   const sec = Math.ceil(c.timeLeft / 1000);
   const live = timerLive(c);
-  const body = c.stage === 'choose' ? partPick(c, def) : c.t === 'board' ? partBoard(c, q, def) : c.t === 'hex' ? partHex(c, q, def) : c.t === 'tchain' ? partTchain(c, q, def) : c.t === 'hot' ? partHot(c, q, def) : c.t === 'bank' ? partBank(c, q, def) : c.t === 'maze' ? partMaze(c, q, def) : c.t === 'snum' ? partSnum(c, q, def) : c.t === 'relay' ? partRelay(c, q, def) :c.t === 'iclock' ? partIclock(c, q, def) :c.t === 'mafia' ? partMafia(c, q, def) : c.t === 'duel' ? partDuel(c, q, def) : c.t === 'escape' ? partEscape(c, q, def) : c.t === 'target' ? partTarget(c, q, def) : c.t === 'trust' ? partTrust(c, q, def) : c.t === 'greed' ? partGreed(c, q, def) : c.t === 'letters' ? partLetters(c, q, def) : c.t === 'race' ? partRace(c, q, def) : c.t === 'secret' ? partSecret(c, q, def) : c.t === 'tmap' ? partTmap(c, q, def) : c.t === 'wordle' ? partWordle(c, q, def) : c.t === 'chain' ? partChain(c, q, def) : COOP_TYPES.includes(c.t) ? partCoop(c, q, def) : c.t === 'alike' ? partAlike(c, q, def) : c.t === 'wrote' ? partWrote(c, q, def) : c.t === 'pdraw' ? partPdraw(c, q, def) : c.t === 'fast' ? partFast(c, q, def) : c.t === 'tclock' ? partTclock(c, q, def) : c.t === 'truth' ? partTruth(c, q, def) : c.t === 'all' ? partAll(c, q, def) : c.t === 'who' ? partWho(c, q, def) : c.t === 'liar' ? partLiar(c, q, def) : c.t === 'spy' ? partSpy(c, q, def) : c.t === 'react' ? partReact(c, q, def) : c.t === 'list' ? partList(c, q, def) : c.t === 'num' ? partNum(c, q, def) : c.t === 'order' ? partOrder(c, q, def) : c.t === 'rapid' ? partRapid(c, q, def) : c.t === 'describe' ? partDescribe(c, q, def) : c.t === 'reverse' ? partReverse(c, q, def) : c.t === 'auction' ? partAuction(c, q, def) : c.t === 'bomb' ? partBomb(c, q, def) : c.t === 'buzz' ? partBuzz(c, q, def) : c.t === 'memory' ? partMemory(c, q, def) : c.t === 'draw' ? partDraw(c, q, def) : partMcq(c, q, def);
+  const body = c.stage === 'choose' ? partPick(c, def) : c.t === 'board' ? partBoard(c, q, def) : c.t === 'hex' ? partHex(c, q, def) : c.t === 'tchain' ? partTchain(c, q, def) : c.t === 'hot' ? partHot(c, q, def) : c.t === 'lead' ? partLead(c, q, def) : c.t === 'bank' ? partBank(c, q, def) : c.t === 'maze' ? partMaze(c, q, def) : c.t === 'snum' ? partSnum(c, q, def) : c.t === 'relay' ? partRelay(c, q, def) :c.t === 'iclock' ? partIclock(c, q, def) :c.t === 'mafia' ? partMafia(c, q, def) : c.t === 'duel' ? partDuel(c, q, def) : c.t === 'escape' ? partEscape(c, q, def) : c.t === 'target' ? partTarget(c, q, def) : c.t === 'trust' ? partTrust(c, q, def) : c.t === 'greed' ? partGreed(c, q, def) : c.t === 'letters' ? partLetters(c, q, def) : c.t === 'race' ? partRace(c, q, def) : c.t === 'secret' ? partSecret(c, q, def) : c.t === 'tmap' ? partTmap(c, q, def) : c.t === 'wordle' ? partWordle(c, q, def) : c.t === 'chain' ? partChain(c, q, def) : COOP_TYPES.includes(c.t) ? partCoop(c, q, def) : c.t === 'alike' ? partAlike(c, q, def) : c.t === 'wrote' ? partWrote(c, q, def) : c.t === 'pdraw' ? partPdraw(c, q, def) : c.t === 'fast' ? partFast(c, q, def) : c.t === 'tclock' ? partTclock(c, q, def) : c.t === 'truth' ? partTruth(c, q, def) : c.t === 'all' ? partAll(c, q, def) : c.t === 'who' ? partWho(c, q, def) : c.t === 'liar' ? partLiar(c, q, def) : c.t === 'spy' ? partSpy(c, q, def) : c.t === 'react' ? partReact(c, q, def) : c.t === 'list' ? partList(c, q, def) : c.t === 'num' ? partNum(c, q, def) : c.t === 'order' ? partOrder(c, q, def) : c.t === 'rapid' ? partRapid(c, q, def) : c.t === 'describe' ? partDescribe(c, q, def) : c.t === 'reverse' ? partReverse(c, q, def) : c.t === 'auction' ? partAuction(c, q, def) : c.t === 'bomb' ? partBomb(c, q, def) : c.t === 'buzz' ? partBuzz(c, q, def) : c.t === 'memory' ? partMemory(c, q, def) : c.t === 'draw' ? partDraw(c, q, def) : partMcq(c, q, def);
   let lifes = '';
   const allowed = LIFES_FOR[c.t];
   if (c.stage === (preStage(c.t) ? 'ready' : 'answer') && allowed.length) {
@@ -8988,6 +9079,11 @@ document.addEventListener('click', e => {
     case 'raceEnd': if (c && c.t === 'race') raceEnd(); break;
     case 'gPick': greedPick(+el.dataset.i); break;
     case 'pChoose': if (c && el.dataset.f) { c[el.dataset.f] = el.dataset.n; save(); render(); } break;
+    case 'ldStart': leadNext(); break;
+    case 'ldCap': if (c && c.t === 'lead') { c.cap[+el.dataset.t] = el.dataset.n; save(); render(); } break;
+    case 'ldBuzz': leadBuzz(+el.dataset.t); break;
+    case 'ldJudge': leadJudge(el.dataset.v === '1'); break;
+    case 'ldAfter': leadAfter(); break;
     case 'htStart': hotStart(); break;
     case 'htReveal': hotReveal(); break;
     case 'htJudge': hotJudge(el.dataset.v === '1'); break;
