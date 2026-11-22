@@ -565,6 +565,10 @@ button.bcell:active{transform:scale(.96)}
 .hxleg i{font-style:normal;background:var(--tc);color:#fff;border-radius:99px;padding:0 8px}
 .hxletter{text-align:center;font-size:1rem;color:var(--muted)}.hxletter b{font-family:var(--display);font-weight:400;font-size:2.6rem;color:var(--brass);margin-inline-start:6px;vertical-align:-6px}
 .hxmarks .btn{flex:1 1 120px}
+.tin .plist{margin-top:6px;font-size:.92rem;font-weight:500;border-inline-start-width:1.5px}
+.pchips{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:8px}
+.pchip{border:2px solid var(--tc);background:transparent;color:var(--tc);border-radius:99px;padding:6px 14px;font-weight:700;font-size:1rem}
+.pchip.on{background:var(--tc);color:#fff}
 .chwho{text-align:center;font-size:1.1rem;padding:10px 14px;border-radius:16px;background:color-mix(in srgb,var(--tc) 14%,transparent);border:2px solid var(--tc)}
 .chwho b{font-family:var(--display);font-weight:400;font-size:1.7rem;color:var(--tc)}.chwho small{display:block;color:var(--muted);font-size:.8rem}
 .betgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}.betgrid .btn{font-size:1.4rem}
@@ -4558,7 +4562,7 @@ const poolCount = r => Q.filter(q => r.cats.includes(q.cat) && r.levels.includes
 const lvlDots = l => `<span class="lvl" title="${LEVEL_NAMES[l]}">${[1,2,3].map(n => `<i class="${n <= l ? 'f' : ''}"></i>`).join('')}</span>`;
 function perTeamText(n){ return n === 2 ? 'سؤالان لكل فريق' : `${n} أسئلة لكل فريق`; }
 
-const DEFAULTS = {names:['الصقور','النسور','الفهود'], nteams:2, perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, fs:'n', diff:'hard', play:'tablet', test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
+const DEFAULTS = {names:['الصقور','النسور','الفهود'], nteams:2, perTeam:2, time:45, steal:true, sound:true, direct:true, wager:true, wheel:true, llMode:'game', vib:true, fs:'n', diff:'hard', play:'tablet', who:'auto', players:[[], [], []], test:false, botAuto:true, phoneQ:false, fun:true, rounds:ROUNDS.map(r => r.id)};
 const WAGER_FLOOR = 300;   // الفريق المتأخر يقدر يراهن حتى هذا الرقم حتى لو نقاطه أقل
 const WAGER_DEF = {cats:['general','football','iq','capitals'], levels:[3]};
 let P = Object.assign({}, DEFAULTS, store.get(PREFS) || {});
@@ -4687,6 +4691,7 @@ function startQuestion(){
   if (!S.plan.length) { toast('لا توجد أسئلة كافية لهذه الفقرة'); S.i = 0; S.phase = S.r >= S.rounds.length - 1 ? 'end' : 'roundEnd'; save(); render(); return; }
   const id = S.plan[S.i];
   S.cur = newCur(id, (S.first + S.i) % S.teams.length);
+  if (['describe', 'draw', 'trust'].includes(S.cur.t)) S.cur.pl = rosterAuto(S.cur.team);
   // «اختار لخصمك»: السؤال الحقيقي يُختار بعد ما يحدد الفريق الثاني الفئة والصعوبة
   if (roundDef().pick && pickSetup(S.cur)) { S.phase = 'question'; save(); render(); return; }
   // «اطمع أو وقّف»: أسئلة السلم تُسحب واحداً واحداً من الأسهل للأصعب
@@ -5236,6 +5241,18 @@ const netUrl = () => NET.mode === 'online'
   : NET.ip ? `http://${NET.ip}:${NET.port}/` : '';
 const onlineKeys = () => [...new Set(Object.values(NET.conn).filter(k => k && PL[k]).concat(P.test ? BOT_KEYS.filter(k => PL[k]) : []))];
 const teamOnline = t => onlineKeys().filter(k => PL[k].team === t);
+// لاعبين الفريق: الأسماء المكتوبة بالتابلت أول، وإذا ماكو فاللي داخلين بجوالاتهم
+const teamRoster = t => { const ty = ((P.players || [])[t] || []).filter(Boolean); return ty.length ? ty : teamOnline(t).slice().sort().map(pname); };
+// اللاعب الجاي بالدور (يتوزع بالعدل على طول السهرة)
+function rosterNext(t){ const r = teamRoster(t); if (!r.length) return ''; S.ptn = S.ptn || {}; const i = S.ptn[t] || 0; S.ptn[t] = i + 1; return r[i % r.length]; }
+const rosterAuto = t => P.who === 'pick' ? '' : rosterNext(t);
+// سطر «منو يجاوب»، ويه أزرار الأسماء إذا الفريق يختار
+function whoLine(c, field, label, fallback){
+  const t = c.team, r = teamRoster(t), name = c[field];
+  const chips = P.who === 'pick' && r.length ? `<div class="pchips">${r.map(n => `<button type="button" class="pchip${name === n ? ' on' : ''}" style="--tc:${TEAM_COLORS[t]}" data-act="pChoose" data-f="${field}" data-n="${esc(n)}">${esc(n)}</button>`).join('')}</div>` : '';
+  const shown = name || (P.who === 'pick' && r.length ? 'اختاروا منو 👇' : fallback || '');
+  return shown || chips ? `<div class="chwho" style="--tc:${TEAM_COLORS[t]}">${label}: <b>${esc(shown)}</b>${chips}</div>` : '';
+}
 const phonesOn = () => (NET.on || P.test) && teamOnline(0).length > 0 && teamOnline(1).length > 0;
 const pname = k => PL[k] ? PL[k].name : '؟';
 const pteam = k => PL[k] ? PL[k].team : 0;
@@ -6288,8 +6305,8 @@ function hotDraw(lvl){
   if (q) { S.used.push(q.id); markSeen(q.id); }
   return q ? q.id : null;
 }
-const hotWho = c => { const ks = (typeof onlineKeys === 'function' ? onlineKeys() : []).filter(k => pteam(k) === c.team); return ks.length ? pname(ks[Math.floor(S.i / S.teams.length) % ks.length]) : ''; };
-function hotSetup(c){ c.hi = 0; c.hres = []; c.hlv = HOT_ORDER(); c.hq = hotDraw(c.hlv[0]) || c.id; c.hpts = 0; c.stage = 'seat'; c.timeLeft = c.max = HOT_TIME * 1000; }
+const hotWho = c => c.hw || '';
+function hotSetup(c){ c.hw = rosterAuto(c.team); c.hi = 0; c.hres = []; c.hlv = HOT_ORDER(); c.hq = hotDraw(c.hlv[0]) || c.id; c.hpts = 0; c.stage = 'seat'; c.timeLeft = c.max = HOT_TIME * 1000; }
 function hotStart(){ const c = S.cur; if (!c || c.t !== 'hot' || c.stage !== 'seat') return; c.stage = 'answer'; c.timeLeft = c.max = HOT_TIME * 1000; timerStart(); sfx('reveal'); save(); render(); }
 function hotReveal(){ const c = S.cur; if (!c || c.t !== 'hot' || c.stage !== 'answer') return; timerStop(); c.stage = 'judge'; sfx('reveal'); save(); render(); }
 function hotJudge(ok){
@@ -6320,13 +6337,13 @@ function quickDraw(lvlPref){
   return q ? q.id : null;
 }
 // منو يجاوب: إذا لاعبين الفريق داخلين بجوالاتهم نطلع أسماءهم بالدور، وإلا «اللاعب رقم…»
-const chWho = (c, n) => { const ks = (typeof onlineKeys === 'function' ? onlineKeys() : []).filter(k => pteam(k) === c.team); return ks.length ? pname(ks[(n - 1) % ks.length]) : `اللاعب رقم ${n}`; };
-function chSetup(c){ c.ci = 0; c.pot = 0; c.pn = 1; c.cq = c.id; c.cord = shuffle([0, 1, 2, 3]); c.cpick = null; c.stage = 'answer'; c.timeLeft = c.max = CH_TIME * 1000; }
+const chWho = (c, n) => c.cw || (P.who === 'pick' && teamRoster(c.team).length ? 'اختاروا منو' : `اللاعب رقم ${n}`);
+function chSetup(c){ c.cw = rosterAuto(c.team); c.ci = 0; c.pot = 0; c.pn = 1; c.cq = c.id; c.cord = shuffle([0, 1, 2, 3]); c.cpick = null; c.stage = 'answer'; c.timeLeft = c.max = CH_TIME * 1000; }
 function chPick(oi){
   const c = S.cur; if (!c || c.t !== 'tchain' || c.stage !== 'answer') return;
   timerStop(); c.cpick = oi;
   if (oi === 0) {
-    c.pot += CH_VALS[c.ci] * roundDef().mult; c.ci++; c.pn++; sfx('win');
+    c.pot += CH_VALS[c.ci] * roundDef().mult; c.ci++; c.pn++; c.cw = rosterAuto(c.team); sfx('win');
     if (c.ci >= CH_VALS.length) { chBank(); return; }
     c.stage = 'choice';
   } else { c.lost = c.pot; c.pot = 0; c.result = 'wrong'; c.stage = 'done'; sfx('lose'); }
@@ -7391,8 +7408,9 @@ function viewHome(){
       <h2>${NT() === 3 ? 'الفرق' : 'الفريقان'}</h2>
       ${seg('nteams', [2, 3], ['فريقين', '3 فرق'])}
       <div class="teams-in" style="--nt:${NT()}">
-        ${teamsIdx().map(i => `<label class="tin" style="--tc:${TEAM_COLORS[i]}"><span class="label">الفريق ${['الأول', 'الثاني', 'الثالث'][i]}</span><input id="team${i}" data-name="${i}" maxlength="18" value="${esc(P.names[i])}" autocomplete="off"></label>`).join('')}
+        ${teamsIdx().map(i => `<label class="tin" style="--tc:${TEAM_COLORS[i]}"><span class="label">الفريق ${['الأول', 'الثاني', 'الثالث'][i]}</span><input id="team${i}" data-name="${i}" maxlength="18" value="${esc(P.names[i])}" autocomplete="off"><input class="plist" data-plist="${i}" maxlength="160" placeholder="اللاعبين: علي، حسن، زينب" value="${esc(((P.players || [])[i] || []).join('، '))}" autocomplete="off" aria-label="لاعبين الفريق ${['الأول', 'الثاني', 'الثالث'][i]}"></label>`).join('')}
       </div>
+      <div class="field"><span class="label">منو يجاوب بالفقرات الفردية (وصّف، ارسمها، راهن على صاحبك، التتابع، الكرسي الساخن)</span>${seg('who', ['auto','pick'], ['🔄 بالدور تلقائياً','👆 الفريق يختار'])}<small class="muted">${P.who === 'pick' ? 'تطلع أسماء لاعبين الفريق كأزرار، والفريق يضغط على اللي يجاوب.' : 'اللعبة تختار اللاعب الجاي بالدور، وبالعدل على طول السهرة.'} اكتبوا الأسماء مفصولة بفاصلة.</small></div>
     </section>
     ${lobbyPanel()}
     <section class="panel">
@@ -7460,7 +7478,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611221239';
+const GAME_VER = '202611221244';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7829,7 +7847,7 @@ function partDraw(c, q, def){
   const pts = basePts() * (c.dbl ? 2 : 1);
   const meta = `<div class="meta"><span class="chip">ارسمها</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(pts)}</span></div>`;
   if (c.stage === 'ready') {
-    return `<article class="qcard">${meta}<p class="qtext">الرسّام من فريق ${tn(c.team)}</p>
+    return `<article class="qcard">${meta}<p class="qtext">الرسّام من فريق ${tn(c.team)}</p>${whoLine(c, 'pl', 'الرسّام', '')}
       ${c.peek ? `<div class="dword">${esc(q.draw)}</div>` : '<p class="subtle" style="text-align:start">أعطوا الهاتف للرسّام وحده، ثم يضغط لرؤية الكلمة.</p>'}
       <button class="btn ghost block" data-act="rPeek">${c.peek ? 'أخفِ الكلمة' : 'أظهر الكلمة للرسّام'}</button>
       <div class="howround">ارسم بإصبعك فقط. ممنوع الكلام والإشارة وكتابة الحروف أو الأرقام.</div></article>
@@ -8007,7 +8025,7 @@ function partDescribe(c, q, def){
   if (c.stage === 'ready') {
     return `<article class="qcard">
       <div class="meta"><span class="chip">وصّف</span><span>${ltr(per)} لكل كلمة</span><span class="pts">${ltr(c.timeLeft / 1000)} ث</span></div>
-      <p class="qtext">${esc(q.q.replace('وصّف: ', ''))}</p>
+      <p class="qtext">${esc(q.q.replace('وصّف: ', ''))}</p>${whoLine(c, 'pl', 'يوصّف', '')}
       <div class="howround">مرّروا الهاتف للاعب واحد من فريق <b style="color:var(--tc)">${esc(tm)}</b>، وأخفوا الشاشة عن بقية الفريق. يشرح كل كلمة بدون أن يقولها، أو يقول جزءاً منها، أو يتهجّاها، أو يترجمها.</div>
     </article>
     <button class="btn team block" data-act="dStart">ابدأ (${ltr(c.timeLeft / 1000)} ثانية)</button>`;
@@ -8416,10 +8434,10 @@ function partTarget(c, q, def){
   return head + box(0) + box(1) + `<div class="verdict judge"><span class="label">حل ممكن</span><span class="big" dir="ltr" style="font-size:1.3rem"><bdi>${esc(g.sol)} = ${g.target}</bdi></span></div>` + ptsLine(c) + nextBtn();
 }
 function partTrust(c, q, def){
-  const tc = TEAM_COLORS[c.team], base = trustBase(c), who = c.who ? `<span style="color:${tc}">${esc(pname(c.who))}</span>` : 'واحد منكم';
+  const tc = TEAM_COLORS[c.team], base = trustBase(c), who = c.who ? `<span style="color:${tc}">${esc(pname(c.who))}</span>` : c.pl ? `<span style="color:${tc}">${esc(c.pl)}</span>` : 'واحد منكم';
   const meta = `<div class="meta"><span class="chip">${CAT_NAMES[q.cat]}</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(basePts())}</span></div>`;
   if (c.stage === 'bet') return `<article class="qcard">${meta}<p class="qtext">${who} راح يجاوب لحاله على سؤال ${CAT_NAMES[q.cat]}</p>
-      <div class="howround">${c.who ? '' : 'اختاروا واحد منكم يجاوب لحاله. '}الفريق يراهن عليه قبل ما يشوف السؤال${c.who ? '، من جوالاتكم أو من هنا' : ''}. شكد تثقون بيه؟</div></article>
+      ${c.who ? '' : whoLine(c, 'pl', 'يجاوب لحاله', '')}<div class="howround">${c.who || c.pl ? '' : 'اختاروا واحد منكم يجاوب لحاله. '}الفريق يراهن عليه قبل ما يشوف السؤال${c.who ? '، من جوالاتكم أو من هنا' : ''}. شكد تثقون بيه؟</div></article>
     <div class="opts">${TRUST_BETS.map((b, i) => `<button class="opt" style="--tc:${tc}" data-act="tsBet" data-i="${i}"><span class="k">×${b.x}</span><span>${b.n}<small class="who">صح ${ltr('+' + base * b.x)} · خطأ ${b.lose ? ltr('−' + base * b.lose) : 'ما تخسرون'}</small></span></button>`).join('')}</div>`;
   const b = TRUST_BETS[c.bet || 0], done = c.stage === 'done';
   const card = `<article class="qcard">${meta}<p class="qtext">${esc(q.q)}</p><div class="howround">${who} يجاوب لحاله · الرهان ×${b.x}${done ? '' : ' · ممنوع المساعدة!'}</div></article>`;
@@ -8469,7 +8487,7 @@ function partHot(c, q0, def){
   const lv = c.hlv[Math.min(c.hi, L - 1)];
   const head = `<article class="qcard"><div class="meta"><span class="chip">🔥 الكرسي الساخن</span><span>السؤال ${ltr(Math.min(c.hi + 1, L))} من ${ltr(L)}</span>${lvlDots(lv)}<span class="pts">${ltr(HOT_VALS[Math.min(c.hi, L - 1)] * m)}</span></div>
     <div class="potline">نقاطه: <b>${ltr(c.hpts || 0)}</b></div>${ladder}`;
-  if (c.stage === 'seat') return `<article class="qcard"><div class="meta"><span class="chip">🔥 الكرسي الساخن</span></div><p class="qtext">فريق ${tnm}: ${who ? `يقعد <b>${esc(who)}</b> بالكرسي` : 'اختاروا واحد يقعد بالكرسي'}</p>
+  if (c.stage === 'seat') return `<article class="qcard"><div class="meta"><span class="chip">🔥 الكرسي الساخن</span></div><p class="qtext">فريق ${tnm}: ${who ? `يقعد <b>${esc(who)}</b> بالكرسي` : 'اختاروا واحد يقعد بالكرسي'}</p>${P.who === 'pick' ? whoLine(c, 'hw', 'بالكرسي', '') : ''}
       <div class="howround">${L} أسئلة ورا بعض، تصعب بالترتيب، و${HOT_TIME} ثواني بس لكل سؤال. يجاوب <b>لحاله وبدون خيارات</b>، وفريقه يتفرج بس. إذا جاوب الخمسة كلها صح ياخذ ${ltr(HOT_BONUS * m)} زيادة.</div></article>
     <button class="btn primary block" data-act="htStart">ابدأ 🔥</button>`;
   if (c.stage === 'answer') return head + `<p class="qtext">${esc(q.q)}</p></article><div class="howround hotnote">${who ? esc(who) : 'اللاعب'} يكول جوابه بصوت عالي</div><button class="btn ghost block" data-act="htReveal">قال جوابه، اكشف</button>`;
@@ -8481,7 +8499,7 @@ function partHot(c, q0, def){
 function partTchain(c, q0, def){
   const q = QBY[c.cq], L = CH_VALS.length, m = def.mult, done = c.stage === 'done';
   const links = `<div class="ladder">${CH_VALS.map((v, i) => `<span class="${i < c.ci ? 'ok' : ''}${i === c.ci && c.stage === 'answer' ? ' now' : ''}${done && c.result !== 'correct' && i === c.ci ? ' no' : ''}">${ltr(v * m)}</span>`).join('')}</div>`;
-  const who = `<div class="chwho" style="--tc:${TEAM_COLORS[c.team]}">الدور على: <b>${esc(chWho(c, c.pn))}</b> <small>لحاله، بدون مساعدة!</small></div>`;
+  const who = whoLine(c, 'cw', 'الدور على', chWho(c, c.pn)).replace(/<\/div>$/, '<small>لحاله، بدون مساعدة!</small></div>');
   const head = `<article class="qcard"><div class="meta"><span class="chip">سباق التتابع البشري</span><span>الحلقة ${ltr(Math.min(c.ci + 1, L))} من ${ltr(L)}</span><span class="pts">${ltr(CH_VALS[Math.min(c.ci, L - 1)] * m)}</span></div>
     <div class="potline">السلسلة: <b>${ltr(c.pot || 0)}</b></div>${links}
     ${q && (c.stage === 'answer' || (done && c.result !== 'correct')) ? `<p class="qtext">${esc(q.q)}</p>` : ''}</article>`;
@@ -8868,6 +8886,8 @@ document.addEventListener('change', e => {
 document.addEventListener('input', e => {
   const i = e.target.dataset && e.target.dataset.name;
   if (i !== undefined) { P.names[+i] = e.target.value; savePrefs(); }
+  const pl = e.target.dataset && e.target.dataset.plist;
+  if (pl !== undefined) { P.players = P.players || [[], [], []]; P.players[+pl] = e.target.value.split(/[،,]/).map(s => s.trim().slice(0, 16)).filter(Boolean).slice(0, 12); savePrefs(); }
 });
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-act]'); if (!el) return;
@@ -8923,6 +8943,7 @@ document.addEventListener('click', e => {
     case 'pqDecide': pqDecide(); break;
     case 'raceEnd': if (c && c.t === 'race') raceEnd(); break;
     case 'gPick': greedPick(+el.dataset.i); break;
+    case 'pChoose': if (c && el.dataset.f) { c[el.dataset.f] = el.dataset.n; save(); render(); } break;
     case 'htStart': hotStart(); break;
     case 'htReveal': hotReveal(); break;
     case 'htJudge': hotJudge(el.dataset.v === '1'); break;
