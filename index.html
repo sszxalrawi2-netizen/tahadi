@@ -164,7 +164,7 @@ details.panel[open] summary::after{content:"−"}
 .topline{display:flex;align-items:center;gap:10px}
 .topline .rn{font-family:var(--display);font-size:1.3rem;color:var(--brass);line-height:1.2}
 .topline .qn{color:var(--muted);font-size:.85rem}
-.iconbtn{margin-inline-start:auto;border:1.5px solid var(--rim);background:var(--felt-2);border-radius:12px;padding:6px 12px;font-weight:500;font-size:.88rem;white-space:nowrap}
+.swapbtn+.iconbtn{margin-inline-start:6px}.iconbtn{margin-inline-start:auto;border:1.5px solid var(--rim);background:var(--felt-2);border-radius:12px;padding:6px 12px;font-weight:500;font-size:.88rem;white-space:nowrap}
 .dots{display:flex;gap:5px}
 .dots i{flex:1;height:5px;border-radius:3px;background:var(--felt-3)}
 .dots i.ok{background:var(--good)} .dots i.no{background:var(--bad)} .dots i.now{background:var(--brass)}
@@ -450,7 +450,7 @@ button.bcell:active{transform:scale(.96)}
 .hintbox{border:1.5px dashed var(--brass-deep);border-radius:12px;padding:9px 12px;font-size:.95rem;color:var(--brass)}
 .stealban{border-radius:12px;padding:10px 12px;background:color-mix(in srgb,var(--tc) 18%,var(--felt));border:1.5px solid var(--tc);font-weight:700}
 .flag{width:min(100%,320px);margin-inline:auto;border-radius:8px;overflow:hidden;border:1px solid var(--rim);box-shadow:0 8px 22px var(--shade);line-height:0}
-.flag svg{display:block;width:100%;height:auto}
+.flag svg,.flag .flagimg{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
 .clues{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;counter-reset:clue}
 .clues li{display:flex;gap:10px;align-items:baseline;background:var(--felt);border:1px solid var(--rim);border-radius:12px;padding:10px 12px;font-weight:500;line-height:1.65;counter-increment:clue}
 .clues li::before{content:counter(clue);font-family:var(--display);color:var(--brass);font-size:1.25rem;line-height:1;flex:none}
@@ -471,6 +471,7 @@ button.bcell:active{transform:scale(.96)}
 .opt.wrong .k{background:var(--bad);color:var(--on)}
 .opt.dim{opacity:.5}
 /* الخيارات الملوّنة: ▲ أحمر · ◆ أزرق · ● أصفر · ■ أخضر */
+.geofig svg{border-radius:14px;max-height:46vh!important}
 .fig{width:min(100%,var(--figw,300px));margin:2px auto;color:var(--ink)}.fig svg{display:block;width:100%;height:auto;max-height:36vh;margin:0 auto}
 .qicon{font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:clamp(2.2rem,8vw,3rem);line-height:1;text-align:center;margin-bottom:-4px}
 .opts.qa .opt{border:none;color:#fff;font-size:1.14rem;min-height:66px;box-shadow:0 5px 0 color-mix(in srgb,var(--oc) 62%,#000)}
@@ -1845,14 +1846,15 @@ const FLAGS = {
   ga: fH('#009E60','#FCD116','#3A75C4'),
   sl: fH('#1EB53A','#fff','#0072C6'),
 };
-const flagSvg = k => `<svg viewBox="0 0 ${FW} ${FH}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="علم">${FLAGS[k] || ''}</svg>`;
+const flagSvg = k => FLAGS[k] ? `<svg viewBox="0 0 ${FW} ${FH}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="علم">${FLAGS[k]}</svg>` : `<img class="flagimg" src="${FLAG_URL(k)}" alt="علم" draggable="false">`;
 
 /* ===================== إعدادات الفقرات ===================== */
 const ROUNDS = [
   {id:'general', group:'ثقافة وذكاء', name:'معلومات عامة', desc:'تاريخ وعلوم وجغرافيا وأدب', cats:['general'], levels:[1,2], mult:1, type:'mcq'},
   {id:'whoami', group:'ثقافة وذكاء', name:'من أنا؟', desc:'شخصية أو مكان أو شيء، بتلميحات تظهر واحداً بعد الآخر', cats:['whoami'], levels:[1,2], mult:1, type:'mcq'},
   {id:'links', group:'ثقافة وذكاء', name:'الرابط المشترك', desc:'ثلاثة أشياء تظهر واحداً بعد الآخر، فما الذي يجمعها؟', cats:['links'], levels:[1,2], mult:1, type:'mcq'},
-  {id:'flags', group:'ثقافة وذكاء', name:'أعلام الدول', desc:'اعرف الدولة من علمها، وبعضها متشابه جداً', cats:['flags'], levels:[1,2], mult:1, type:'mcq'},
+  {id:'flags', group:'ثقافة وذكاء', name:'أعلام الدول', desc:'اعرف الدولة من علمها، وبعضها متشابه جداً', cats:['flags'], levels:[1,2,3], mult:1, type:'mcq'},
+  {id:'geomap', group:'ثقافة وذكاء', name:'على الخريطة 🗺️', desc:'دولة مأشّرة بالأحمر على الخريطة، والخيارات جيرانها. شنو هي؟', cats:['geomap'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'flagcolors', group:'ثقافة وذكاء', name:'ألوان الأعلام', desc:'نعطيك اسم الدولة، فما ألوان علمها وبأي ترتيب؟', cats:['flagcolors'], levels:[1,2], mult:1, type:'mcq'},
   {id:'capitals', group:'ثقافة وذكاء', name:'عواصم الدول', desc:'العاصمة كثيراً ما تكون غير أكبر مدينة، فانتبه', cats:['capitals'], levels:[1,2], mult:1, type:'mcq'},
   {id:'brands', group:'ثقافة وذكاء', name:'ماركات وشعارات', desc:'شعارات الشركات بالوصف، ومن وين الماركة، ومنو أسسها، وشنو تصنع', cats:['brands'], levels:[1,2,3], mult:1, type:'mcq'},
@@ -1943,6 +1945,7 @@ const ROUND_GUIDE = {
   hot:{p:G_ANY, pt:1, t:'8 د', tags:'🔥 ضغط · 🧠 بدون خيارات', how:'كل فريق يختار واحد يقعد بالكرسي. يجاوب 5 أسئلة ورا بعض لحاله وبدون خيارات، 10 ثواني لكل سؤال، والأسئلة تصعب بالترتيب. كل سؤال نقاطه أكثر من اللي قبله، والخمسة كلها صح تعطي مكافأة.'},
   tchain:{p:'أحسن 3 بكل فريق أو أكثر', pt:1, t:'8 د', tags:'⛓️ تتابع · 🎲 مخاطرة', how:'كل فريق يبني سلسلة: كل سؤال يجاوبه لاعب ثاني من الفريق لحاله بدون مساعدة. كل جواب صح يضيف حلقة نقاطها أكبر (50، 100، 150… لحد 300). بعد أي جواب صح تكدرون تثبّتون وتاخذون السلسلة، بس الغلط يصفّرها.'},
   bankr:{p:G_ANY, pt:1, t:'8 د', tags:'🏦 رهان · 😈 مقالب', how:'قبل كل سؤال الفريق يشوف بس الفئة والصعوبة ويراهن. الفريق الثاني يكدر يرفع الرهان للضعف: إذا قبلوا يجاوبون على الضعف، وإذا انسحبوا يخسرون نص الرهان. الجواب الصح يربح الرهان، والغلط يروح للخصم.'},
+  geomap:{p:G_ANY, pt:1, t:'5 د', tags:'🗺️ جغرافيا', how:'تطلع خريطة بيها دولة وحدة بالأحمر، والخيارات الأربعة دول قريبة عليها، فلازم تعرفون الشكل والموقع بالضبط. السهل يبيّن منطقة كبيرة حواليها، والصعب يقرّب على الدولة وما يبيّن هواية.'},
   wiki:{p:G_ANY, pt:1, t:'5–8 د', tags:'🌐 من النت · 🧠 ثقافة', how:'التابلت يسحب حقائق من ويكي داتا (قاعدة بيانات ويكيبيديا) ويسوي منها أسئلة: الفائزين بجوائز نوبل، العناصر الكيميائية، الكتب ومؤلفيها، اللوحات ورساميها، الأفلام ومخرجيها، المدن ودولها، الأندية ومدنها، أعلى القمم، وقارات الدول. تتجدد وحدها كل 3 أيام إذا التابلت على النت.'},
   hex:{p:G_ANY, pt:1, t:'10–15 د', tags:'🔠 حروف · 🎯 خطة', how:'لوحة خلايا سداسية، بكل خلية حرف. الفريق اللي دوره يختار خلية، ويطلع سؤال جوابه يبدأ بهذا الحرف. أول فريق يكول الجواب الصح ياخذ الخلية ويختار اللي بعدها. فريق يحاول يوصّل يمين بيسار، والثاني فوك بجوه، وأول واحد يوصّل يفوز.'},
   rule:{p:G_ANY, pt:1, t:'5–8 د', tags:'🧠 ذكاء · 🔍 استنتاج', how:'تطلع أمثلة وحدة وحدة: ✔ يمشي على القاعدة، و✖ ما يمشي. اكتشفوا القاعدة المخفية واختاروها. كل ما اكتشفتوها أبكر أخذتوا نقاط أكثر.'},
@@ -2006,7 +2009,7 @@ function guideFit(r){
   if (TEAM_TYPES.includes(r.type) && (!a || !b)) return {tone:'no', text:'⚠️ تحتاج لاعب متصل من كل فريق'};
   return {tone:'ok', text:`✅ تنفع لعددكم (${a} مقابل ${b})${a !== b && g.warn && /نفس العدد|الأكبر/.test(g.warn) ? ' · ⚖️ الفريقين مو متساويين' : ''}`};
 }
-const CAT_NAMES = {wiki:'ويكيبيديا', hex:'خلايا الحروف', rule:'القاعدة السرية', match:'أعواد الكبريت', brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
+const CAT_NAMES = {geomap:'على الخريطة', wiki:'ويكيبيديا', hex:'خلايا الحروف', rule:'القاعدة السرية', match:'أعواد الكبريت', brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
 const LEVEL_POINTS = {1:100, 2:200, 3:300};
 const LEVEL_NAMES = {1:'سهل', 2:'متوسط', 3:'صعب'};
 const CLUE_POINTS = [300, 200, 150, 100];
@@ -2069,6 +2072,7 @@ const LETTERS = ['أ','ب','ج','د'];
 const CAT_PATHS = {
   brands:'<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',
   babhara:'<path d="M5 21V10a7 7 0 0 1 14 0v11"/><path d="M3 21h18M12 3.5V21"/><path d="M10 14h.01M14 14h.01"/>',
+  geomap:'<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/>',
   wiki:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/><path d="M7 8.5h10M7 15.5h10"/>',
   hex:'<path d="M12 2.5 20 7v10l-8 4.5L4 17V7z"/><path d="M9 15l3-7 3 7M10.2 12.5h3.6"/>',
   rule:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8.5 11h5M11 8.5v5"/>',
@@ -5362,7 +5366,7 @@ const pname = k => PL[k] ? PL[k].name : '؟';
 const pteam = k => PL[k] ? PL[k].team : 0;
 const teamNames = () => S ? S.teams.map(t => t.name) : P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
 // فقرات تشتغل ويه 3 فرق (الباقي مبني على فريقين بالضبط: جرس، قنبلة، مزاد، وفقرات الجوال الجماعية)
-const TEAM3_OK = ['general','brands','babhara','shapes','match','rule','hot','wiki','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
+const TEAM3_OK = ['general','brands','babhara','shapes','match','rule','hot','wiki','geomap','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
 // «بدون جوال»: نخفي الفقرات اللي تحتاج جوالات (سباق الجرس وراهن على صاحبك يبقون، لأن إلهم أزرار على التابلت)
 const phoneRound = def => NET_TYPES.includes(def.type);
 const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && !(P.deleted || []).includes(def.id) && !(P.play !== 'phone' && phoneRound(def)) &&(!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
@@ -7581,7 +7585,7 @@ function viewHome(){
     <section class="panel">
       <h2>الإعدادات</h2>
       <div class="field"><span class="label">ألوان اللعبة</span><div class="themes">${THEMES.map(([k, n, cs]) => `<button type="button" data-act="theme" data-v="${k}" aria-pressed="${(P.theme || 'fun') === k}"><span class="sw">${cs.map(c => `<i style="background:${c}"></i>`).join('')}</span>${n}</button>`).join('')}</div></div>
-      <div class="field"><span class="label">🌐 أسئلة ويكيبيديا من النت</span><small class="muted">${wdStatus()}</small><button type="button" class="btn ghost" data-act="wdRefresh" ${WD.loading ? 'disabled' : ''}>${WD.loading ? 'جاري السحب…' : 'حدّث الأسئلة من النت'}</button></div>
+      <div class="field"><span class="label">🌐 أسئلة ويكيبيديا من النت</span><small class="muted">${wdStatus()}<br>${geoStatus()}</small><button type="button" class="btn ghost" data-act="wdRefresh" ${WD.loading ? 'disabled' : ''}>${WD.loading ? 'جاري السحب…' : 'حدّث الأسئلة من النت'}</button></div>
       <div class="field"><span class="label">صعوبة الأسئلة</span>${seg('diff', ['mix','hard'], ['متنوعة','صعبة'])}<small class="muted">«صعبة»: كل الفقرات تجيب الأسئلة الصعبة أول، وبعدها المتوسطة. السهلة ما تطلع إلا إذا خلصت الباقية.</small></div>
       <div class="field"><span class="label">حجم الكتابة على التابلت</span>${seg('fs', ['n','l','xl'], ['عادي','كبير','كبير جداً'])}</div>
       <div class="field"><span class="label">عدد الأسئلة لكل فريق في الجولة</span>${seg('perTeam', [1,2,3,4])}</div>
@@ -7637,7 +7641,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611231819';
+const GAME_VER = '202611231834';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7881,7 +7885,7 @@ function partMcq(c, q, def){
     ${c.stage === 'steal' ? `<div class="stealban">سرقة! فريق ${esc(S.teams[other].name)} يجاوب الآن على ${ltr(Math.round(base / 2))} نقطة</div>` : ''}
     ${catIcon(q.cat)}
     <p class="qtext">${esc(q.q)}</p>
-    ${q.fig ? `<div class="fig"${q.cat === 'match' ? ' style="--figw:440px"' : ''}>${q.fig}</div>` : ''}
+    ${q.fig ? `<div class="fig${q.cat === 'geomap' ? ' geofig' : ''}"${q.cat === 'match' ? ' style="--figw:440px"' : q.cat === 'geomap' ? ' style="--figw:520px"' : ''}>${q.fig}</div>` : ''}
     ${tiles || (q.flag ? `<div class="flag">${flagSvg(q.flag)}</div>` : '')}
     ${q.cc && (c.stage === 'judge' || c.stage === 'done') ? `<div class="flag">${flagSvg(q.cc)}</div>` : ''}
     ${clues}
@@ -8754,7 +8758,7 @@ function viewQuestion(){
   const focus = live && ['answer', 'steal'].includes(c.stage);
   return `<div class="screen${focus ? ' focus' : ''}" style="--tc:${tc}">
     ${scorebar(act)}
-    <div class="topline"><span class="rn">${def.name}</span><span class="qn">سؤال ${S.i + 1} من ${S.plan.length}</span><button class="iconbtn" data-act="menu">المضيف ⋯</button></div>
+    <div class="topline"><span class="rn">${def.name}</span><span class="qn">سؤال ${S.i + 1} من ${S.plan.length}</span>${['done', 'reveal', 'breveal'].includes(c.stage) || ['board', 'greed', 'trust', 'mafia'].includes(c.t) || NET_TYPES.includes(c.t) ? '' : '<button class="iconbtn swapbtn" data-act="hostSwap" title="بدّل السؤال إذا طلع قبل">🔄 بدّل</button>'}<button class="iconbtn" data-act="menu">المضيف ⋯</button></div>
     <div class="dots">${dots}</div>
     ${live && c.t !== 'bomb' ? `<button id="timer" class="timer${sec <= 5 ? ' low' : ''}${c.running ? '' : ' paused'}" data-act="timer" aria-label="إيقاف أو تشغيل الوقت"><span class="ring"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="tr0" cx="32" cy="32" r="27"/><circle class="tr1" cx="32" cy="32" r="27" pathLength="100" style="stroke-dashoffset:${100 - Math.max(0, Math.min(100, c.timeLeft / c.max * 100))}"/></svg><span class="num">${sec}</span></span><span class="st">${c.running ? 'اضغط للإيقاف' : 'متوقف — اضغط'}</span></button>` : ''}
     ${live && c.t !== 'bomb' && act != null && S.teams[act] && S.teams[act].to !== false ? `<button class="tobtn" style="--tc:${TEAM_COLORS[act]}" data-act="tout" data-t="${act}">⏸️ وقت مستقطع لفريق ${esc(S.teams[act].name)} <small>(${TOUT_S} ثانية، مرة وحدة باللعبة)</small></button>` : ''}
@@ -8988,7 +8992,7 @@ function viewSheet(){
     <div class="row"><div class="tx"><span>الأصوات</span></div><button type="button" class="switch" role="switch" aria-checked="${!!P.sound}" aria-label="الأصوات" data-act="toggle" data-key="sound"></button></div>
     ${NET.avail ? `<details class="joinbox"><summary>انضمام لاعب من جواله (${onlineKeys().length} متصل)</summary>${lobbyBox()}</details>` : ''}
     <div class="actions">
-      ${inQ ? `<button class="btn ghost" data-act="skip">تخطي هذا السؤال</button><button class="btn ghost" data-act="badQ">🚩 السؤال غلط، شيله للأبد</button>` : ''}
+      ${inQ ? `<button class="btn ghost" data-act="hostSwap">🔄 بدّل السؤال (طلع قبل)</button><button class="btn ghost" data-act="skip">تخطي هذا السؤال</button><button class="btn ghost" data-act="badQ">🚩 السؤال غلط، شيله للأبد</button>` : ''}
       <button class="btn ghost" data-act="home">الرئيسية (اللعبة محفوظة)</button>
       <button class="btn danger" data-act="endGame">${confirmEnd ? 'اضغط مرة أخرى للتأكيد' : 'إنهاء اللعبة وإعلان النتيجة'}</button>
     </div>
@@ -9131,7 +9135,8 @@ document.addEventListener('click', e => {
     case 'pqDecide': pqDecide(); break;
     case 'raceEnd': if (c && c.t === 'race') raceEnd(); break;
     case 'gPick': greedPick(+el.dataset.i); break;
-    case 'wdRefresh': wdRefresh(true); break;
+    case 'wdRefresh': wdRefresh(true); geoRefresh(true); break;
+    case 'hostSwap': hostSwap(); break;
     case 'pChoose': if (c && el.dataset.f) { c[el.dataset.f] = el.dataset.n; save(); render(); } break;
     case 'ldStart': leadNext(); break;
     case 'ldCap': if (c && c.t === 'lead') { c.cap[+el.dataset.t] = el.dataset.n; save(); render(); } break;
@@ -9379,7 +9384,7 @@ function wdBuild(t, rows){
 // يضيف الأسئلة للعبة (وللفقرات اللي تسحب منها)
 function wdInstall(list){
   BANK.wiki = list;
-  list.forEach(q => { if (QBY[q.id]) return; const full = Object.assign({cat:'wiki'}, q); Q.push(full); QBY[q.id] = full; });
+  list.forEach(q => { if (QBY[q.id]) { Object.assign(QBY[q.id], {q:q.q, o:q.o, lvl:q.lvl}); return; } const full = Object.assign({cat:'wiki'}, q); Q.push(full); QBY[q.id] = full; });
   HEXQ = null;
 }
 function wdCached(){ const c = store.get(WD_KEY); return c && Array.isArray(c.qs) ? c : null; }
@@ -9408,7 +9413,120 @@ function wdStatus(){
 
 // الفقرات اللي تسحب من كل المكتبة تاخذ من ويكيبيديا هم
 ['tchain', 'bankr', 'hot'].forEach(id => { if (RD[id] && !RD[id].cats.includes('wiki')) RD[id].cats.push('wiki'); }); LEAD_CATS.push('wiki');
+/* ===================== الخريطة والأعلام من النت =====================
+   أسماء الدول بالعربي ورموزها وقاراتها من ويكي داتا، وأشكال الدول من خريطة Natural Earth (world-atlas).
+   تنحفظ على التابلت شهر كامل، فتشتغل بدون نت بعدها */
+const GEO_KEY = 'tahadi.geo.v1', GEO_EVERY = 30 * 24 * 3600 * 1000;
+const GEO_TOPO = 'https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json';
+const FLAG_URL = k => `https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/4x3/${k}.svg`;
+const GEO = {loading:false, err:'', shapes:null};
+const GEO_Q = `SELECT ?k ?kL ?a2 ?num ?cL ?s WHERE { ?k wdt:P31 wd:Q6256; wdt:P297 ?a2; wikibase:sitelinks ?s. OPTIONAL { ?k wdt:P299 ?num } OPTIONAL { ?k wdt:P30 ?c. ?c rdfs:label ?cL FILTER(LANG(?cL) = "ar") } ?k rdfs:label ?kL FILTER(LANG(?kL) = "ar") }`;
+// يفك ملف الخريطة (TopoJSON) لحلقات إحداثيات لكل دولة حسب رقمها الدولي
+function geoDecode(topo){
+  const [sx, sy] = topo.transform.scale, [tx, ty] = topo.transform.translate;
+  const arcs = topo.arcs.map(a => { let x = 0, y = 0; return a.map(([dx, dy]) => { x += dx; y += dy; return [x * sx + tx, y * sy + ty]; }); });
+  const arc = i => i >= 0 ? arcs[i] : arcs[~i].slice().reverse();
+  const ring = ids => { const pts = []; ids.forEach((i, k) => { const a = arc(i); pts.push(...(k ? a.slice(1) : a)); }); return pts; };
+  const out = {};
+  topo.objects.countries.geometries.forEach(g => {
+    if (!g.id || !g.arcs) return;
+    const polys = g.type === 'Polygon' ? [g.arcs] : g.type === 'MultiPolygon' ? g.arcs : [];
+    const rings = polys.flatMap(p => p.map(ring));
+    const all = rings.flat(); const xs = all.map(p => p[0]), ys = all.map(p => p[1]);
+    out[String(+g.id)] = {rings, box:[Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)]};
+  });
+  return out;
+}
+// رسمة الخريطة: الدولة المطلوبة بالأحمر، وكل الدول اللي حواليها رمادي، والبحر أزرق
+function geoFig(num, lvl){
+  const sh = GEO.shapes, me = sh && sh[num]; if (!me) return '';
+  const [x0, y0, x1, y1] = me.box, w = x1 - x0, h = y1 - y0, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  const span = Math.max(w, h) * (lvl === 1 ? 3.2 : lvl === 2 ? 2.2 : 1.5) + (lvl === 1 ? 16 : lvl === 2 ? 9 : 4);
+  const k = Math.cos(cy * Math.PI / 180), vw = span, vh = span * .68;
+  const V = [cx - vw / 2 / k, cy - vh / 2, cx + vw / 2 / k, cy + vh / 2];
+  const P = ([lon, lat]) => `${((lon - V[0]) * k * 10).toFixed(1)},${((V[3] - lat) * 10).toFixed(1)}`;
+  const W = vw * 10, H = vh * 10, sw = Math.max(.6, W / 600);
+  let body = '';
+  Object.entries(sh).forEach(([id, c]) => {
+    const [a, b, cc, d] = c.box; if (cc < V[0] - 5 || a > V[2] + 5 || d < V[1] - 5 || b > V[3] + 5) return;
+    // الدول اللي تعبر خط 180 (روسيا، فيجي، القطب الجنوبي): نقطع الخط بدل ما يعبر الخريطة كلها
+    const dpath = c.rings.map(r => { let s = '', jump = false; r.forEach((pt, i) => { const cut = i && Math.abs(pt[0] - r[i - 1][0]) > 180; if (cut) jump = true; s += (i === 0 || cut ? 'M' : 'L') + P(pt); }); return s + (jump ? '' : 'Z'); }).join('');
+    body += `<path d="${dpath}" fill="${id === num ? '#e8436a' : '#e9dcc6'}" stroke="${id === num ? '#7a1430' : '#fff'}" stroke-width="${id === num ? sw * 1.6 : sw}" stroke-linejoin="round"/>`;
+  });
+  // الدول الصغيرة نأشّر عليها بدائرة حتى تنشاف
+  const ring = Math.max(w * k, h) * 10 < W / 14 ? `<circle cx="${((cx - V[0]) * k * 10).toFixed(1)}" cy="${((V[3] - cy) * 10).toFixed(1)}" r="${(W / 16).toFixed(1)}" fill="none" stroke="#e8436a" stroke-width="${sw * 3}"/>` : '';
+  return `<svg viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="خريطة"><rect width="100%" height="100%" fill="#bfe3f2"/>${body}${ring}</svg>`;
+}
+// الأسماء المتعارفة بدل الأسماء الرسمية الطويلة
+const GEO_NAMES = {nl:'هولندا', om:'عُمان', cz:'التشيك', ps:'فلسطين', gb:'بريطانيا', ae:'الإمارات'};
+function geoBuild(rows){
+  const by = {}; rows.forEach(r => { const a2 = String(r.a2 || '').toLowerCase(); if (!/^[a-z]{2}$/.test(a2) || /[a-z]{3}/i.test(r.kL)) return; const x = by[a2] || (by[a2] = {a2, name:GEO_NAMES[a2] || r.kL, num:r.num ? String(+r.num) : '', cont:r.cL || '', s:+r.s || 0}); if (!x.cont && r.cL) x.cont = r.cL; });
+  return Object.values(by);
+}
+function geoInstall(cache){
+  if (!cache || !cache.countries) return;
+  if (cache.topo && !GEO.shapes) { try { GEO.shapes = geoDecode(cache.topo); } catch(e) { GEO.shapes = null; } }
+  const C = cache.countries, lv = s => s > 250 ? 1 : s > 180 ? 2 : 3;
+  const ctr = c => { const b = GEO.shapes && GEO.shapes[c.num] && GEO.shapes[c.num].box; return b ? [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2] : null; };
+  const geo = [], flags = [], haveFlag = new Set((BANK.flags || []).filter(q => !String(q.id).startsWith('gf_')).map(q => q.flag));
+  C.forEach(c => {
+    // الخريطة: الخيارات الغلط أقرب الدول عليها
+    const p = ctr(c), box = p && GEO.shapes[c.num].box;
+    if (p && box[2] - box[0] < 120) {
+      const near = C.filter(o => o !== c && ctr(o)).map(o => { const q = ctr(o); return [o.name, Math.hypot((q[0] - p[0]) * Math.cos(p[1] * Math.PI / 180), q[1] - p[1])]; }).sort((a, b) => a[1] - b[1]).map(x => x[0]);
+      const o = [c.name, ...[...new Set(near)].filter(n => n !== c.name).slice(0, 3)];
+      if (new Set(o).size === 4) { const q = {id:'gm_' + c.a2, lvl:lv(c.s), q:'شنو هاي الدولة المأشّرة بالأحمر؟', o, hint:c.cont ? `بقارة ${c.cont}` : '', note:'', geo:c.num}; geo.push(q); }
+    }
+    // الأعلام: الدول اللي ما إلها علم مرسوم باللعبة، والخيارات من نفس القارة
+    if (!haveFlag.has(c.a2)) {
+      const same = C.filter(o => o !== c && o.cont && o.cont === c.cont).map(o => o.name), r = seeded('gf' + c.a2);
+      for (let i = same.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [same[i], same[j]] = [same[j], same[i]]; }
+      const o = [c.name, ...same.filter(n => n !== c.name).slice(0, 3)];
+      if (new Set(o).size === 4) flags.push({id:'gf_' + c.a2, lvl:lv(c.s), flag:c.a2, q:'لأي دولة هذا العلم؟', o, hint:c.cont ? `بقارة ${c.cont}` : '', note:''});
+    }
+  });
+  const put = (cat, list) => list.forEach(q => { if (QBY[q.id]) { Object.assign(QBY[q.id], {o:q.o, lvl:q.lvl, hint:q.hint}); return; } const full = Object.assign({cat}, q); if (q.geo) Object.defineProperty(full, 'fig', {get(){ return this._fig || (this._fig = geoFig(this.geo, this.lvl)); }, set(v){ this._fig = v; }, configurable:true}); Q.push(full); QBY[q.id] = full; (BANK[cat] = BANK[cat] || []).push(full); });
+  put('geomap', geo); put('flags', flags);
+  GEO.count = {geo:geo.length, flags:flags.length};
+}
+async function geoRefresh(force){
+  if (GEO.loading) return;
+  const c = store.get(GEO_KEY);
+  if (!force && c && c.countries && c.topo && Date.now() - c.at < GEO_EVERY) return;
+  if (!navigator.onLine) return;
+  GEO.loading = true; GEO.err = ''; if (onHome) render();
+  try {
+    const [rows, topo] = await Promise.all([wdQuery(GEO_Q), fetch(GEO_TOPO).then(r => { if (!r.ok) throw new Error('map'); return r.json(); })]);
+    const cache = {at:Date.now(), countries:geoBuild(rows), topo};
+    try { store.set(GEO_KEY, cache); } catch(e) {}
+    GEO.shapes = null; geoInstall(cache);
+  } catch(e) { GEO.err = 'الخريطة ما وصلت'; }
+  GEO.loading = false; if (onHome) render();
+}
+const geoStatus = () => GEO.loading ? 'جاري تحميل الخريطة والأعلام…' : GEO.count ? `الخريطة: ${ltr(GEO.count.geo)} دولة · أعلام جديدة: ${ltr(GEO.count.flags)}` : (GEO.err || 'الخريطة بعدها ما تحمّلت');
+
+/* --- المضيف يبدّل السؤال (مثلاً إذا طلع قبل) بدون ما يضيع وسيلة مساعدة الفريق --- */
+function hostSwap(){
+  const c = S && S.cur; if (!c || S.phase !== 'question') return;
+  const done = ['done', 'reveal', 'breveal'].includes(c.stage);
+  if (done) { toast('السؤال خلص، كمّلوا للي بعده'); return; }
+  const fresh = () => { timerStop(); c.timeLeft = c.max; };
+  if (c.t === 'hot' && (c.stage === 'answer' || c.stage === 'judge')) { const n = hotDraw(c.hlv[c.hi]); if (!n) return toast('ماكو سؤال بديل'); c.hq = n; c.stage = 'answer'; c.timeLeft = c.max = HOT_TIME * 1000; timerStart(); }
+  else if (c.t === 'lead' && ['buzz', 'steal', 'judge'].includes(c.stage)) { const n = leadDraw(c); if (!n) return toast('ماكو سؤال بديل'); c.lq = n; c.lby = null; c.ltried = []; c.stage = 'buzz'; c.timeLeft = c.max = LEAD_TIME * 1000; timerStart(); }
+  else if (c.t === 'tchain' && c.stage === 'answer') { const n = quickDraw(c.ci < 2 ? 1 : c.ci < 4 ? 2 : 3); if (!n) return toast('ماكو سؤال بديل'); fresh(); c.cq = n; c.cord = shuffle([0, 1, 2, 3]); c.timeLeft = c.max = CH_TIME * 1000; timerStart(); }
+  else if (c.t === 'hex' && (c.stage === 'answer' || c.stage === 'reveal')) { timerStop(); const i = c.hx.sel; c.stage = 'pick'; hexPick(i); sfx('swap'); return; }
+  else if (c.t === 'bank' && c.stage !== 'done') { const [n] = drawQuestions(roundDef(), 1, QBY[c.id].lvl); if (!n) return toast('ماكو سؤال بديل'); S.plan[S.i] = n; S.used.push(n); markSeen(n); c.id = n; c.bord = shuffle([0, 1, 2, 3]); }
+  else if (['board', 'greed', 'trust', 'mafia'].includes(c.t) || NET_TYPES.includes(c.t)) { toast('هاي الفقرة تختار أسئلتها بنفسها. استعمل «تخطي هذا السؤال» من قائمة المضيف'); return; }
+  else {
+    const [n] = drawQuestions(roundDef(), 1, QBY[c.id].lvl); if (!n) { toast('ماكو سؤال بديل بهاي الفقرة'); return; }
+    timerStop(); S.plan[S.i] = n; S.used.push(n); markSeen(n);
+    const keep = c.dbl; S.cur = newCur(n, c.team); S.cur.dbl = keep; initPQ(S.cur); if (S.cur.stage === 'answer') timerStart();
+  }
+  menuOpen = false; sfx('swap'); toast('تبدّل السؤال 🔄'); save(); render();
+}
+
 { const c = wdCached(); if (c) wdInstall(c.qs); }
+{ const g = store.get(GEO_KEY); if (g) geoInstall(g); }
 document.documentElement.dir = 'rtl';
 function boot(data){
   try {
@@ -9423,7 +9541,7 @@ function boot(data){
 window.claude?.hot?.snapshot?.(() => { save(); return {S, onHome}; });
 botsSync();
 window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
-setTimeout(() => wdRefresh(false), 3000);
+setTimeout(() => { geoRefresh(false); wdRefresh(false); }, 3000);
 window.addEventListener('online', () => wdRefresh(false));
 netInit();
 </script>
