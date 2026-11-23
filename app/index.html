@@ -1934,6 +1934,7 @@ const ROUNDS = [
   {id:'calc', group:'تحديات الذكاء', name:'الحاسبة البشرية', desc:'حساب ذهني سريع بدون ورقة ولا جوال', cats:['calc'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'anagram', group:'تحديات الذكاء', name:'الحروف المبعثرة', desc:'رتّب الحروف لتكتشف الدولة أو اللاعب أو المدينة', cats:['anagram'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'odd', group:'تحديات الذكاء', name:'الدخيل', desc:'أربعة أشياء، واحد منها لا ينتمي للبقية، فما هو؟', cats:['odd'], levels:[1,2,3], mult:1, type:'mcq'},
+  {id:'wiki', group:'ثقافة وذكاء', name:'أسئلة ويكيبيديا 🌐', desc:'أسئلة تنسحب من ويكي داتا على النت وتتجدد كل كم يوم: نوبل، العناصر، الكتب، اللوحات، الأفلام، المدن، الأندية، القمم…', cats:['wiki'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'hex', group:'ثقافة وذكاء', name:'خلايا الحروف', desc:'لوحة خلايا بيها حروف، كل جواب صح ياخذ خلية، وأول فريق يوصّل جهتين يفوز', cats:['hex'], levels:[1,2,3], mult:1, type:'hex', count:() => 1},
   {id:'rule', group:'تحديات الذكاء', name:'القاعدة السرية', desc:'أمثلة تمشي على قاعدة مخفية تطلع وحدة وحدة، اكتشفوا القاعدة', cats:['rule'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'match', group:'تحديات الذكاء', name:'أعواد الكبريت', desc:'معادلة غلط مرسومة بالأعواد، حرّكوا عود واحد بس حتى تصح', cats:['match'], levels:[1,2,3], mult:1, type:'mcq'},
@@ -2011,6 +2012,7 @@ const ROUND_GUIDE = {
   hot:{p:G_ANY, pt:1, t:'8 د', tags:'🔥 ضغط · 🧠 بدون خيارات', how:'كل فريق يختار واحد يقعد بالكرسي. يجاوب 5 أسئلة ورا بعض لحاله وبدون خيارات، 10 ثواني لكل سؤال، والأسئلة تصعب بالترتيب. كل سؤال نقاطه أكثر من اللي قبله، والخمسة كلها صح تعطي مكافأة.'},
   tchain:{p:'أحسن 3 بكل فريق أو أكثر', pt:1, t:'8 د', tags:'⛓️ تتابع · 🎲 مخاطرة', how:'كل فريق يبني سلسلة: كل سؤال يجاوبه لاعب ثاني من الفريق لحاله بدون مساعدة. كل جواب صح يضيف حلقة نقاطها أكبر (50، 100، 150… لحد 300). بعد أي جواب صح تكدرون تثبّتون وتاخذون السلسلة، بس الغلط يصفّرها.'},
   bankr:{p:G_ANY, pt:1, t:'8 د', tags:'🏦 رهان · 😈 مقالب', how:'قبل كل سؤال الفريق يشوف بس الفئة والصعوبة ويراهن. الفريق الثاني يكدر يرفع الرهان للضعف: إذا قبلوا يجاوبون على الضعف، وإذا انسحبوا يخسرون نص الرهان. الجواب الصح يربح الرهان، والغلط يروح للخصم.'},
+  wiki:{p:G_ANY, pt:1, t:'5–8 د', tags:'🌐 من النت · 🧠 ثقافة', how:'التابلت يسحب حقائق من ويكي داتا (قاعدة بيانات ويكيبيديا) ويسوي منها أسئلة: الفائزين بجوائز نوبل، العناصر الكيميائية، الكتب ومؤلفيها، اللوحات ورساميها، الأفلام ومخرجيها، المدن ودولها، الأندية ومدنها، أعلى القمم، وقارات الدول. تتجدد وحدها كل 3 أيام إذا التابلت على النت.'},
   hex:{p:G_ANY, pt:1, t:'10–15 د', tags:'🔠 حروف · 🎯 خطة', how:'لوحة خلايا سداسية، بكل خلية حرف. الفريق اللي دوره يختار خلية، ويطلع سؤال جوابه يبدأ بهذا الحرف. أول فريق يكول الجواب الصح ياخذ الخلية ويختار اللي بعدها. فريق يحاول يوصّل يمين بيسار، والثاني فوك بجوه، وأول واحد يوصّل يفوز.'},
   rule:{p:G_ANY, pt:1, t:'5–8 د', tags:'🧠 ذكاء · 🔍 استنتاج', how:'تطلع أمثلة وحدة وحدة: ✔ يمشي على القاعدة، و✖ ما يمشي. اكتشفوا القاعدة المخفية واختاروها. كل ما اكتشفتوها أبكر أخذتوا نقاط أكثر.'},
   match:{p:G_ANY, pt:1, t:'5 د', tags:'🔥 ذكاء بصري', how:'تطلع على التابلت معادلة غلط مرسومة بأعواد الكبريت. حرّكوا عود واحد بس (من رقم لرقم، أو من الإشارة) حتى تصير صحيحة، واختاروا المعادلة الصحيحة من الخيارات.'},
@@ -2073,7 +2075,7 @@ function guideFit(r){
   if (TEAM_TYPES.includes(r.type) && (!a || !b)) return {tone:'no', text:'⚠️ تحتاج لاعب متصل من كل فريق'};
   return {tone:'ok', text:`✅ تنفع لعددكم (${a} مقابل ${b})${a !== b && g.warn && /نفس العدد|الأكبر/.test(g.warn) ? ' · ⚖️ الفريقين مو متساويين' : ''}`};
 }
-const CAT_NAMES = {hex:'خلايا الحروف', rule:'القاعدة السرية', match:'أعواد الكبريت', brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
+const CAT_NAMES = {wiki:'ويكيبيديا', hex:'خلايا الحروف', rule:'القاعدة السرية', match:'أعواد الكبريت', brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
 const LEVEL_POINTS = {1:100, 2:200, 3:300};
 const LEVEL_NAMES = {1:'سهل', 2:'متوسط', 3:'صعب'};
 const CLUE_POINTS = [300, 200, 150, 100];
@@ -2136,6 +2138,7 @@ const LETTERS = ['أ','ب','ج','د'];
 const CAT_PATHS = {
   brands:'<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',
   babhara:'<path d="M5 21V10a7 7 0 0 1 14 0v11"/><path d="M3 21h18M12 3.5V21"/><path d="M10 14h.01M14 14h.01"/>',
+  wiki:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/><path d="M7 8.5h10M7 15.5h10"/>',
   hex:'<path d="M12 2.5 20 7v10l-8 4.5L4 17V7z"/><path d="M9 15l3-7 3 7M10.2 12.5h3.6"/>',
   rule:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8.5 11h5M11 8.5v5"/>',
   match:'<path d="M7 21 17 5"/><circle cx="17.5" cy="4.5" r="1.8"/><path d="M4 14h6M14 18h6"/>',
@@ -5428,7 +5431,7 @@ const pname = k => PL[k] ? PL[k].name : '؟';
 const pteam = k => PL[k] ? PL[k].team : 0;
 const teamNames = () => S ? S.teams.map(t => t.name) : P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
 // فقرات تشتغل ويه 3 فرق (الباقي مبني على فريقين بالضبط: جرس، قنبلة، مزاد، وفقرات الجوال الجماعية)
-const TEAM3_OK = ['general','brands','babhara','shapes','match','rule','hot','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
+const TEAM3_OK = ['general','brands','babhara','shapes','match','rule','hot','wiki','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
 // «بدون جوال»: نخفي الفقرات اللي تحتاج جوالات (سباق الجرس وراهن على صاحبك يبقون، لأن إلهم أزرار على التابلت)
 const phoneRound = def => NET_TYPES.includes(def.type);
 const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && !(P.deleted || []).includes(def.id) && !(P.play !== 'phone' && phoneRound(def)) &&(!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
@@ -6224,7 +6227,7 @@ let HEXQ = null;
 // كل سؤال جوابه كلمة أو اسم قصير يصير سؤال حرف (العواصم والمعلومات العامة والكرة...)، ويه أسئلة مكتوبة خصيصاً للحروف
 function hexIndex(){
   if (HEXQ) return HEXQ;
-  HEXQ = {}; const SRC = new Set(['general', 'capitals', 'football', 'brands', 'babhara', 'logic']);
+  HEXQ = {}; const SRC = new Set(['general', 'capitals', 'football', 'brands', 'babhara', 'logic', 'wiki']);
   Q.forEach(q => {
     if (!SRC.has(q.cat) || !q.o || q.clues || q.fig || q.flag || q.scene || q.cols || q.tf) return;
     const a = String(q.o[0]).replace(/[⁦⁩]/g, '');
@@ -7647,6 +7650,7 @@ function viewHome(){
     <section class="panel">
       <h2>الإعدادات</h2>
       <div class="field"><span class="label">ألوان اللعبة</span><div class="themes">${THEMES.map(([k, n, cs]) => `<button type="button" data-act="theme" data-v="${k}" aria-pressed="${(P.theme || 'fun') === k}"><span class="sw">${cs.map(c => `<i style="background:${c}"></i>`).join('')}</span>${n}</button>`).join('')}</div></div>
+      <div class="field"><span class="label">🌐 أسئلة ويكيبيديا من النت</span><small class="muted">${wdStatus()}</small><button type="button" class="btn ghost" data-act="wdRefresh" ${WD.loading ? 'disabled' : ''}>${WD.loading ? 'جاري السحب…' : 'حدّث الأسئلة من النت'}</button></div>
       <div class="field"><span class="label">صعوبة الأسئلة</span>${seg('diff', ['mix','hard'], ['متنوعة','صعبة'])}<small class="muted">«صعبة»: كل الفقرات تجيب الأسئلة الصعبة أول، وبعدها المتوسطة. السهلة ما تطلع إلا إذا خلصت الباقية.</small></div>
       <div class="field"><span class="label">حجم الكتابة على التابلت</span>${seg('fs', ['n','l','xl'], ['عادي','كبير','كبير جداً'])}</div>
       <div class="field"><span class="label">عدد الأسئلة لكل فريق في الجولة</span>${seg('perTeam', [1,2,3,4])}</div>
@@ -7702,7 +7706,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611221312';
+const GAME_VER = '202611231819';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -9196,6 +9200,7 @@ document.addEventListener('click', e => {
     case 'pqDecide': pqDecide(); break;
     case 'raceEnd': if (c && c.t === 'race') raceEnd(); break;
     case 'gPick': greedPick(+el.dataset.i); break;
+    case 'wdRefresh': wdRefresh(true); break;
     case 'pChoose': if (c && el.dataset.f) { c[el.dataset.f] = el.dataset.n; save(); render(); } break;
     case 'ldStart': leadNext(); break;
     case 'ldCap': if (c && c.t === 'lead') { c.cap[+el.dataset.t] = el.dataset.n; save(); render(); } break;
@@ -9391,6 +9396,88 @@ document.addEventListener('click', e => {
 
 /* ===================== التشغيل ===================== */
 document.documentElement.lang = 'ar';
+/* ===================== أسئلة ويكي داتا من النت =====================
+   التابلت يسحب حقائق من ويكي داتا (قاعدة بيانات ويكيبيديا) ويحوّلها لأسئلة بالعربي.
+   تنحفظ على التابلت، فإذا انقطع النت تبقى آخر أسئلة سحبها. وتتجدد وحدها كل 3 أيام */
+const WD_KEY = 'tahadi.wiki.v1', WD_EVERY = 3 * 24 * 3600 * 1000;
+const WD = {loading:false, err:'', done:0, total:0};
+const AR = v => `?${v} rdfs:label ?${v}L FILTER(LANG(?${v}L) = "ar")`;
+// كل قالب: استعلام، وشلون يتحول كل صف لـ{موضوع، جواب، سؤال، صعوبة}
+const WD_T = [
+  {k:'nb', q:`SELECT ?p ?pL ?prize (YEAR(?d) AS ?y) WHERE { VALUES ?prize {wd:Q80061 wd:Q38104 wd:Q44585 wd:Q37922 wd:Q35637} ?p p:P166 ?st. ?st ps:P166 ?prize; pq:P585 ?d. ${AR('p')} }`,
+    row:r => { const n = {Q80061:'الطب', Q38104:'الفيزياء', Q44585:'الكيمياء', Q37922:'الأدب', Q35637:'السلام'}[r.prize.split('/').pop()]; const y = +r.y; return {s:n + y, a:r.pL, q:`منو فاز بجائزة نوبل في ${n} عام ${y}؟`, lvl:y >= 2000 ? 2 : 3, pool:n}; }},
+  {k:'el', q:`SELECT ?e ?eL ?n WHERE { ?e wdt:P31 wd:Q11344; wdt:P1086 ?n. FILTER(?n <= 100) ${AR('e')} }`, num:true,
+    row:r => ({s:r.e, a:+r.n, q:`كم العدد الذري لعنصر ${r.eL}؟`, lvl:+r.n <= 20 ? 2 : 3})},
+  {k:'ci', q:`SELECT ?c ?cL ?kL ?s WHERE { ?c wdt:P31 wd:Q1549591; wdt:P1082 ?pop; wdt:P17 ?k; wikibase:sitelinks ?s. FILTER(?pop > 1000000) ${AR('c')} ${AR('k')} }`,
+    row:r => ({s:r.c, a:r.kL, q:`مدينة «${r.cL}» بأي دولة؟`, lvl:+r.s > 150 ? 1 : +r.s > 80 ? 2 : 3})},
+  {k:'bk', q:`SELECT ?b ?bL ?aL ?s WHERE { ?b wdt:P31 wd:Q7725634; wikibase:sitelinks ?s. FILTER(?s > 60) ?b wdt:P50 ?a. ${AR('b')} ${AR('a')} } LIMIT 600`,
+    row:r => ({s:r.b, a:r.aL, q:`منو مؤلف «${r.bL}»؟`, lvl:+r.s > 100 ? 2 : 3})},
+  {k:'pt', q:`SELECT ?w ?wL ?aL ?s WHERE { ?w wdt:P31 wd:Q3305213; wikibase:sitelinks ?s. FILTER(?s > 30) ?w wdt:P170 ?a. ${AR('w')} ${AR('a')} } LIMIT 600`,
+    row:r => ({s:r.w, a:r.aL, q:`منو رسم لوحة «${r.wL}»؟`, lvl:+r.s > 70 ? 2 : 3})},
+  {k:'fm', q:`SELECT ?f ?fL ?dL ?s WHERE { ?f wdt:P31 wd:Q11424; wdt:P57 ?d; wikibase:sitelinks ?s. FILTER(?s > 70) ${AR('f')} ${AR('d')} }`,
+    row:r => ({s:r.f, a:r.dL, q:`منو مخرج فلم «${r.fL}»؟`, lvl:+r.s > 110 ? 2 : 3})},
+  {k:'hp', q:`SELECT ?k ?kL ?hL WHERE { ?k wdt:P31 wd:Q6256; wdt:P610 ?h. ${AR('k')} ${AR('h')} }`,
+    row:r => ({s:r.k, a:r.hL, q:`ما أعلى قمة في ${r.kL}؟`, lvl:3})},
+  {k:'fc', q:`SELECT ?c ?cL ?tL ?s WHERE { ?c wdt:P31 wd:Q476028; wdt:P159 ?t; wikibase:sitelinks ?s. FILTER(?s > 50) ${AR('c')} ${AR('t')} }`,
+    row:r => ({s:r.c, a:r.tL, q:`نادي «${r.cL}» من أي مدينة؟`, lvl:+r.s > 90 ? 2 : 3})},
+  {k:'ct', q:`SELECT ?k ?kL ?cL WHERE { ?k wdt:P31 wd:Q6256; wdt:P30 ?c. ${AR('k')} ${AR('c')} }`,
+    row:r => ({s:r.k, a:r.cL, q:`بأي قارة تقع ${r.kL}؟`, lvl:2})},
+];
+const wdVal = b => { const o = {}; for (const k in b) o[k] = b[k].value; return o; };
+async function wdQuery(sparql){
+  const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 60000);
+  try { const r = await fetch('https://query.wikidata.org/sparql?format=json&query=' + encodeURIComponent(sparql), {headers:{Accept:'application/sparql-results+json'}, signal:ctl.signal}); if (!r.ok) throw new Error('HTTP ' + r.status); return (await r.json()).results.bindings.map(wdVal); }
+  finally { clearTimeout(tm); }
+}
+// يحوّل صفوف القالب لأسئلة: الجواب الصح واحد من أجوبة الموضوع، والخيارات الغلط مو من أجوبته أبداً
+function wdBuild(t, rows){
+  const by = new Map();
+  rows.forEach(raw => { let x; try { x = t.row(raw); } catch(e) { return; } if (!x || x.a == null || x.a === '' || /^Q\d+$/.test(String(x.a)) || /[a-z]{4}/i.test(String(x.a))) return; const g = by.get(x.s) || {x, ans:new Set()}; g.ans.add(x.a); by.set(x.s, g); });
+  const out = [], pools = {};
+  by.forEach(g => { const p = g.x.pool || '_'; (pools[p] = pools[p] || new Set()); g.ans.forEach(a => pools[p].add(a)); });
+  by.forEach((g, s) => {
+    const x = g.x, a = [...g.ans][0], id = 'wd' + t.k + '_' + String(s).split('/').pop().slice(0, 24);
+    let o;
+    if (t.num) { const n = +a; o = [n, n + 1, n - 1, n + 2, n - 2, n + 5].filter(v => v > 0); o = [...new Set(o)].slice(0, 4).map(String); }
+    else { const pool = [...(pools[x.pool || '_'])].filter(v => !g.ans.has(v)); if (pool.length < 3) return; const r = seeded(id); for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; } o = [a, ...pool.slice(0, 3)]; }
+    if (o.length < 4 || new Set(o).size < 4) return;
+    out.push({id, lvl:x.lvl || 2, q:x.q, o:o.map(String), hint:'', note:'المصدر: ويكي داتا'});
+  });
+  return out;
+}
+// يضيف الأسئلة للعبة (وللفقرات اللي تسحب منها)
+function wdInstall(list){
+  BANK.wiki = list;
+  list.forEach(q => { if (QBY[q.id]) return; const full = Object.assign({cat:'wiki'}, q); Q.push(full); QBY[q.id] = full; });
+  HEXQ = null;
+}
+function wdCached(){ const c = store.get(WD_KEY); return c && Array.isArray(c.qs) ? c : null; }
+async function wdRefresh(force){
+  if (WD.loading) return;
+  const c = wdCached();
+  if (!force && c && Date.now() - c.at < WD_EVERY) return;
+  if (!navigator.onLine) { WD.err = 'ماكو نت هسه'; render(); return; }
+  WD.loading = true; WD.err = ''; WD.done = 0; WD.total = WD_T.length; if (onHome) render();
+  const all = [];
+  for (const t of WD_T) {
+    try { all.push(...wdBuild(t, await wdQuery(t.q))); } catch(e) { WD.err = 'بعض القوالب ما وصلت'; }
+    WD.done++; if (onHome) render();
+  }
+  WD.loading = false;
+  if (all.length) { store.set(WD_KEY, {at:Date.now(), qs:all}); wdInstall(all); }
+  else if (!WD.err) WD.err = 'ما رجعت أسئلة';
+  if (onHome) render();
+}
+function wdStatus(){
+  const c = wdCached();
+  if (WD.loading) return `جاري السحب من ويكي داتا… ${ltr(WD.done)} من ${ltr(WD.total)}`;
+  const base = c ? `${ltr(c.qs.length)} سؤال · آخر تحديث ${new Date(c.at).toLocaleDateString('ar-IQ')}` : 'بعد ما انسحبت أسئلة';
+  return base + (WD.err ? ` · ${WD.err}` : '');
+}
+
+// الفقرات اللي تسحب من كل المكتبة تاخذ من ويكيبيديا هم
+['tchain', 'bankr', 'hot'].forEach(id => { if (RD[id] && !RD[id].cats.includes('wiki')) RD[id].cats.push('wiki'); }); LEAD_CATS.push('wiki');
+{ const c = wdCached(); if (c) wdInstall(c.qs); }
 document.documentElement.dir = 'rtl';
 function boot(data){
   try {
@@ -9405,6 +9492,8 @@ function boot(data){
 window.claude?.hot?.snapshot?.(() => { save(); return {S, onHome}; });
 botsSync();
 window.claude?.hot?.ready ? window.claude.hot.ready(boot) : boot(window.claude?.hot?.data ?? {});
+setTimeout(() => wdRefresh(false), 3000);
+window.addEventListener('online', () => wdRefresh(false));
 netInit();
 </script>
 
