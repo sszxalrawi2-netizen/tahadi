@@ -7825,7 +7825,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611240841';
+const GAME_VER = '202611240949';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7947,7 +7947,8 @@ function viewIntro(){
     ? `${NET.avail ? lobbyBox() : !netOk ? (canOnline() ? onlineOffer() : '<div class="verdict no"><span>فقرات الجوال تشتغل من تطبيق التابلت فقط، أو من «وضع التجربة» في الإعدادات.</span></div>') : ''}
        <button class="btn primary block" data-act="beginRound" ${netOk && have >= need ? '' : 'disabled'}>ابدأ الجولة (تحتاج ${need} لاعبين متصلين)</button>
        <button class="btn ghost block" data-act="skipRound">تخطَّ هذه الجولة</button>`
-    : `<button class="btn primary block" data-act="beginRound">ابدأ الجولة</button>`;
+    : `<button class="btn primary block" data-act="beginRound">ابدأ الجولة</button>
+       <button class="btn ghost block" data-act="skipRound">⏭️ تخطّ هذه الفقرة</button>`;
   return `<div class="screen">
     ${scorebar(null, true)}
     <div class="stage">
@@ -9180,7 +9181,7 @@ function viewSheet(){
     <div class="row"><div class="tx"><span>الأصوات</span></div><button type="button" class="switch" role="switch" aria-checked="${!!P.sound}" aria-label="الأصوات" data-act="toggle" data-key="sound"></button></div>
     ${NET.avail ? `<details class="joinbox"><summary>انضمام لاعب من جواله (${onlineKeys().length} متصل)</summary>${lobbyBox()}</details>` : ''}
     <div class="actions">
-      ${inQ ? `<button class="btn ghost" data-act="hostSwap">🔄 بدّل السؤال (طلع قبل)</button><button class="btn ghost" data-act="skip">تخطي هذا السؤال</button><button class="btn ghost" data-act="badQ">🚩 السؤال غلط، شيله للأبد</button>` : ''}
+      ${inQ ? `<button class="btn ghost" data-act="hostSwap">🔄 بدّل السؤال (طلع قبل)</button><button class="btn ghost" data-act="skip">تخطي هذا السؤال</button><button class="btn ghost" data-act="badQ">🚩 السؤال غلط، شيله للأبد</button><button class="btn ghost" data-act="skipRound">⏭️ تخطّ الفقرة كلها (ما عجبتنا)</button>` : ''}
       <button class="btn ghost" data-act="home">الرئيسية (اللعبة محفوظة)</button>
       <button class="btn danger" data-act="endGame">${confirmEnd ? 'اضغط مرة أخرى للتأكيد' : 'إنهاء اللعبة وإعلان النتيجة'}</button>
     </div>
@@ -9415,7 +9416,7 @@ document.addEventListener('click', e => {
       netMode(m, fresh); break;
     }
     case 'plClean': { const on = new Set(onlineKeys()); Object.keys(PL).forEach(k => { if (!on.has(k)) delete PL[k]; }); savePL(); netChanged(); break; }
-    case 'skipRound': timerStop(); S.cur = null; S.plan = []; S.i = 0; if (S.r >= S.rounds.length - 1) wagerOrEnd(); else S.phase = 'roundEnd'; save(); go(render); break;
+    case 'skipRound': timerStop(); menuOpen = false; S.cur = null; S.plan = []; S.i = 0; if (S.r >= S.rounds.length - 1) wagerOrEnd(); else S.phase = 'roundEnd'; save(); go(render); break;
     case 'wAdj': { const i = S.w.stage === 'bet0' ? 0 : 1; S.w.bets[i] = Math.min(wagerMax(i), Math.max(0, S.w.bets[i] + +el.dataset.d)); sfx('tap'); save(); render(); break; }
     case 'wSet': { const i = S.w.stage === 'bet0' ? 0 : 1; S.w.bets[i] = Math.min(wagerMax(i), Math.max(0, +el.dataset.v)); sfx('tap'); save(); render(); break; }
     case 'wLock': S.w.stage = S.w.stage === 'bet0' ? 'bet1' : 'question'; sfx('life'); save(); go(render); break;
