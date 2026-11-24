@@ -183,6 +183,8 @@ details.panel[open] summary::after{content:"−"}
 .scene.seq{position:relative;height:min(62vw,280px)}
 .scene.seq span{position:absolute;inset:0;margin:auto;width:min(56vw,250px);height:min(56vw,250px);border-radius:50%;display:grid;place-items:center;font-size:min(30vw,130px);opacity:0;animation-name:flash;animation-timing-function:linear;animation-fill-mode:both}
 @keyframes flash{0%{opacity:0;transform:scale(.7)}12%{opacity:1;transform:scale(1)}82%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1)}}
+.scene.wit svg{display:block;width:100%;height:auto;border-radius:14px}
+.replay .scene.wit{max-width:520px;margin:auto}
 .scene.strip{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .scene.strip span{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;font-size:1.6rem;position:relative}
 .scene.strip b{position:absolute;top:-6px;inset-inline-start:-4px;background:var(--felt);color:var(--brass);font-size:.72rem;border-radius:99px;padding:0 5px;line-height:1.5}
@@ -1875,6 +1877,7 @@ const ROUNDS = [
   {id:'describe', group:'تحديات تفاعلية', name:'وصّف', desc:'لاعب يشرح الكلمات لفريقه بدون أن يقولها، في 60 ثانية', cats:['describe'], levels:[1,2,3], mult:1, type:'describe'},
   {id:'draw', group:'تحديات تفاعلية', name:'ارسمها', desc:'لاعب يرسم الكلمة بإصبعه على الهاتف، وفريقه يخمّن', cats:['draw'], levels:[1,2,3], mult:1, type:'draw'},
   {id:'memory', group:'تحديات تفاعلية', name:'تحدي الذاكرة', desc:'احفظوا 12 كلمة في 20 ثانية، ثم اذكروها بعد أن تختفي', cats:['memory'], levels:[1,2,3], mult:1, type:'memory'},
+  {id:'witness', group:'تحديات تفاعلية', name:'شاهد عيان 👁️', desc:'مشهد شارع بيه تفاصيل هواية يطلع ثواني ويختفي، وبعدها سؤال تحقيق عن تفصيلة وحدة', cats:['witness'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'look', group:'تحديات تفاعلية', name:'ركّز جيداً', desc:'صورة أو مقطع يظهر ثواني ثم يختفي، وبعدها يأتي السؤال', cats:['look'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'buzz', group:'تحديات تفاعلية', name:'سباق الجرس', desc:'كل لاعب يضغط الجرس من جواله، وأسرع واحد يجاوب لحاله', cats:['general','capitals','football'], levels:[1,2], mult:1, type:'buzz'},
   {id:'bomb', group:'تحديات تفاعلية', name:'القنبلة', desc:'مرّروا القنبلة بإجابة صحيحة قبل أن تنفجر بأيديكم', cats:['bomb'], levels:[1,2,3], mult:1, type:'bomb'},
@@ -1955,6 +1958,7 @@ const ROUND_GUIDE = {
   describe:{p:'لازم 2 بكل فريق على الأقل', pt:2, t:'5–8 د', tags:'😂 ضحك · 🗣️ كلام', how:'واحد من الفريق يشوف الكلمات ويشرحها لجماعته بدون ما يكولها، وعنده 60 ثانية.', warn:'إذا الفريق شخص واحد ما تنلعب، لأن ماكو أحد يخمّن.'},
   draw:{p:'لازم 2 بكل فريق على الأقل', pt:2, t:'5–8 د', tags:'😂 ضحك · 🎨 رسم', how:'واحد يرسم الكلمة بإصبعه على التابلت، وجماعته يخمّنون.', warn:'إذا الفريق شخص واحد ما تنلعب.'},
   memory:{p:G_ANY, pt:1, t:'5 د', tags:'🧠 ذاكرة', how:'12 كلمة تطلع 20 ثانية وتختفي، وبعدها اذكروا اللي تتذكرونه.'},
+  witness:{p:G_ANY, pt:1, t:'5 د', tags:'👁️ تركيز · 🕵️ تحقيق', how:'يطلع مشهد شارع بيه ناس وسيارة ومحل وساعة وإشارة مرور، ثواني ويختفي. بعدها يسألكم المحقق عن تفصيلة وحدة: رقم اللوحة، لون قميص واحد، كم الساعة… ما تعرفون شنو راح ينسأل، فركّزوا على كلشي.'},
   look:{p:G_ANY, pt:1, t:'5 د', tags:'👀 تركيز', how:'صورة أو مقطع يطلع ثواني ويختفي، وبعدها سؤال عنه.'},
   buzz:{p:G_ANY, pt:1, t:'5 د', tags:'⚡ سرعة', how:'كل لاعب يضغط الجرس من جواله، وأول واحد يضغط هو اللي يجاوب لحاله بدون مساعدة فريقه. إذا ماكو جوالات، الفريقين يضغطون أزرارهم على التابلت.'},
   bomb:{p:G_ANY, pt:1, t:'5 د', tags:'⚡ سرعة · 😂 حماس', how:'القنبلة تنتقل بين الفريقين بكل جواب صح، ووقت انفجارها مخفي. اللي تنفجر بيده يخسر.'},
@@ -2009,7 +2013,7 @@ function guideFit(r){
   if (TEAM_TYPES.includes(r.type) && (!a || !b)) return {tone:'no', text:'⚠️ تحتاج لاعب متصل من كل فريق'};
   return {tone:'ok', text:`✅ تنفع لعددكم (${a} مقابل ${b})${a !== b && g.warn && /نفس العدد|الأكبر/.test(g.warn) ? ' · ⚖️ الفريقين مو متساويين' : ''}`};
 }
-const CAT_NAMES = {geomap:'على الخريطة', wiki:'ويكيبيديا', hex:'خلايا الحروف', rule:'القاعدة السرية', match:'أعواد الكبريت', brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
+const CAT_NAMES = {witness:'شاهد عيان', geomap:'على الخريطة', wiki:'ويكيبيديا', hex:'خلايا الحروف', rule:'القاعدة السرية', match:'أعواد الكبريت', brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
 const LEVEL_POINTS = {1:100, 2:200, 3:300};
 const LEVEL_NAMES = {1:'سهل', 2:'متوسط', 3:'صعب'};
 const CLUE_POINTS = [300, 200, 150, 100];
@@ -2093,6 +2097,7 @@ const CAT_PATHS = {
   players:'<path d="M8 3 3 6l2 4 2-1v12h10V9l2 1 2-4-5-3a4 4 0 0 1-8 0z"/>',
   career:'<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/>',
   links:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  witness:'<circle cx="10" cy="10" r="6"/><path d="M14.5 14.5 21 21"/><circle cx="10" cy="10" r="2"/>',
   look:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
   order:'<path d="M5 20v-4M10 20v-8M15 20V8M20 20V4"/>',
   rapid:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
@@ -2205,6 +2210,116 @@ BANK.look = [];
   for (let i = 1; i <= 12; i++) BANK.look.push(makeLook(`lq${lvl}${String(i).padStart(2, '0')}`, lvl, 'seq'));
 });
 BANK.look = BANK.look.filter(Boolean);
+/* فقرة «شاهد عيان»: مشهد شارع مرسوم بيه تفاصيل هواية يطلع ثواني ويختفي،
+   وبعدها سؤال تحقيق عن تفصيلة وحدة منه. المشهد يتولّد من رقم السؤال، فيبقى نفسه كل مرة */
+const WCOL = [['#d9473f','أحمر'],['#2f74d0','أزرق'],['#23955a','أخضر'],['#e7b416','أصفر'],['#2a2a2a','أسود'],['#f4f4f4','أبيض'],['#f08a24','برتقالي'],['#8a4fc2','بنفسجي'],['#8d8d8d','رمادي']];
+const WSHOP = ['مخبز النور','صيدلية الشفاء','مطعم دجلة','حلويات الأمير','مكتبة الرشيد','عطارة الربيع','خياط الأناقة','ساعات الدقة','فرن الزهراء','أسواق الخير','مقهى الياسمين','عصائر الفرات'];
+const WITEM = ['ولا شي بإيده','مظلة','حقيبة','موبايل على إذنه'];
+const WANI = ['قطة','كلب','حمامة','ماكو حيوان'];
+const WLIGHT = ['أحمر','أصفر','أخضر','الإشارة طافية'];
+const WIT = {1:{sec:12, ppl:3, n:30}, 2:{sec:10, ppl:4, n:35}, 3:{sec:8, ppl:5, n:40}};
+const WIT_ASK = {
+  1:['carcol','shop','light','animal','count','itemShirt','trees','hatShirt'],
+  2:['shop','clock','door','hatShirt','whoItem','itemShirt','trees','plate','animal','carcol'],
+  3:['plate','door','windows','clouds','pants','clock','whoItem','hatShirt','itemShirt','count'],
+};
+function witSvg(d){
+  const s = [];
+  s.push(`<rect width="620" height="340" fill="${d.night ? '#1d2b4a' : '#bfe3f2'}"/>`);
+  s.push(d.night ? `<circle cx="300" cy="32" r="16" fill="#f3efd6"/><circle cx="308" cy="27" r="14" fill="#1d2b4a"/>` : `<circle cx="300" cy="32" r="17" fill="#ffd34d"/>`);
+  d.clouds.forEach(x => s.push(`<g fill="${d.night ? '#4a5a7a' : '#fff'}"><ellipse cx="${x}" cy="30" rx="26" ry="11"/><ellipse cx="${x + 16}" cy="22" rx="16" ry="10"/></g>`));
+  // العمارة اليسرى ويه المحل
+  s.push(`<rect x="30" y="60" width="260" height="192" fill="#d8c3a0"/>`);
+  for (let r = 0; r < 2; r++) for (let k = 0; k < 4; k++) s.push(`<rect x="${48 + k * 60}" y="${74 + r * 40}" width="34" height="26" fill="#7c93a8"/>`);
+  s.push(`<rect x="36" y="148" width="248" height="26" rx="4" fill="#2d6a4f"/><text x="160" y="167" text-anchor="middle" direction="rtl" font-size="17" font-weight="700" fill="#fff">${d.shop}</text>`);
+  s.push(`<rect x="38" y="194" width="34" height="58" fill="#7a4a2a"/><rect x="40" y="179" width="30" height="13" rx="2" fill="#fff"/><text x="55" y="190" text-anchor="middle" font-size="11" font-weight="700" fill="#222">${d.door}</text>`);
+  s.push(`<rect x="84" y="196" width="188" height="44" fill="#9fd0e6" stroke="#6d5a3c" stroke-width="3"/>`);
+  // ساعة الحائط
+  const ha = ((d.clock[0] % 12) + d.clock[1] / 60) * 30 * Math.PI / 180, ma = d.clock[1] * 6 * Math.PI / 180;
+  s.push(`<circle cx="276" cy="124" r="12" fill="#fff" stroke="#333" stroke-width="2"/><line x1="276" y1="124" x2="${(276 + Math.sin(ha) * 6.5).toFixed(1)}" y2="${(124 - Math.cos(ha) * 6.5).toFixed(1)}" stroke="#222" stroke-width="3" stroke-linecap="round"/><line x1="276" y1="124" x2="${(276 + Math.sin(ma) * 10).toFixed(1)}" y2="${(124 - Math.cos(ma) * 10).toFixed(1)}" stroke="#222" stroke-width="1.6" stroke-linecap="round"/>`);
+  // العمارة اليمنى وشبابيكها
+  s.push(`<rect x="340" y="44" width="210" height="208" fill="#b9c4cf"/>`);
+  for (let i = 0; i < 9; i++) s.push(`<rect x="${362 + (i % 3) * 62}" y="${62 + Math.floor(i / 3) * 52}" width="40" height="32" fill="${d.lit.includes(i) ? '#ffd95a' : '#5b6b7c'}"/>`);
+  s.push(`<rect x="420" y="214" width="50" height="38" fill="#4b3a2e"/>`);
+  // الرصيف والشارع
+  s.push(`<rect y="252" width="620" height="20" fill="#cfcac0"/><rect y="272" width="620" height="68" fill="#55585e"/>`);
+  for (let x = 10; x < 620; x += 70) s.push(`<rect x="${x}" y="304" width="36" height="5" fill="#eee"/>`);
+  // الأشجار
+  d.trees.forEach(x => s.push(`<rect x="${x - 4}" y="215" width="8" height="45" fill="#6b4a2b"/><circle cx="${x}" cy="205" r="20" fill="#3d9a4f"/>`));
+  // إشارة المرور
+  s.push(`<rect x="583" y="160" width="5" height="100" fill="#333"/><rect x="574" y="120" width="23" height="56" rx="5" fill="#222"/>`);
+  ['#d9473f', '#e7b416', '#23955a'].forEach((c, i) => s.push(`<circle cx="585.5" cy="${131 + i * 17}" r="6.5" fill="${d.light === i ? c : '#444'}"/>`));
+  // الحيوان
+  if (d.ani === 0) s.push(`<g transform="translate(${d.ax},262)"><ellipse cx="0" cy="-6" rx="11" ry="6" fill="#e08a3a"/><circle cx="11" cy="-13" r="5.5" fill="#e08a3a"/><path d="M8 -17l2 -6 3 5zM12 -17l3 -5 1 6z" fill="#e08a3a"/><path d="M-11 -6q-8 -10 -3 -16" stroke="#e08a3a" stroke-width="2.5" fill="none"/></g>`);
+  if (d.ani === 1) s.push(`<g transform="translate(${d.ax},262)"><rect x="-14" y="-16" width="26" height="11" rx="5" fill="#8b5a2b"/><rect x="-12" y="-6" width="4" height="7" fill="#8b5a2b"/><rect x="6" y="-6" width="4" height="7" fill="#8b5a2b"/><circle cx="15" cy="-19" r="7" fill="#8b5a2b"/><ellipse cx="13" cy="-23" rx="3" ry="6" fill="#5d3a1a"/><path d="M-14 -13l-7 -7" stroke="#8b5a2b" stroke-width="3"/></g>`);
+  if (d.ani === 2) s.push(`<g transform="translate(${d.ax},262)"><ellipse cx="0" cy="-6" rx="8" ry="5.5" fill="#9aa3ad"/><circle cx="7" cy="-12" r="4" fill="#9aa3ad"/><path d="M11 -12l4 1 -4 1z" fill="#e7b416"/></g>`);
+  // الناس
+  d.ppl.forEach(p => {
+    const x = p.x, sh = WCOL[p.shirt][0], pa = WCOL[p.pants][0];
+    s.push(`<rect x="${x - 9}" y="236" width="7" height="30" fill="${pa}" stroke="#222" stroke-width=".6"/><rect x="${x + 2}" y="236" width="7" height="30" fill="${pa}" stroke="#222" stroke-width=".6"/>`);
+    s.push(`<rect x="${x - 12}" y="203" width="24" height="36" rx="6" fill="${sh}" stroke="#222" stroke-width=".8"/><circle cx="${x}" cy="192" r="10" fill="#e9b98f"/>`);
+    if (p.hat) s.push(`<rect x="${x - 13}" y="181" width="26" height="5" fill="#3a2a1a"/><rect x="${x - 8}" y="172" width="16" height="11" fill="#3a2a1a"/>`);
+    if (p.item === 1) s.push(`<line x1="${x + 15}" y1="225" x2="${x + 15}" y2="180" stroke="#333" stroke-width="2"/><path d="M${x - 3} 182 A18 10 0 0 1 ${x + 33} 182Z" fill="#5b2a86"/>`);
+    if (p.item === 2) s.push(`<rect x="${x + 11}" y="222" width="13" height="15" rx="2" fill="#8b5a2b" stroke="#222" stroke-width=".6"/>`);
+    if (p.item === 3) s.push(`<rect x="${x + 8}" y="186" width="5" height="10" rx="1" fill="#111"/>`);
+  });
+  // السيارة
+  const cx = d.cx, cc = WCOL[d.car][0];
+  s.push(`<path d="M${cx} 318v-22q0-8 8-9l22-3 18-20h60l20 20 20 4q8 2 8 10v20z" fill="${cc}" stroke="#222" stroke-width="1.2"/><path d="M${cx + 52} 285l14-15h40l14 15z" fill="#bfe3f2" stroke="#222"/>`);
+  s.push(`<circle cx="${cx + 35}" cy="320" r="11" fill="#222"/><circle cx="${cx + 125}" cy="320" r="11" fill="#222"/><circle cx="${cx + 35}" cy="320" r="4" fill="#aaa"/><circle cx="${cx + 125}" cy="320" r="4" fill="#aaa"/>`);
+  s.push(`<rect x="${cx + 58}" y="300" width="52" height="15" rx="2" fill="#fff" stroke="#222"/><text x="${cx + 84}" y="312" text-anchor="middle" font-size="12" font-weight="700" font-family="monospace" fill="#111">${d.plate}</text>`);
+  return `<svg viewBox="0 0 620 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="مشهد شارع" font-family="Tahoma,sans-serif">${s.join('')}</svg>`;
+}
+function makeWitness(id, lvl){
+  const rnd = seeded(id), ri = n => Math.floor(rnd() * n);
+  const sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = ri(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const L = WIT[lvl];
+  const nums = v => [v, ...sh([-2, -1, 1, 2, 3].map(k => v + k).filter(x => x >= 0)).slice(0, 3)].map(String);
+  const colOpts = (c, prefer) => [c, ...[...new Set(sh(prefer).concat(sh([...WCOL.keys()])))].filter(x => x !== c).slice(0, 3)].map(i => WCOL[i][1]);
+  for (let attempt = 0; attempt < 60; attempt++) {
+    const plate = String(10000 + ri(90000)), door = String(lvl === 3 ? 100 + ri(900) : 2 + ri(98));
+    const xs = sh([105, 185, 262, 380, 480]).slice(0, L.ppl).sort((a, b) => a - b);
+    const shirts = sh([...WCOL.keys()]);
+    const ppl = xs.map((x, i) => ({x, shirt:shirts[i], pants:ri(WCOL.length), hat:false, item:0}));
+    const hatN = ri(3) ? 1 : 2; sh(ppl.map((_, i) => i)).slice(0, hatN).forEach(i => ppl[i].hat = true);
+    sh([1, 2, 3]).slice(0, Math.min(3, ppl.length - 1)).forEach((it, k) => { ppl[k].item = it; });
+    const pp = sh(ppl.map((_, i) => i)); const items = ppl.map(p => p.item); pp.forEach((pi, k) => ppl[pi].item = items[k]);
+    const freeAx = [145, 224, 320, 432, 530].filter(a => xs.every(x => Math.abs(x - a) > 30));
+    const d = {night:ri(4) === 0, clouds:sh([80, 170, 420, 520]).slice(0, 1 + ri(3)), shop:WSHOP[ri(WSHOP.length)], door,
+      clock:[1 + ri(12), lvl === 3 ? 5 * ri(12) : 15 * ri(4)], lit:sh([0, 1, 2, 3, 4, 5, 6, 7, 8]).slice(0, 2 + ri(5)),
+      trees:sh([305, 12, 612]).slice(0, 1 + ri(3)), light:ri(5) === 0 ? 3 : ri(3), ani:ri(6) === 0 ? 3 : ri(3), ax:freeAx.length ? freeAx[ri(freeAx.length)] : 320,
+      ppl, car:ri(WCOL.length), cx:60 + ri(300), plate};
+    const swapD = (str, i) => { const a = str.split(''); [a[i], a[i + 1]] = [a[i + 1], a[i]]; return a.join(''); };
+    const tweak = (str, i) => { const a = str.split(''); a[i] = String((+a[i] + 1 + ri(8)) % 10); if (i === 0 && a[0] === '0') a[0] = '1'; return a.join(''); };
+    const tm = (h, m) => `${h}:${String(m).padStart(2, '0')}`;
+    const one = f => { const m = ppl.filter(f); return m.length === 1 ? m[0] : null; };
+    const M = {
+      carcol(){ return {q:'شنو كان لون السيارة؟', o:colOpts(d.car, []), hint:'كانت واكفة بالشارع جوة.'}; },
+      plate(){ const o = new Set([plate]); for (let i = 0; o.size < 4 && i < 30; i++) o.add(ri(2) ? swapD(plate, ri(4)) : tweak(plate, ri(5))); return {q:'شنو رقم لوحة السيارة؟', o:[...o], hint:`يبدأ برقم ${plate[0]}.`}; },
+      shop(){ return {q:'شنو كان اسم المحل؟', o:[d.shop, ...sh(WSHOP.filter(x => x !== d.shop)).slice(0, 3)], hint:'مكتوب على اللوحة الخضرا.'}; },
+      door(){ const o = new Set([door]); [door.split('').reverse().join(''), String(+door + 1), String(+door + 10), String(+door - 1), String(+door + 11)].forEach(v => { if (o.size < 4 && +v > 0 && !/^0/.test(v)) o.add(v); }); return {q:'شنو رقم باب المحل؟', o:[...o], hint:'كان مكتوب على ورقة بيضة فوك الباب.'}; },
+      clock(){ const [h, m] = d.clock; const o = new Set([tm(h, m), tm(h % 12 + 1, m), tm(h, (m + (lvl === 3 ? 10 : 15)) % 60), tm(((h + 10) % 12) + 1, (m + 30) % 60)]); return {q:'كم كانت الساعة على ساعة الحائط؟', o:[...o], hint:'الساعة معلّكة على زاوية العمارة.'}; },
+      light(){ return {q:'إشارة المرور شنو كان لونها المضوي؟', o:[WLIGHT[d.light], ...WLIGHT.filter((_, i) => i !== d.light)], hint:'الإشارة بطرف الشارع.'}; },
+      animal(){ return {q:'شنو الحيوان اللي كان بالرصيف؟', o:[WANI[d.ani], ...WANI.filter((_, i) => i !== d.ani)], hint:'كان واكف بين الناس.'}; },
+      count(){ return {q:'كم شخص كان واكف بالرصيف؟', o:nums(ppl.length), hint:'عدّوا الراسات.'}; },
+      trees(){ return {q:'كم شجرة كانت بالمشهد؟', o:nums(d.trees.length), hint:'بعضها على أطراف الصورة.'}; },
+      windows(){ return {q:'بالعمارة الرمادية، كم شباك كان مضوي (أصفر)؟', o:nums(d.lit.length), hint:'العمارة بيها 9 شبابيك.'}; },
+      clouds(){ return {q:'كم غيمة كانت بالسما؟', o:nums(d.clouds.length), hint:d.night ? 'كان الوقت ليل.' : 'كان الوقت نهار.'}; },
+      hatShirt(){ const p = one(x => x.hat); if (!p) return null; return {q:'اللابس قبعة، شنو كان لون قميصه؟', o:colOpts(p.shirt, ppl.map(x => x.shirt)), hint:`بنطرونه ${WCOL[p.pants][1]}.`}; },
+      itemShirt(){ const it = 1 + ri(3), p = one(x => x.item === it); if (!p) return null; return {q:`اللي كان شايل ${it === 3 ? 'موبايل على إذنه' : WITEM[it]}، شنو لون قميصه؟`, o:colOpts(p.shirt, ppl.map(x => x.shirt)), hint:p.hat ? 'كان لابس قبعة.' : 'ما كان لابس قبعة.'}; },
+      whoItem(){ const p = ppl[ri(ppl.length)]; return {q:`اللابس قميص ${WCOL[p.shirt][1]}، شنو كان بإيده؟`, o:[WITEM[p.item], ...WITEM.filter((_, i) => i !== p.item)], hint:p.hat ? 'كان لابس قبعة.' : 'ما كان لابس قبعة.'}; },
+      pants(){ const p = ppl[ri(ppl.length)]; return {q:`اللابس قميص ${WCOL[p.shirt][1]}، شنو كان لون بنطرونه؟`, o:colOpts(p.pants, ppl.map(x => x.pants)), hint:`كان شايل: ${WITEM[p.item]}.`}; },
+    };
+    // ترتيب الأسئلة يتغير حسب رقم السؤال، حتى ما تطلع كلها عن نفس الشي
+    for (const k of sh(WIT_ASK[lvl])) {
+      const r = M[k](); if (r && r.o.length === 4 && new Set(r.o).size === 4) return Object.assign({id, lvl, cat:'witness', topic:'تحقيق', scene:{k:'wit', d, ms:L.sec * 1000}, note:''}, r);
+    }
+  }
+  return null;
+}
+BANK.witness = [];
+[1, 2, 3].forEach(lvl => { for (let i = 1; i <= WIT[lvl].n; i++) BANK.witness.push(makeWitness(`wt${lvl}${String(i).padStart(2, '0')}`, lvl)); });
+BANK.witness = BANK.witness.filter(Boolean);
 
 /* فقرات الجوال */
 // الجاسوس: [الموضوع، الكلمة السرية]
@@ -4613,7 +4728,7 @@ const HEX_EXTRA = [
   const most = q => /اكثر|أكثر/.test(q);
   const fromTbl = q => /^[FGT][a-z]\d/.test(q.id);
   const jac = (a, b) => { let i = 0; a.forEach(x => { if (b.has(x)) i++; }); return i / (a.size + b.size - i || 1); };
-  const SKIP = new Set(['look', 'scale', 'shapes', 'seqs', 'match']);
+  const SKIP = new Set(['look', 'witness', 'scale', 'shapes', 'seqs', 'match']);
   for (const cat in BANK) {
     if (SKIP.has(cat)) continue;
     const arr = BANK[cat], drop = new Set(), qs = arr.filter(q => q.o && q.q && !q.clues).map(q => ({q, w:words(q.q), a:nk(q.o[0]), n:nums(q.q), m:most(q.q)}));
@@ -5366,7 +5481,7 @@ const pname = k => PL[k] ? PL[k].name : '؟';
 const pteam = k => PL[k] ? PL[k].team : 0;
 const teamNames = () => S ? S.teams.map(t => t.name) : P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
 // فقرات تشتغل ويه 3 فرق (الباقي مبني على فريقين بالضبط: جرس، قنبلة، مزاد، وفقرات الجوال الجماعية)
-const TEAM3_OK = ['general','brands','babhara','shapes','match','rule','hot','wiki','geomap','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
+const TEAM3_OK = ['witness','general','brands','babhara','shapes','match','rule','hot','wiki','geomap','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
 // «بدون جوال»: نخفي الفقرات اللي تحتاج جوالات (سباق الجرس وراهن على صاحبك يبقون، لأن إلهم أزرار على التابلت)
 const phoneRound = def => NET_TYPES.includes(def.type);
 const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && !(P.deleted || []).includes(def.id) && !(P.play !== 'phone' && phoneRound(def)) &&(!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
@@ -7641,7 +7756,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611231834';
+const GAME_VER = '202611240841';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7722,6 +7837,7 @@ function viewIntro(){
     if (def.id === 'links') how = 'يظهر شيء واحد في البداية، والفريق يكتشف ما الذي يجمع الأشياء الثلاثة. يقدر يجاوب الآن أو يطلب الشيء التالي، وكل شيء إضافي ينزّل النقاط: 300 ثم 200 ثم 150.';
     if (def.id === 'flags') how = 'العلم مغطّى بمربعات، ومربعان فقط مكشوفان في البداية. الفريق يجاوب الآن أو يطلب كشف مربعات أكثر، وكل كشف ينزّل النقاط.';
     if (def.id === 'flagcolors') how = 'يظهر اسم الدولة فقط، والفريق يذكر ألوان علمها بالترتيب أو يختار من الأعلام الصغيرة. يُكشف العلم الحقيقي بعد الإجابة.';
+    if (def.id === 'witness') how = 'يطلع مشهد شارع كامل لثواني ويختفي. بعدها المحقق يسأل سؤال وحد عن أي تفصيلة بيه، وما تعرفون شنو راح ينسأل، فوزّعوا العيون: واحد على الناس، واحد على السيارة، واحد على المحل والساعة.';
     if (def.id === 'look') how = 'تظهر صورة أو مقطع لثوانٍ قليلة ثم يختفي، وبعدها يظهر سؤال عنه. ركّزوا في الأشكال والألوان والأماكن والأعداد والترتيب.';
     if (S.settings.direct) how += (how ? ' ' : '') + 'الخيارات مخفية: الجواب المباشر الصحيح يأخذ ضعف النقاط.';
   }
@@ -7841,23 +7957,26 @@ function viewWager(){
 
 function sceneHtml(sc, play){
   const cell = (e, c, extra = '') => `<span style="background:${TCOL[c][0]};${extra}"><i class="emo">${EMO[e][0]}</i></span>`;
+  if (sc.k === 'wit') return `<div class="scene wit">${witSvg(sc.d)}</div>`;
   if (sc.k === 'pic') return `<div class="scene pic" style="--cols:${sc.cols}">${sc.cells.map(([e, c]) => cell(e, c)).join('')}</div>`;
   if (play) return `<div class="scene seq">${sc.items.map(([e, c], i) => cell(e, c, `animation-delay:${LOOK_LEAD + i * sc.per}ms;animation-duration:${sc.per}ms`)).join('')}</div>`;
   return `<div class="scene strip">${sc.items.map(([e, c], i) => `<span style="background:${TCOL[c][0]}"><b>${i + 1}</b><i class="emo">${EMO[e][0]}</i></span>`).join('')}</div>`;
 }
 function partLook(c, q, def){
-  const pic = q.scene.k === 'pic', d = c.dbl ? 2 : 1;
-  const meta = `<div class="meta"><span class="chip">${CAT_NAMES.look} · ${q.topic}</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(basePts() * d)}</span></div>`;
+  const wit = q.scene.k === 'wit', pic = q.scene.k === 'pic' || wit, d = c.dbl ? 2 : 1;
+  const meta = `<div class="meta"><span class="chip">${CAT_NAMES[q.cat] || CAT_NAMES.look} · ${q.topic}</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(basePts() * d)}</span></div>`;
   if (c.stage === 'view' && c.running) {
     return `<div class="lookbox">${sceneHtml(q.scene, true)}<div class="lookbar"><i style="animation-duration:${c.timeLeft}ms"></i></div></div>
-      <p class="subtle">${pic ? 'ركّزوا في كل شيء!' : 'تابعوا الترتيب جيداً!'}</p>`;
+      <p class="subtle">${wit ? 'احفظوا كل تفصيلة… المحقق راح يسأل!' : pic ? 'ركّزوا في كل شيء!' : 'تابعوا الترتيب جيداً!'}</p>`;
   }
   const again = c.stage === 'view';
-  return `<article class="qcard">${meta}<p class="qtext">${pic ? 'ركّزوا في الصورة!' : 'ركّزوا في المقطع!'}</p>
-      <div class="howround">${pic
+  return `<article class="qcard">${meta}<p class="qtext">${wit ? '🕵️ صار شي بهذا الشارع، وإنتو الشهود' : pic ? 'ركّزوا في الصورة!' : 'ركّزوا في المقطع!'}</p>
+      <div class="howround">${wit
+        ? `راح يطلع مشهد الشارع ${ltr(q.scene.ms / 1000)} ثواني ويختفي. بعدها سؤال وحد عن أي تفصيلة: ناس، ملابس، سيارة ولوحتها، محل، ساعة، إشارة، شبابيك…`
+        : pic
         ? `ستظهر صورة لمدة ${ltr(q.scene.ms / 1000)} ثوانٍ ثم تختفي، وبعدها يأتي سؤال عنها. ركّزوا في الأشكال والألوان والأماكن والأعداد.`
         : `ستظهر أشياء واحداً بعد الآخر بسرعة، ثم يأتي سؤال عنها. ركّزوا في الترتيب والألوان والأعداد.`}</div></article>
-    <button class="btn primary block" data-act="lShow">${again ? 'أعد العرض' : pic ? 'اعرض الصورة' : 'شغّل المقطع'}</button>`;
+    <button class="btn primary block" data-act="lShow">${again ? 'أعد العرض' : wit ? 'اعرض المشهد' : pic ? 'اعرض الصورة' : 'شغّل المقطع'}</button>`;
 }
 function partMcq(c, q, def){
   if (q.scene && (c.stage === 'ready' || c.stage === 'view')) return partLook(c, q, def);
@@ -7925,7 +8044,7 @@ function partMcq(c, q, def){
     verdict = `<div class="verdict ${ok ? 'ok' : 'no'}"><span class="big">${head}</span>${answer}</div>`;
     actions = nextBtn();
   }
-  const replay = q.scene && c.stage === 'done' ? `<div class="replay"><span class="label">${q.scene.k === 'pic' ? 'هذه هي الصورة' : 'المقطع بالترتيب'}</span>${sceneHtml(q.scene, false)}</div>` : '';
+  const replay = q.scene && c.stage === 'done' ? `<div class="replay"><span class="label">${q.scene.k === 'wit' ? 'هذا هو المشهد' : q.scene.k === 'pic' ? 'هذه هي الصورة' : 'المقطع بالترتيب'}</span>${sceneHtml(q.scene, false)}</div>` : '';
   let pqBox = '';
   if (c.pq && (c.stage === 'answer' || c.stage === 'steal')) {
     const a = pqActive(c), voters = teamOnline(a);
