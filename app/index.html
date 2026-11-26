@@ -1929,6 +1929,7 @@ const ROUNDS = [
   {id:'flagcolors', group:'ثقافة وذكاء', name:'ألوان الأعلام', desc:'نعطيك اسم الدولة، فما ألوان علمها وبأي ترتيب؟', cats:['flagcolors'], levels:[1,2], mult:1, type:'mcq'},
   {id:'capitals', group:'ثقافة وذكاء', name:'عواصم الدول', desc:'العاصمة كثيراً ما تكون غير أكبر مدينة، فانتبه', cats:['capitals'], levels:[1,2], mult:1, type:'mcq'},
   {id:'brands', group:'ثقافة وذكاء', name:'ماركات وشعارات', desc:'شعارات الشركات بالوصف، ومن وين الماركة، ومنو أسسها، وشنو تصنع', cats:['brands'], levels:[1,2,3], mult:1, type:'mcq'},
+  {id:'abbr', group:'ثقافة وذكاء', name:'الاختصارات 🔤', desc:'NATO وMRI وCEO… شنو تعني؟ ومرات بالعكس: المعنى وتختارون الاختصار', cats:['abbr'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'babhara', group:'ثقافة وذكاء', name:'باب الحارة', desc:'أحداث المسلسل جزء جزء: شنو صار، وليش، وشلون انتهى', cats:['babhara'], levels:[1,2,3], mult:1, type:'mcq'},
   {id:'board', group:'ثقافة وذكاء', name:'لوحة الأسئلة', desc:'لوحة بـ5 فئات وأسئلة من 100 لـ500، وكل فريق بدوره يختار الفئة والقيمة. ووراء مربع واحد سؤال ذهبي ⭐', cats:['general','capitals','football','iq','logic','seqs','calc','odd','anagram'], levels:[1,2,3], mult:1, type:'board', count:() => 1},
   {id:'pickfor', group:'ثقافة وذكاء', name:'اختار لخصمك', desc:'الفريق الثاني يختار لكم الفئة والصعوبة، وإذا أخطأتم يسرقون السؤال', cats:['general','capitals','football','iq','logic','seqs','calc','odd','anagram','flagcolors'], levels:[1,2,3], mult:1, type:'mcq', pick:true},
@@ -2004,6 +2005,7 @@ const ROUND_GUIDE = {
   flags:{p:G_ANY, pt:1, t:'5 د', tags:'🌍 أعلام', how:'العلم مغطّى ويتكشف شوية شوية، واعرفوا الدولة قبل ما ينكشف كله.'},
   flagcolors:{p:G_ANY, pt:1, t:'5 د', tags:'🌍 أعلام', how:'يطلع اسم دولة، واختاروا ألوان علمها بالترتيب الصح.'},
   brands:{p:G_ANY, pt:1, t:'5 د', tags:'🏷️ ماركات', how:'شعار شركة موصوف بالكلام والفريق يعرفها، أو من أي بلد الماركة، أو منو أسسها، أو شنو تصنع. أربع خيارات.'},
+  abbr:{p:G_ANY, pt:1, t:'5 د', tags:'🔤 اختصارات · 🩺 طب', how:'يطلع اختصار إنكليزي مثل NATO أو ECG وتختارون معناه، ومرات بالعكس. بيها منظمات وتقنية وكلمات عامة واختصارات طبية، والصعبة منها ما يعرفها إلا المختص.'},
   babhara:{p:G_ANY, pt:1, t:'5 د', tags:'📺 باب الحارة', how:'أسئلة عن أحداث مسلسل باب الحارة من الجزء الأول للثالث عشر: السرقات والجواسيس والحصار والأعراس والمؤامرات. ما بيها أسئلة عن الممثلين.'},
   capitals:{p:G_ANY, pt:1, t:'5 د', tags:'🌍 ثقافة', how:'اعرفوا عاصمة الدولة. انتبهوا: العاصمة مو دايماً أكبر مدينة.'},
   board:{p:G_ANY, pt:1, t:'15–20 د', tags:'🧠 ثقافة · 🎯 خطة', how:'لوحة بـ5 فئات وقيم من 100 لـ500. كل فريق بدوره يختار مربع، والغلط يفتح سرقة للخصم. ووراء مربع واحد سؤال ذهبي بنقاط مضاعفة.'},
@@ -2082,9 +2084,14 @@ function guideFit(r){
   if (TEAM_TYPES.includes(r.type) && (!a || !b)) return {tone:'no', text:'⚠️ تحتاج لاعب متصل من كل فريق'};
   return {tone:'ok', text:`✅ تنفع لعددكم (${a} مقابل ${b})${a !== b && g.warn && /نفس العدد|الأكبر/.test(g.warn) ? ' · ⚖️ الفريقين مو متساويين' : ''}`};
 }
-const CAT_NAMES = {witness:'شاهد عيان', geomap:'على الخريطة', wiki:'ويكيبيديا', hex:'خلايا الحروف', rule:'القاعدة السرية', match:'أعواد الكبريت', brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
+const CAT_NAMES = {abbr:'الاختصارات', witness:'شاهد عيان', geomap:'على الخريطة', wiki:'ويكيبيديا', hex:'خلايا الحروف', rule:'القاعدة السرية', match:'أعواد الكبريت', brands:'ماركات وشعارات', babhara:'باب الحارة', shapes:'كم مثلث؟', snum:'الرقم السري', relay:'التتابع', iclock:'الساعة الداخلية', maze:'المتاهة الجماعية', escape:'غرفة الهروب', target:'هدف الأرقام', secret:'الشخصية السرية', tmap:'خريطة الكنز', wordle:'الكلمة المخفية', chain:'سلسلة الفريق', cipher:'شفرة الأرقام', scale:'الميزان', alike:'فكّر مثل الجماعة', wrote:'منو كتبها؟', tclock:'عدّاد في رأسك', truth:'حقيقتان وكذبة', logic:'ألغاز المنطق', seqs:'المتتاليات', calc:'الحاسبة البشرية', anagram:'الحروف المبعثرة', odd:'الدخيل', spy:'الجاسوس', liar:'الكذّاب', who:'منو أكثر واحد؟', react:'ردّة الفعل', look:'ركّز', links:'الرابط المشترك', draw:'ارسمها', memory:'الذاكرة', bomb:'القنبلة', auction:'المزاد', reverse:'بالمقلوب', describe:'وصّف', order:'رتّب', rapid:'صح أم خطأ', general:'معلومات عامة', whoami:'من أنا؟', iq:'ذكاء', flags:'أعلام', flagcolors:'ألوان الأعلام', capitals:'عواصم', football:'كرة قدم', players:'من هو اللاعب', career:'مسيرة لاعب', lists:'عدّد', closest:'الأقرب يفوز'};
 const LEVEL_POINTS = {1:100, 2:200, 3:300};
 const LEVEL_NAMES = {1:'سهل', 2:'متوسط', 3:'صعب'};
+// المستويات المختارة (4 = مستحيلة: أسئلة صعبة بدون خيارات وبوقت أقصر)
+const TIERS = () => Array.isArray(P.tiers) && P.tiers.length ? P.tiers : (P.diff === 'mix' ? [1, 2, 3] : [2, 3]);
+const tierLv = () => [...new Set(TIERS().map(x => Math.min(3, x)))].sort();
+const nearLv = l => tierLv().includes(l) ? l : tierLv().slice().sort((a, b) => Math.abs(a - l) - Math.abs(b - l))[0];
+const IMP_TIME = .6;
 const CLUE_POINTS = [300, 200, 150, 100];
 const LIST_PER = 50, LIST_TIME = 60, NUM_TIME = 30;
 const ORDER_PER = 50, ORDER_BONUS = 100, RAPID_PER = 30, RAPID_TIME = 45;
@@ -2144,6 +2151,7 @@ const LETTERS = ['أ','ب','ج','د'];
 // أيقونات خطّية بنفس الستايل لكل فقرة، بدل الإيموجي
 const CAT_PATHS = {
   brands:'<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',
+  abbr:'<path d="M4 17l3-10 3 10M5 14h4"/><path d="M13 7h4a2.5 2.5 0 0 1 0 5h-4zM13 12h4.5a2.5 2.5 0 0 1 0 5H13z"/>',
   babhara:'<path d="M5 21V10a7 7 0 0 1 14 0v11"/><path d="M3 21h18M12 3.5V21"/><path d="M10 14h.01M14 14h.01"/>',
   geomap:'<path d="M3 6l6-3 6 3 6-3v15l-6 3-6-3-6 3z"/><path d="M9 3v15M15 6v15"/>',
   wiki:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/><path d="M7 8.5h10M7 15.5h10"/>',
@@ -3571,6 +3579,73 @@ BANK.letters = Array.from('ابتجحدرزسشصعفقكلمنهي').map((l, i)
     [1,'بأي فترة تدور أحداث المسلسل؟',['الانتداب الفرنسي على سوريا','الحكم العثماني الأخير','زمن المماليك','بعد الاستقلال'],'',''],
   ]));
 
+  /* ---- الاختصارات: [الاختصار، معناه بالعربي، المستوى، الأصل بالإنكليزي] مجموعة بمجموعة حتى الخيارات الغلط تكون من نفس النوع ---- */
+  const ABBR = {
+    org:[
+      ['NATO','حلف شمال الأطلسي',1,'North Atlantic Treaty Organization'],['UN','الأمم المتحدة',1,'United Nations'],['WHO','منظمة الصحة العالمية',1,'World Health Organization'],
+      ['UNICEF','منظمة الأمم المتحدة للطفولة',1,"United Nations International Children's Emergency Fund"],['UNESCO','منظمة الأمم المتحدة للتربية والعلم والثقافة',2,'United Nations Educational, Scientific and Cultural Organization'],
+      ['FIFA','الاتحاد الدولي لكرة القدم',1,'Fédération Internationale de Football Association'],['OPEC','منظمة الدول المصدّرة للنفط',1,'Organization of the Petroleum Exporting Countries'],
+      ['IMF','صندوق النقد الدولي',2,'International Monetary Fund'],['WTO','منظمة التجارة العالمية',2,'World Trade Organization'],['UEFA','الاتحاد الأوروبي لكرة القدم',1,'Union of European Football Associations'],
+      ['IOC','اللجنة الأولمبية الدولية',2,'International Olympic Committee'],['UNHCR','مفوضية الأمم المتحدة لشؤون اللاجئين',2,'United Nations High Commissioner for Refugees'],
+      ['ICRC','اللجنة الدولية للصليب الأحمر',2,'International Committee of the Red Cross'],['NASA','وكالة الفضاء الأمريكية',1,'National Aeronautics and Space Administration'],
+      ['FBI','مكتب التحقيقات الفيدرالي الأمريكي',1,'Federal Bureau of Investigation'],['CIA','وكالة المخابرات المركزية الأمريكية',1,'Central Intelligence Agency'],['EU','الاتحاد الأوروبي',1,'European Union'],
+      ['IAEA','الوكالة الدولية للطاقة الذرية',2,'International Atomic Energy Agency'],['FAO','منظمة الأغذية والزراعة',3,'Food and Agriculture Organization'],['ILO','منظمة العمل الدولية',3,'International Labour Organization'],
+      ['ICC','المحكمة الجنائية الدولية',3,'International Criminal Court'],['OIC','منظمة التعاون الإسلامي',3,'Organisation of Islamic Cooperation'],['GCC','مجلس التعاون الخليجي',2,'Gulf Cooperation Council'],
+      ['ASEAN','رابطة دول جنوب شرق آسيا',3,'Association of Southeast Asian Nations'],['UNRWA','وكالة غوث وتشغيل اللاجئين الفلسطينيين',2,'United Nations Relief and Works Agency'],
+      ['AFC','الاتحاد الآسيوي لكرة القدم',2,'Asian Football Confederation'],['NBA','دوري كرة السلة الأمريكي للمحترفين',2,'National Basketball Association'],
+      ['FDA','إدارة الغذاء والدواء الأمريكية',2,'Food and Drug Administration'],['CDC','مراكز مكافحة الأمراض والوقاية منها',2,'Centers for Disease Control and Prevention'],
+      ['MSF','أطباء بلا حدود',3,'Médecins Sans Frontières'],['WWF','الصندوق العالمي للطبيعة',3,'World Wide Fund for Nature'],['OECD','منظمة التعاون الاقتصادي والتنمية',3,'Organisation for Economic Co-operation and Development'],
+    ],
+    tech:[
+      ['GPS','نظام تحديد المواقع العالمي',1,'Global Positioning System'],['USB','الناقل التسلسلي العام',2,'Universal Serial Bus'],['PDF','صيغة المستند المحمول',2,'Portable Document Format'],
+      ['HTML','لغة ترميز النص التشعبي',2,'HyperText Markup Language'],['URL','عنوان الموقع على الإنترنت',2,'Uniform Resource Locator'],['CPU','وحدة المعالجة المركزية',1,'Central Processing Unit'],
+      ['RAM','ذاكرة الوصول العشوائي',1,'Random Access Memory'],['AI','الذكاء الاصطناعي',1,'Artificial Intelligence'],['SIM','وحدة تعريف المشترك (شريحة الموبايل)',3,'Subscriber Identity Module'],
+      ['LED','الصمام الثنائي الباعث للضوء',2,'Light-Emitting Diode'],['LCD','شاشة الكريستال السائل',2,'Liquid Crystal Display'],['ATM','جهاز الصرّاف الآلي',1,'Automated Teller Machine'],
+      ['SMS','خدمة الرسائل القصيرة',1,'Short Message Service'],['VPN','الشبكة الافتراضية الخاصة',2,'Virtual Private Network'],['HTTP','بروتوكول نقل النص التشعبي',3,'HyperText Transfer Protocol'],
+      ['GPU','وحدة معالجة الرسوميات',2,'Graphics Processing Unit'],['SSD','قرص الحالة الصلبة',3,'Solid-State Drive'],['QR','رمز الاستجابة السريعة',2,'Quick Response'],['IP','بروتوكول الإنترنت',3,'Internet Protocol'],
+      ['RADAR','كشف الأجسام وتحديد بعدها بالموجات الراديوية',3,'Radio Detection And Ranging'],['LASER','تضخيم الضوء بالانبعاث المحفَّز للإشعاع',3,'Light Amplification by Stimulated Emission of Radiation'],
+    ],
+    gen:[
+      ['CEO','المدير التنفيذي',1,'Chief Executive Officer'],['GDP','الناتج المحلي الإجمالي',2,'Gross Domestic Product'],['VIP','شخص مهم جداً',1,'Very Important Person'],
+      ['DIY','سوّيها بنفسك',2,'Do It Yourself'],['ASAP','بأسرع وقت ممكن',1,'As Soon As Possible'],['FAQ','الأسئلة الشائعة',2,'Frequently Asked Questions'],['IQ','معامل الذكاء',1,'Intelligence Quotient'],
+      ['PhD','دكتوراه الفلسفة',2,'Doctor of Philosophy'],['RSVP','يُرجى الرد على الدعوة',3,'Répondez s\'il vous plaît'],['ISBN','الرقم الدولي المعياري للكتاب',3,'International Standard Book Number'],
+      ['GMT','توقيت غرينتش',2,'Greenwich Mean Time'],['UV','الأشعة فوق البنفسجية',1,'Ultraviolet'],['DNA','الحمض النووي الريبي منقوص الأكسجين',1,'Deoxyribonucleic Acid'],
+      ['VAT','ضريبة القيمة المضافة',2,'Value Added Tax'],['MBA','ماجستير إدارة الأعمال',2,'Master of Business Administration'],['ETA','الوقت المتوقع للوصول',3,'Estimated Time of Arrival'],
+      ['SOS','نداء استغاثة',1,'إشارة استغاثة بالمورس، مو اختصار لكلمات محددة'],['AM','قبل الظهر',1,'Ante Meridiem'],['PM','بعد الظهر',1,'Post Meridiem'],['AD','بعد الميلاد',2,'Anno Domini'],
+      ['TBA','يُعلن عنه لاحقاً',3,'To Be Announced'],['FYI','للعلم فقط',2,'For Your Information'],
+    ],
+    med:[
+      ['MRI','التصوير بالرنين المغناطيسي',1,'Magnetic Resonance Imaging'],['CT','التصوير المقطعي المحوسب',1,'Computed Tomography'],['ECG','تخطيط كهربائية القلب',1,'Electrocardiogram'],
+      ['EEG','تخطيط كهربائية الدماغ',2,'Electroencephalogram'],['ICU','وحدة العناية المركزة',1,'Intensive Care Unit'],['CPR','الإنعاش القلبي الرئوي',1,'Cardiopulmonary Resuscitation'],
+      ['BMI','مؤشر كتلة الجسم',1,'Body Mass Index'],['HIV','فيروس نقص المناعة البشرية',1,'Human Immunodeficiency Virus'],['COPD','الداء الرئوي الانسدادي المزمن',2,'Chronic Obstructive Pulmonary Disease'],
+      ['ARDS','متلازمة الضائقة التنفسية الحادة',2,'Acute Respiratory Distress Syndrome'],['DVT','الخثار الوريدي العميق',2,'Deep Vein Thrombosis'],['MI','احتشاء عضلة القلب',2,'Myocardial Infarction'],
+      ['CVA','الحادث الوعائي الدماغي (السكتة)',2,'Cerebrovascular Accident'],['GERD','داء الارتداد المعدي المريئي',2,'Gastroesophageal Reflux Disease'],['IBS','متلازمة القولون المتهيّج',2,'Irritable Bowel Syndrome'],
+      ['SLE','الذئبة الحمامية الجهازية',3,'Systemic Lupus Erythematosus'],['DKA','الحماض الكيتوني السكري',2,'Diabetic Ketoacidosis'],['ALS','التصلّب الجانبي الضموري',3,'Amyotrophic Lateral Sclerosis'],
+      ['ESR','سرعة ترسّب الدم',2,'Erythrocyte Sedimentation Rate'],['CRP','البروتين التفاعلي C',2,'C-Reactive Protein'],['NSAID','مضادات الالتهاب غير الستيرويدية',2,'Non-Steroidal Anti-Inflammatory Drug'],
+      ['SSRI','مثبطات استرداد السيروتونين الانتقائية',3,'Selective Serotonin Reuptake Inhibitor'],['DIC','التخثّر المنتشر داخل الأوعية',3,'Disseminated Intravascular Coagulation'],
+      ['TIA','نوبة نقص التروية العابرة',3,'Transient Ischemic Attack'],['ARB','حاصرات مستقبلات الأنجيوتنسين',3,'Angiotensin Receptor Blocker'],['PCOS','متلازمة المبيض متعدد الكيسات',2,'Polycystic Ovary Syndrome'],
+      ['ADHD','اضطراب نقص الانتباه وفرط الحركة',2,'Attention-Deficit/Hyperactivity Disorder'],['PTSD','اضطراب ما بعد الصدمة',2,'Post-Traumatic Stress Disorder'],['OCD','اضطراب الوسواس القهري',2,'Obsessive-Compulsive Disorder'],
+      ['GCS','مقياس غلاسكو للغيبوبة',2,'Glasgow Coma Scale'],['ERCP','تصوير القنوات الصفراوية والبنكرياسية بالتنظير الراجع',3,'Endoscopic Retrograde Cholangiopancreatography'],
+      ['TPN','التغذية الوريدية الكاملة',3,'Total Parenteral Nutrition'],['CABG','جراحة مجازة الشريان التاجي',3,'Coronary Artery Bypass Graft'],['PCI','التدخل التاجي عبر الجلد',3,'Percutaneous Coronary Intervention'],
+      ['ATLS','دعم الحياة المتقدم للإصابات',3,'Advanced Trauma Life Support'],['SIADH','متلازمة الإفراز غير الملائم للهرمون المضاد لإدرار البول',3,'Syndrome of Inappropriate Antidiuretic Hormone'],
+      ['TTP','فرفرية نقص الصفيحات الخثارية',3,'Thrombotic Thrombocytopenic Purpura'],['HELLP','انحلال الدم وارتفاع إنزيمات الكبد ونقص الصفيحات',3,'Hemolysis, Elevated Liver enzymes, Low Platelets'],
+      ['NPO','لا شيء عن طريق الفم (صيام)',3,'Nil Per Os'],['PRN','عند الحاجة',3,'Pro Re Nata'],['BID','مرتين باليوم',2,'Bis In Die'],['STAT','فوراً',2,'Statim'],
+      ['ACLS','دعم الحياة القلبي المتقدم',3,'Advanced Cardiac Life Support'],['AKI','إصابة الكلية الحادة',2,'Acute Kidney Injury'],['CKD','داء الكلية المزمن',2,'Chronic Kidney Disease'],
+      ['UTI','التهاب المسالك البولية',1,'Urinary Tract Infection'],['IV','عن طريق الوريد',1,'Intravenous'],['ENT','الأنف والأذن والحنجرة',1,'Ear, Nose and Throat'],
+    ],
+  };
+  const ab = [];
+  Object.entries(ABBR).forEach(([g, rows]) => rows.forEach(([a, m, lvl, en], i) => {
+    const r = seeded('ab' + g + a), sh = arr => { arr = arr.slice(); for (let k = arr.length - 1; k > 0; k--) { const j = Math.floor(r() * (k + 1)); [arr[k], arr[j]] = [arr[j], arr[k]]; } return arr; };
+    // الخيارات الغلط من نفس المجموعة، والأقرب بالمستوى أول حتى تصعب
+    const pool = sh(rows.filter(x => x[0] !== a)).sort((x, y) => Math.abs(x[2] - lvl) - Math.abs(y[2] - lvl));
+    const note = en.includes(' ') || /^[A-Z]/.test(en) ? `${a} = ${en}` : en;
+    ab.push({id:'abf' + g + i, lvl, fam:'ab' + a, q:`شنو يعني «${a}»؟`, o:[m, ...pool.slice(0, 3).map(x => x[1])], hint:`أول كلمة بالإنكليزي تبدي بحرف ${en[0]}.`, note});
+    // بالعكس: المعنى وتختارون الاختصار (أصعب شوية)
+    ab.push({id:'abr' + g + i, lvl:Math.min(3, lvl + 1), fam:'ab' + a, q:`«${m}»، شنو اختصارها بالإنكليزي؟`, o:[a, ...pool.slice(0, 3).map(x => x[0])], hint:`يتكون من ${a.replace(/[^A-Za-z]/g, '').length} حروف.`, note});
+  }));
+  add('abbr', ab);
+
   /* ---- ماركات وشعارات: الشعار موصوف بالكلام (ما نرسم شعارات حقيقية) ---- */
   add('brands', mcq('br', [
     // شعارات (سهلة)
@@ -4944,8 +5019,8 @@ function drawQuestions(def, n, preferLvl){
   const bad = new Set(P.bad || []);
   const fits = q => def.cats.includes(q.cat) && !used.has(q.id) && !bad.has(q.id);
   // وضع «صعبة»: نجيب الصعب أول ثم المتوسط، وبعدها مستويات الفقرة الأصلية إذا ما كفّت
-  const hard = P.diff === 'hard', HL = [3, 2];
-  if (hard) def = Object.assign({}, def, {levels:HL});
+  const LV = tierLv();
+  def = Object.assign({}, def, {levels:LV});
   const rank = arr => shuffle(arr.filter(q => !seen.has(q.id))).concat(shuffle(arr.filter(q => seen.has(q.id))));
   let list = rank(Q.filter(q => fits(q) && def.levels.includes(q.lvl)));
   if (def.cats.length > 1) {           // وزّع الفقرات بالتساوي في الجولة الصعبة
@@ -4955,10 +5030,9 @@ function drawQuestions(def, n, preferLvl){
     list = mixed;
   }
   if (preferLvl) list = list.filter(q => q.lvl === preferLvl).concat(list.filter(q => q.lvl !== preferLvl));
-  if (hard && !preferLvl) list = list.filter(q => q.lvl === 3).concat(list.filter(q => q.lvl !== 3));
   if (list.length < n) list = list.concat(rank(Q.filter(q => fits(q) && !def.levels.includes(q.lvl))));
   // نفس الدولة أو نفس الجواب ما يتكرر بنفس السهرة (علم ثم عاصمته ثم ألوانه...) إلا إذا ما بقى غيره
-  const keys = q => { const k = []; if (q.o && q.o[0] && !/^\d+$/.test(String(q.o[0]))) k.push('a:' + String(q.o[0]).replace(/^ال/, '')); if (q.flag) k.push('f:' + q.flag); if (q.cc) k.push('f:' + q.cc); return k; };
+  const keys = q => { const k = []; if (q.o && q.o[0] && !/^\d+$/.test(String(q.o[0]))) k.push('a:' + String(q.o[0]).replace(/^ال/, '')); if (q.flag) k.push('f:' + q.flag); if (q.cc) k.push('f:' + q.cc); if (q.fam) k.push('m:' + q.fam); return k; };
   const usedK = new Set([...S.used, ...S.plan].flatMap(id => QBY[id] ? keys(QBY[id]) : []));
   const out = [], later = [];
   for (const q of list) {
@@ -4981,16 +5055,18 @@ function buildRound(){
   S.plan = [];
   const ids = drawQuestions(def, def.count ? Math.round(def.count(S.settings.perTeam) * S.teams.length / 2) : S.settings.perTeam * S.teams.length);
   ids.sort((a, b) => QBY[a].lvl - QBY[b].lvl);   // من الأسهل للأصعب، وكل سؤالين متقاربين
+  S.imp = []; if (TIERS().includes(4)) { const h = ids.filter(id => QBY[id].lvl === 3 && qType(QBY[id]) === 'mcq' && !QBY[id].scene); S.imp = TIERS().includes(3) ? h.filter((_, i) => i % 2) : h; }
   S.plan = ids; S.res = []; S.i = 0; S.first = S.r % S.teams.length; S.cur = null; S.phase = 'intro';
   if (S.settings.llMode === 'round') S.teams.forEach(t => t.ll = freshLL());
 }
 function newCur(id, team){
-  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'lead', 'mafia'].includes(rt) ? rt : qType(q);
-  const ms = q.scene && !['race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'lead', 'mafia'].includes(t) ? q.scene.ms : (t === 'snum' ? SN_SET : t === 'relay' ? RL_TIME : t === 'maze' ? MAZE_TIME : t === 'iclock' ? IC_TIME : t === 'duel' ? DUEL_TIME : t === 'escape' ? ESC_TIME : t === 'target' ? TG_TIME : t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
+  const rt = (RD[S.rounds[S.r]] || {}).type, q = QBY[id], t0 = ['buzz', 'all', 'pdraw', 'fast', 'split', 'tmem', 'coop', 'race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'lead', 'mafia'].includes(rt) ? rt : qType(q), t = t0;
+  const ms0 = q.scene && !['race', 'greed', 'trust', 'duel', 'board', 'hex', 'tchain', 'bank', 'hot', 'lead', 'mafia'].includes(t) ? q.scene.ms : (t === 'snum' ? SN_SET : t === 'relay' ? RL_TIME : t === 'maze' ? MAZE_TIME : t === 'iclock' ? IC_TIME : t === 'duel' ? DUEL_TIME : t === 'escape' ? ESC_TIME : t === 'target' ? TG_TIME : t === 'race' ? RACE_TIME : t === 'greed' ? GREED_TIME : t === 'letters' ? LT_TIME : t === 'secret' ? SECRET_TIME : t === 'tmap' ? TMAP_TIME : t === 'wordle' ? WORDLE_TIME : t === 'chain' ? CHAIN_TIME : t === 'split' || t === 'coop' ? COOP_TIME : t === 'tmem' ? TMEM_STUDY :t === 'alike' ? ALIKE_TIME : t === 'wrote' ? WROTE_WRITE : t === 'pdraw' ? PDRAW_TIME : t === 'fast' ? FAST_TIME : t === 'tclock' ? 60 : t === 'truth' ? TRUTH_WRITE : t === 'all' ? ALL_TIME : t === 'spy' ? SPY_TALK : t === 'liar' ? LIAR_WRITE : t === 'who' ? WHO_TIME : t === 'react' ? REACT_WAIT / 1000 : t === 'list' ? (q.time || LIST_TIME) : t === 'num' ? NUM_TIME : t === 'rapid' ? RAPID_TIME : t === 'describe' ? DESCRIBE_TIME : t === 'reverse' ? REVERSE_TIME : t === 'auction' ? AUCTION_TIME : t === 'bomb' ? BOMB_MIN + Math.random() * (BOMB_MAX - BOMB_MIN) : t === 'buzz' ? BUZZ_TIME : t === 'memory' ? MEM_STUDY : t === 'draw' ? DRAW_TIME : S.settings.time) * 1000;
+  const ms = t === 'mcq' && (S.imp || []).includes(id) ? Math.round(ms0 * IMP_TIME) : ms0;
   return {id, team, t, stage: t === 'auction' ? 'bid' : (preStage(t) || t === 'buzz' || q.scene || NET_TYPES.includes(t)) ? 'ready' : 'answer',
     pk:[], picks:{}, votes:{}, fakes:{}, ferr:{}, opts:[], rx:{}, res2:null, spyKey:null, turn:[], buzzBy:null, nums:null, numBy:null, buzzer:null, textShown:false, recording:false, bid:AUCTION_START, bidder:null, cnt:0, wOrder: shuffle((q.words || []).map((_, i) => i)), wi:0, got:[], skipped:[], result:null, timeLeft:ms, max:ms, running:false, dbl:false, lock:null, gained:0,
     order:shuffle([0,1,2,3]), gone:[], hint:false, pick:null, spick:null, sres:null, sgained:0,
-    clueN:1, freeN:0, showOpts: t !== 'mcq' || !S.settings.direct, direct:false,
+    clueN:1, freeN:0, showOpts: t !== 'mcq' || (!S.settings.direct && !(S.imp || []).includes(id)), direct:false, imp: t === 'mcq' && (S.imp || []).includes(id),
     found:[], sfound:null, peek:false, winner:null, exact:false,
     mOrder:shuffle((q.mem || []).map((_, i) => i)), rOrder:shuffle((q.mem || []).map((_, i) => i)),
     seq:[], disp:shuffle((q.order || []).map((_, i) => i)), hintFirst:false, right:0, k:0, marks:[], last:null};
@@ -5567,7 +5643,7 @@ const pname = k => PL[k] ? PL[k].name : '؟';
 const pteam = k => PL[k] ? PL[k].team : 0;
 const teamNames = () => S ? S.teams.map(t => t.name) : P.names.slice(0, NT()).map((n, i) => (n || '').trim() || DEFAULTS.names[i]);
 // فقرات تشتغل ويه 3 فرق (الباقي مبني على فريقين بالضبط: جرس، قنبلة، مزاد، وفقرات الجوال الجماعية)
-const TEAM3_OK = ['witness','general','brands','babhara','shapes','match','rule','hot','wiki','geomap','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
+const TEAM3_OK = ['abbr','witness','general','brands','babhara','shapes','match','rule','hot','wiki','geomap','whoami','links','flags','flagcolors','capitals','pickfor','iq','logic','seqs','calc','anagram','odd','describe','draw','memory','look','reverse','greed','trust','rapid','football','players','career','lists','hard'];
 // «بدون جوال»: نخفي الفقرات اللي تحتاج جوالات (سباق الجرس وراهن على صاحبك يبقون، لأن إلهم أزرار على التابلت)
 const phoneRound = def => NET_TYPES.includes(def.type);
 const roundOk = def => !!def && !(P.hidden || []).includes(def.id) && !(P.deleted || []).includes(def.id) && !(P.play !== 'phone' && phoneRound(def)) &&(!def.net || NET.avail || P.test) && (NT() === 2 || TEAM3_OK.includes(def.id));
@@ -6404,7 +6480,7 @@ function hexPick(i){
   const all = (hexIndex()[L] || []).filter(x => !QBY[x.id] || !off.has(QBY[x.id].cat));
   let list = all.filter(x => !used.has(x.id));
   if (!list.length) list = all.length ? all : hexIndex()[L] || [];
-  if (P.diff === 'hard') { const h = list.filter(x => x.lvl === 3), m = list.filter(x => x.lvl === 2); list = h.length ? h : m.length ? m : list; }
+  { const ok = list.filter(x => tierLv().includes(x.lvl)); if (ok.length) list = ok; }
   const fresh = list.filter(x => !seen.has(x.id)), pool = fresh.length ? fresh : list, pick = pool[Math.floor(Math.random() * pool.length)];
   c.hx.sel = i; c.hx.qq = pick; S.used.push(pick.id); markSeen(pick.id);
   c.stage = 'answer'; c.timeLeft = c.max = HEX_TIME * 1000; sfx('tap'); timerStart(); save(); render();
@@ -6656,7 +6732,7 @@ function leadTimeout(c){
 
 /* --- الكرسي الساخن: لاعب واحد يجاوب 5 أسئلة ورا بعض بدون خيارات، والصعوبة تزيد بترتيب ثابت --- */
 const HOT_VALS = [100, 150, 200, 300, 400], HOT_BONUS = 300, HOT_TIME = 10;
-const HOT_ORDER = () => P.diff === 'hard' ? [2, 2, 3, 3, 3] : [1, 2, 2, 3, 3];
+const HOT_ORDER = () => (TIERS().includes(1) ? [1, 2, 2, 3, 3] : [2, 2, 3, 3, 3]).map(nearLv);
 // سؤال بنفس الصعوبة المطلوبة بالترتيب، وإذا خلصت نجيب الأقرب
 function hotDraw(lvl){
   const def = roundDef(), used = new Set([...S.used, ...S.plan]), seen = new Set(store.get(SEEN) || []);
@@ -6692,7 +6768,7 @@ function quickDraw(lvlPref){
   const def = roundDef(), used = new Set([...S.used, ...S.plan]), seen = new Set(store.get(SEEN) || []);
   const ok = q => def.cats.includes(q.cat) && plainMcq(q) && !used.has(q.id);
   const rank = arr => shuffle(arr.filter(q => !seen.has(q.id))).concat(shuffle(arr.filter(q => seen.has(q.id))));
-  const order = P.diff === 'hard' ? [3, 2, 1] : [lvlPref, 2, 1, 3];
+  const order = [...new Set([nearLv(lvlPref || 2), ...tierLv().slice().reverse(), 2, 1, 3])];
   let q = null; for (const l of order) { q = rank(Q.filter(x => ok(x) && x.lvl === l))[0]; if (q) break; }
   q = q || rank(Q.filter(ok))[0];
   if (q) { S.used.push(q.id); markSeen(q.id); }
@@ -7787,7 +7863,7 @@ function viewHome(){
       <h2>الإعدادات</h2>
       <div class="field"><span class="label">ألوان اللعبة</span><div class="themes">${THEMES.map(([k, n, cs]) => `<button type="button" data-act="theme" data-v="${k}" aria-pressed="${(P.theme || 'fun') === k}"><span class="sw">${cs.map(c => `<i style="background:${c}"></i>`).join('')}</span>${n}</button>`).join('')}</div></div>
       <div class="field"><span class="label">🌐 أسئلة ويكيبيديا من النت</span><small class="muted">${wdStatus()}<br>${geoStatus()}</small><button type="button" class="btn ghost" data-act="wdRefresh" ${WD.loading ? 'disabled' : ''}>${WD.loading ? 'جاري السحب…' : 'حدّث الأسئلة من النت'}</button></div>
-      <div class="field"><span class="label">صعوبة الأسئلة</span>${seg('diff', ['mix','hard'], ['متنوعة','صعبة'])}<small class="muted">«صعبة»: كل الفقرات تجيب الأسئلة الصعبة أول، وبعدها المتوسطة. السهلة ما تطلع إلا إذا خلصت الباقية.</small></div>
+      <div class="field"><span class="label">مستوى الأسئلة (اختاروا وحدة أو أكثر)</span><div class="seg tiers">${[[1,'سهلة'],[2,'متوسطة'],[3,'صعبة'],[4,'💀 مستحيلة']].map(([v, n]) => `<button type="button" data-act="tier" data-val="${v}" aria-pressed="${TIERS().includes(v)}">${n}</button>`).join('')}</div><small class="muted">ينطبق على كل الفقرات. «مستحيلة»: أسئلة صعبة تطلع بدون خيارات، والوقت أقصر، والنقاط مضاعفة.</small></div>
       <div class="field"><span class="label">حجم الكتابة على التابلت</span>${seg('fs', ['n','l','xl'], ['عادي','كبير','كبير جداً'])}</div>
       <div class="field"><span class="label">عدد الأسئلة لكل فريق في الجولة</span>${seg('perTeam', [1,2,3,4])}</div>
       <div class="field"><span class="label">وقت الإجابة (بالثواني)</span>${seg('time', [30,45,60,90])}</div>
@@ -7842,7 +7918,7 @@ function viewHome(){
   </div>`;
 }
 // رقم النسخة: سكربت البناء يكتبه هنا (UTC بصيغة yyyyMMddHHmm)، ويظهر بتوقيت بغداد
-const GAME_VER = '202611240957';
+const GAME_VER = '202611261133';
 function verLabel(){
   const m = /^(\d{4})(\d\d)(\d\d)(\d\d)(\d\d)$/.exec(GAME_VER);
   if (!m) return '';
@@ -7892,7 +7968,7 @@ function viewIntro(){
     how = `قائد كل فريق يقعد قدام الثاني والتابلت بالنص. أسئلة <b>صعبة جداً</b>، كل سؤال من فئة مختلفة، و<b>بدون خيارات</b>. أول قائد يضغط جهته يجاوب بصوت عالي، والمضيف يحكم. الغلط يعطي الثاني فرصة. أول واحد يوصل ${LEAD_TO} يفوز.`;
   } else if (def.type === 'hot') {
     rules = [[HOT_VALS.length, 'أسئلة ورا بعض'], [HOT_TIME, 'ثواني لكل سؤال'], [ltr(HOT_BONUS * def.mult), 'إذا الخمسة صح']];
-    how = `كل فريق يختار واحد يقعد بالكرسي، ويجاوب ${HOT_VALS.length} أسئلة ورا بعض <b>لحاله وبدون خيارات</b>. الأسئلة تصعب بالترتيب (${P.diff === 'hard' ? 'متوسط، متوسط، صعب، صعب، صعب' : 'سهل، متوسط، متوسط، صعب، صعب'})، وكل سؤال نقاطه أكثر من اللي قبله. المضيف يكشف الجواب ويحكم.`;
+    how = `كل فريق يختار واحد يقعد بالكرسي، ويجاوب ${HOT_VALS.length} أسئلة ورا بعض <b>لحاله وبدون خيارات</b>. الأسئلة تصعب بالترتيب (${HOT_ORDER().map(l => LEVEL_NAMES[l]).join('، ')})، وكل سؤال نقاطه أكثر من اللي قبله. المضيف يكشف الجواب ويحكم.`;
   } else if (def.type === 'tchain') {
     rules = [[CH_VALS.length, 'حلقات بالسلسلة'], [ltr(CH_VALS.reduce((s, v) => s + v, 0) * def.mult), 'أعلى سلسلة'], [CH_TIME, 'ثانية لكل سؤال']];
     how = `كل فريق يبني سلسلة بالدور. كل سؤال يجاوبه لاعب ثاني من الفريق <b>لحاله</b>، والباقين ممنوع يساعدون. كل جواب صح يضيف حلقة أغلى من اللي قبلها، وبعده تقررون: تكمّلون لو تثبّتون وتاخذون السلسلة. الغلط يصفّر السلسلة كلها.`;
@@ -8087,7 +8163,7 @@ function partMcq(c, q, def){
         : `<p class="subtle">ظهرت كل التلميحات</p>`) : '');
   }
   const card = `<article class="qcard">
-    <div class="meta"><span class="chip">${q.topic ? CAT_NAMES[q.cat] + ' · ' + q.topic : CAT_NAMES[q.cat]}</span>${lvlDots(q.lvl)}<span>${LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(ptsNow)}</span></div>
+    <div class="meta"><span class="chip">${q.topic ? CAT_NAMES[q.cat] + ' · ' + q.topic : CAT_NAMES[q.cat]}</span>${lvlDots(q.lvl)}<span>${c.imp ? '💀 مستحيل' : LEVEL_NAMES[q.lvl]}</span><span class="pts">${ltr(ptsNow)}</span></div>
     ${c.stage === 'steal' ? `<div class="stealban">سرقة! فريق ${esc(S.teams[other].name)} يجاوب الآن على ${ltr(Math.round(base / 2))} نقطة</div>` : ''}
     ${catIcon(q.cat)}
     <p class="qtext">${esc(q.q)}</p>
@@ -8101,8 +8177,8 @@ function partMcq(c, q, def){
   if (hidden) {
     choose = `<div class="choose">
       <button class="btn team" data-act="direct"><span>جاوبوا بدون خيارات</span><small>${ltr(base * 2 * d)} نقطة</small></button>
-      <button class="btn ghost" data-act="showOpts"><span>اعرض الخيارات</span><small>${ltr(base * d)} نقطة</small></button>
-    </div><p class="subtle">الفريق يقول جوابه أولاً، ثم اضغط «جاوبوا بدون خيارات» لكشف الجواب والحكم عليه.</p>`;
+      ${c.imp ? '' : `<button class="btn ghost" data-act="showOpts"><span>اعرض الخيارات</span><small>${ltr(base * d)} نقطة</small></button>`}
+    </div>${c.imp ? '<p class="subtle">💀 سؤال مستحيل: ماكو خيارات والوقت أقصر</p>' : ''}<p class="subtle">الفريق يقول جوابه أولاً، ثم اضغط «جاوبوا بدون خيارات» لكشف الجواب والحكم عليه.</p>`;
   }
   if (c.showOpts || c.stage === 'done') {
     const live = c.stage === 'answer' || c.stage === 'steal';
@@ -9293,6 +9369,7 @@ document.addEventListener('click', e => {
   if (act === 'closeMenu' && el.classList.contains('sheet-bg') && e.target !== el) return;
   const c = S && S.cur;
   switch (act) {
+    case 'tier': { const v = +el.dataset.val, cur = TIERS().slice(), i = cur.indexOf(v); if (i >= 0) { if (cur.length > 1) cur.splice(i, 1); else { toast('لازم تختارون مستوى واحد على الأقل'); break; } } else cur.push(v); P.tiers = cur.sort(); savePrefs(); render(); break; }
     case 'seg': { const v = el.dataset.val; P[el.dataset.key] = isNaN(+v) ? v : +v; savePrefs(); render(); break; }
     case 'toggle': { P[el.dataset.key] = !P[el.dataset.key]; savePrefs(); if (el.dataset.key === 'test') { botsSync(); toast(P.test ? 'وضع التجربة: أُضيف 4 لاعبين تجريبيين' : 'أُلغي وضع التجربة'); } render(); break; }
     case 'roundEdit': roundEdit = !roundEdit; render(); break;
@@ -9446,7 +9523,7 @@ document.addEventListener('click', e => {
     case 'resetSeen': store.del(SEEN); toast('صار كل بنك الأسئلة جديداً'); break;
     case 'beginRound': go(startQuestion); break;
     case 'opt': pick(+el.dataset.i); break;
-    case 'showOpts': if (c && c.stage === 'answer') { c.showOpts = true; sfx('tap'); save(); render(); } break;
+    case 'showOpts': if (c && c.stage === 'answer' && !c.imp) { c.showOpts = true; sfx('tap'); save(); render(); } break;
     case 'direct': goDirect(); break;
     case 'judge': judge(el.dataset.v === '1'); break;
     case 'life': useLife(el.dataset.id); break;
